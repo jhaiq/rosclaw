@@ -1,3 +1,35 @@
+#!/usr/bin/env bash
+# Generate openclaw.plugin.json from environment variables
+# This ensures plugin default configuration is in sync with docker/.env
+#
+# Usage:
+#   source ../../docker/.env  # or set env vars externally
+#   ./generate-plugin-config.sh [output_file]
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTENV_FILE="$SCRIPT_DIR/../../docker/.env"
+OUTPUT_FILE="${1:-$SCRIPT_DIR/openclaw.plugin.json}"
+
+# Load .env if exists
+if [[ -f "$DOTENV_FILE" ]]; then
+  set -a
+  # shellcheck disable=SC1090
+  source "$DOTENV_FILE"
+  set +a
+  echo "[info] loaded $DOTENV_FILE"
+fi
+
+# Use environment variables or defaults
+ROSBRIDGE_URL="${ROSCLAW_ROSBRIDGE_URL:-ws://localhost:9090}"
+TRANSPORT_MODE="${ROSCLAW_TRANSPORT_MODE:-rosbridge}"
+ROBOT_NAME="${ROSCLAW_ROBOT_NAME:-Robot}"
+
+# Remove quotes from robot name if present
+ROBOT_NAME=$(echo "$ROBOT_NAME" | tr -d '"')
+
+cat > "$OUTPUT_FILE" <<EOF
 {
   "id": "rosclaw",
   "name": "RosClaw",
@@ -14,7 +46,7 @@
             "type": "string",
             "enum": ["rosbridge", "local", "webrtc"],
             "description": "Transport mode: rosbridge (Mode B), local (Mode A), or webrtc (Mode C)",
-            "default": "rosbridge"
+            "default": "${TRANSPORT_MODE}"
           }
         }
       },
@@ -24,7 +56,7 @@
           "url": {
             "type": "string",
             "description": "Rosbridge WebSocket URL",
-            "default": "ws://ros2:9090"
+            "default": "${ROSBRIDGE_URL}"
           },
           "reconnect": {
             "type": "boolean",
@@ -95,7 +127,7 @@
           "name": {
             "type": "string",
             "description": "Robot display name",
-            "default": "TurtleBot3 (Sim)"
+            "default": "${ROBOT_NAME}"
           },
           "namespace": {
             "type": "string",
@@ -138,11 +170,11 @@
     },
     "rosbridge.url": {
       "label": "Rosbridge URL",
-      "placeholder": "ws://ros2:9090"
+      "placeholder": "${ROSBRIDGE_URL}"
     },
     "robot.name": {
       "label": "Robot Name",
-      "placeholder": "TurtleBot3 (Sim)"
+      "placeholder": "${ROBOT_NAME}"
     },
     "safety.maxLinearVelocity": {
       "label": "Max Linear Velocity (m/s)",
@@ -158,3 +190,7 @@
     }
   }
 }
+EOF
+
+echo "[ok] generated $OUTPUT_FILE"
+echo "[info] Defaults: ROSBRIDGE_URL=$ROSBRIDGE_URL, ROBOT_NAME=$ROBOT_NAME"

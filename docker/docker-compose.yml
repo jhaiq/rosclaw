@@ -1,36 +1,62 @@
-version: "3.8"
+# RosClaw ROS2 + rosbridge_server + Gazebo simulation
+# Configuration is loaded from .env file
 
 services:
-  # ROS2 + rosbridge_server + Gazebo simulation
+  # ROS2 + rosbridge_server + Gazebo simulation (default CPU-only)
   ros2:
     build:
-      context: .
-      dockerfile: Dockerfile.ros2
+      context: ..
+      dockerfile: docker/Dockerfile.ros2
     image: rosclaw/ros2:latest
     ports:
-      - "9090:9090"   # rosbridge WebSocket
-      - "11311:11311" # ROS master (if needed)
+      - "${ROSBRIDGE_PORT:-9090}:${ROSBRIDGE_PORT:-9090}"   # rosbridge WebSocket
+      - "${ROS_MASTER_PORT:-11311}:${ROS_MASTER_PORT:-11311}" # ROS master (if needed)
     environment:
-      - ROS_DOMAIN_ID=0
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
       - GAZEBO_MODEL_PATH=/opt/ros/jazzy/share/turtlebot3_gazebo/models
-      - TURTLEBOT3_MODEL=burger
+      - TURTLEBOT3_MODEL=${TURTLEBOT3_MODEL:-burger}
+      - DISPLAY=${DISPLAY:-:0}
+      - QT_X11_NO_MITSHM=1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
     networks:
-      - rosclaw
+      - rosclaw-network
 
-  # RosClaw plugin (runs within OpenClaw)
-  rosclaw:
+  # GPU-enabled variant - use with: docker compose --profile gpu up -d
+  ros2-gpu:
     build:
       context: ..
-      dockerfile: docker/Dockerfile.rosclaw
-    image: rosclaw/plugin:latest
+      dockerfile: docker/Dockerfile.ros2
+    image: rosclaw/ros2:latest
+    container_name: rosclaw-ros2-gpu
+    ports:
+      - "${ROSBRIDGE_PORT:-9090}:${ROSBRIDGE_PORT:-9090}"   # rosbridge WebSocket
+      - "${ROS_MASTER_PORT:-11311}:${ROS_MASTER_PORT:-11311}" # ROS master (if needed)
     environment:
-      - ROSCLAW_TRANSPORT_MODE=rosbridge
-      - ROSCLAW_ROSBRIDGE_URL=ws://ros2:9090
-    depends_on:
-      - ros2
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+      - GAZEBO_MODEL_PATH=/opt/ros/jazzy/share/turtlebot3_gazebo/models
+      - TURTLEBOT3_MODEL=${TURTLEBOT3_MODEL:-burger}
+      - DISPLAY=${DISPLAY:-:0}
+      - QT_X11_NO_MITSHM=1
+      - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES:-all}
+      - NVIDIA_DRIVER_CAPABILITIES=${NVIDIA_DRIVER_CAPABILITIES:-graphics,utility,compute}
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
     networks:
-      - rosclaw
+      rosclaw-network:
+        aliases:
+          - ros2
+    profiles:
+      - gpu
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu, graphics, compute, utility]
 
 networks:
-  rosclaw:
-    driver: bridge
+  rosclaw-network:
+    external: true
+    name: ${DOCKER_NETWORK_NAME:-1panel-network}

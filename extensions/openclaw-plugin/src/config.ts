@@ -1,5 +1,14 @@
 import { z } from "zod";
 
+// Default values can be overridden by environment variables:
+// - ROSCLAW_DEFAULT_ROSBRIDGE_URL (default: ws://localhost:9090)
+// - ROSCLAW_DEFAULT_TRANSPORT_MODE (default: rosbridge)
+// - ROSCLAW_DEFAULT_ROBOT_NAME (default: Robot)
+
+const DEFAULT_ROSBRIDGE_URL = process.env.ROSCLAW_DEFAULT_ROSBRIDGE_URL || "ws://localhost:9090";
+const DEFAULT_TRANSPORT_MODE = (process.env.ROSCLAW_DEFAULT_TRANSPORT_MODE || "rosbridge") as "rosbridge" | "local" | "webrtc";
+const DEFAULT_ROBOT_NAME = process.env.ROSCLAW_DEFAULT_ROBOT_NAME || "Robot";
+
 const IceServerSchema = z.object({
   urls: z.union([z.string(), z.array(z.string())]),
   username: z.string().optional(),
@@ -9,13 +18,13 @@ const IceServerSchema = z.object({
 export const RosClawConfigSchema = z.object({
   transport: z
     .object({
-      mode: z.enum(["rosbridge", "local", "webrtc"]).default("rosbridge"),
+      mode: z.enum(["rosbridge", "local", "webrtc"]).default(DEFAULT_TRANSPORT_MODE),
     })
     .default({}),
 
   rosbridge: z
     .object({
-      url: z.string().default("ws://localhost:9090"),
+      url: z.string().default(DEFAULT_ROSBRIDGE_URL),
       reconnect: z.boolean().default(true),
       reconnectInterval: z.number().default(3000),
     })
@@ -41,7 +50,7 @@ export const RosClawConfigSchema = z.object({
 
   robot: z
     .object({
-      name: z.string().default("Robot"),
+      name: z.string().default(DEFAULT_ROBOT_NAME),
       namespace: z.string().default(""),
     })
     .default({}),

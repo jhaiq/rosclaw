@@ -1,0 +1,61 @@
+version: "3.8"
+
+# OpenClaw Gateway (containerized) + RosClaw plugin (mounted from this repo)
+# Configuration is loaded from .env file
+#
+# Usage:
+#   cd docker
+#   docker compose --env-file .env -f docker-compose.yml -f docker-compose.openclaw.yml up
+#
+# Then open:
+#   http://127.0.0.1:${OPENCLAW_PORT}/
+#
+# Notes:
+# - The ros2 service comes from docker-compose.yml and provides rosbridge at ws://ros2:${ROSBRIDGE_PORT}
+# - This file mounts the local RosClaw plugin into the OpenClaw container and enables it in openclaw.json
+
+services:
+  openclaw-gateway:
+    image: ghcr.io/openclaw/openclaw:latest
+    container_name: openclaw-gateway
+    ports:
+      - "${OPENCLAW_PORT:-18789}:${OPENCLAW_PORT:-18789}"
+    environment:
+      # Persist OpenClaw state under /home/node/.openclaw (default)
+      - OPENCLAW_STATE_DIR=${OPENCLAW_STATE_DIR:-/home/node/.openclaw}
+      # Token auth for the Control UI and CLI. Put this in docker/openclaw/.env.
+      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN:-}
+      # Optional: make logs easier while integrating
+      - OPENCLAW_LOG_LEVEL=${OPENCLAW_LOG_LEVEL:-info}
+    volumes:
+      # Persist gateway state (sessions, credentials, etc.)
+      - openclaw_state:/home/node/.openclaw
+      # Mount RosClaw repo into the container (read-only is fine)
+      - ..:/home/node/rosclaw:ro
+      # Provide the gateway config enabling rosclaw plugin
+      - ./openclaw/openclaw.json:/home/node/.openclaw/openclaw.json:ro
+    command: ["openclaw", "gateway", "run", "--allow-unconfigured", "--port", "${OPENCLAW_PORT:-18789}"]
+    depends_on:
+      - ros2
+    networks:
+      - ${DOCKER_NETWORK_NAME:-1panel-network}
+
+  # Utility container to run one-off OpenClaw CLI commands against the same state.
+  openclaw-cli:
+    image: ghcr.io/openclaw/openclaw:latest
+    container_name: openclaw-cli
+    entrypoint: ["bash", "-lc"]
+    environment:
+      - OPENCLAW_STATE_DIR=${OPENCLAW_STATE_DIR:-/home/node/.openclaw}
+      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN:-}
+      - OPENCLAW_LOG_LEVEL=${OPENCLAW_LOG_LEVEL:-info}
+    volumes:
+      - openclaw_state:/home/node/.openclaw
+      - ..:/home/node/rosclaw:ro
+      - ./openclaw/openclaw.json:/home/node/.openclaw/openclaw.json:ro
+    networks:
+      - ${DOCKER_NETWORK_NAME:-1panel-network}
+    profiles: ["tools"]
+
+volumes:
+  openclaw_state:
