@@ -6,7 +6,7 @@ DOTENV := .env
 COMPOSE_FILES := -f docker-compose.yml -f docker-compose.openclaw.yml
 COMPOSE := docker compose --env-file $(DOTENV) $(COMPOSE_FILES)
 
-.PHONY: help setup start stop restart clean logs validate gen-config gen-plugin-config gpu-start gpu-stop verify-gpu
+.PHONY: help setup start stop restart clean logs validate gen-config gen-plugin-config gpu-start gpu-stop verify-gpu go2-start go2-stop go2-logs
 
 help: ## Show this help message
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-25s\033[0m %s\n", $$1, $$2}'
@@ -119,3 +119,19 @@ gpu-stop: ## Stop GPU-accelerated ros2 container
 
 verify-gpu: ## Verify GPU support and configuration
 	@bash verify-gpu.sh
+
+# GO2 commands
+go2-start: ## Start Unitree GO2 control node (simulation mode by default)
+	@echo "[info] Starting Unitree GO2 control node..."
+	@$(COMPOSE) --profile go2 up -d go2-node
+	@echo ""
+	@echo "[ok] GO2 node started!"
+	@echo "[info] Mode: $$GO2_MODE (default: simulation)"
+
+go2-stop: ## Stop Unitree GO2 control node
+	@echo "[info] Stopping GO2 node..."
+	@$(COMPOSE) --profile go2 stop go2-node
+	@echo "[ok] GO2 node stopped"
+
+go2-logs: ## Follow logs from GO2 node
+	@$(COMPOSE) --profile go2 logs -f go2-node

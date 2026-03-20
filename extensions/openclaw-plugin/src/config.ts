@@ -4,10 +4,12 @@ import { z } from "zod";
 // - ROSCLAW_DEFAULT_ROSBRIDGE_URL (default: ws://localhost:9090)
 // - ROSCLAW_DEFAULT_TRANSPORT_MODE (default: rosbridge)
 // - ROSCLAW_DEFAULT_ROBOT_NAME (default: Robot)
+// - ROSCLAW_DEFAULT_ROBOT_TYPE (default: turtlebot)
 
 const DEFAULT_ROSBRIDGE_URL = process.env.ROSCLAW_DEFAULT_ROSBRIDGE_URL || "ws://localhost:9090";
 const DEFAULT_TRANSPORT_MODE = (process.env.ROSCLAW_DEFAULT_TRANSPORT_MODE || "rosbridge") as "rosbridge" | "local" | "webrtc";
 const DEFAULT_ROBOT_NAME = process.env.ROSCLAW_DEFAULT_ROBOT_NAME || "Robot";
+const DEFAULT_ROBOT_TYPE = process.env.ROSCLAW_DEFAULT_ROBOT_TYPE || "turtlebot";
 
 const IceServerSchema = z.object({
   urls: z.union([z.string(), z.array(z.string())]),
@@ -51,6 +53,7 @@ export const RosClawConfigSchema = z.object({
   robot: z
     .object({
       name: z.string().default(DEFAULT_ROBOT_NAME),
+      type: z.string().default(DEFAULT_ROBOT_TYPE), // 'turtlebot', 'go2', 'custom'
       namespace: z.string().default(""),
     })
     .default({}),

@@ -1,0 +1,40 @@
+# Unitree GO2 Docker Compose configuration
+# Usage: GO2_MODE=simulation docker compose -f docker-compose.go2.yml up -d
+
+services:
+  # Unitree GO2 simulation (stub - for future Gazebo/Isaac integration)
+  go2-sim:
+    image: rosclaw/go2-sim:latest
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.go2-sim
+    environment:
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+      - GO2_MODE=${GO2_MODE:-simulation}
+      - GO2_ROBOT_IP=${GO2_ROBOT_IP:-192.168.123.2}
+    ports:
+      - "8080:8080"  # Unitree API port (future use)
+    networks:
+      - rosclaw-network
+    profiles:
+      - go2
+    depends_on:
+      - ros2
+
+  # GO2 control node (can run in simulation or hardware mode)
+  go2-node:
+    image: rosclaw/ros2:latest
+    command: ["ros2", "launch", "unitree_go2", "go2_launch.py"]
+    environment:
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+      - GO2_MODE=${GO2_MODE:-simulation}
+      - GO2_ROBOT_IP=${GO2_ROBOT_IP:-192.168.123.2}
+      - DISPLAY=${DISPLAY:-:0}
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    networks:
+      - rosclaw-network
+    profiles:
+      - go2
+    depends_on:
+      - ros2

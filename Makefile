@@ -1,7 +1,7 @@
 # RosClaw Project Management
 # Central Makefile for all configuration and build tasks
 
-.PHONY: help setup build typecheck gen-config clean
+.PHONY: help setup build typecheck gen-config clean go2-start go2-stop
 
 help: ## Show this help message
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-25s\033[0m %s\n", $$1, $$2}'
@@ -39,3 +39,21 @@ clean: ## Clean build artifacts
 # Delegate to docker/Makefile for Docker operations
 docker-%:
 	@$(MAKE) -C docker $*
+
+# GO2 commands
+go2-start: ## Start Unitree GO2 control (simulation or hardware)
+	@echo "[info] Starting Unitree GO2 control..."
+	@echo "[info] Mode: $${GO2_MODE:-simulation}"
+	@echo "[info] Hardware IP: $${GO2_ROBOT_IP:-192.168.123.2}"
+	@echo ""
+	@echo "[info] Usage:"
+	@echo "[info]   Simulation:  make go2-start"
+	@echo "[info]   Hardware:    GO2_MODE=hardware make go2-start"
+	@echo ""
+	@$(MAKE) -C docker go2-start
+
+go2-stop: ## Stop Unitree GO2 control
+	@$(MAKE) -C docker go2-stop
+
+go2-hardware: ## Start GO2 control in hardware mode
+	@GO2_MODE=hardware $(MAKE) go2-start

@@ -1,0 +1,25 @@
+# Unitree GO2 Configuration
+# This file contains default parameters for the GO2 control node
+
+/unitree_go2_node:
+  ros__parameters:
+    # Robot configuration
+    robot_name: "GO2"
+    robot_namespace: "go2"
+
+    # Control parameters
+    max_linear_velocity: 1.0    # m/s
+    max_angular_velocity: 2.0   # rad/s
+    max_body_height: 0.5        # m
+    min_body_height: 0.1        # m
+
+    # State publishing
+    state_publish_rate: 10.0    # Hz
+
+    # Connection settings
+    connection_timeout: 5.0     # seconds
+    reconnect_interval: 3.0     # seconds
+
+    # Simulation mode
+    use_sim_time: false
+    mode: "simulation"          # simulation or hardware
