@@ -27,7 +27,7 @@ def generate_launch_description():
     # GO2 control node
     go2_node = Node(
         package='unitree_go2',
-        executable='go2_node',
+        executable='go2_node.py',
         name='unitree_go2_node',
         output='screen',
         parameters=[{
