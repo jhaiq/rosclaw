@@ -18,10 +18,12 @@ find_package(rosclaw_msgs REQUIRED)
 # Install Python modules
 ament_python_install_package(${PROJECT_NAME})
 ament_python_install_module(${PROJECT_NAME}/go2_node.py)
+ament_python_install_module(${PROJECT_NAME}/go2_gz_bridge.py)
 
 # Install Python executables
 install(PROGRAMS
   ${PROJECT_NAME}/go2_node.py
+  ${PROJECT_NAME}/go2_gz_bridge.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
