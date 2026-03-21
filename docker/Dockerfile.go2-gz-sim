@@ -1,16 +1,16 @@
-# ROS2 Jazzy + Gazebo Harmonic Sim for Unitree GO2
-FROM ros:jazzy-ros-base AS base
+# ROS2 humble + Gazebo Harmonic Sim for Unitree GO2
+FROM ros:humble-ros-base AS base
 
 LABEL maintainer="RosClaw Team"
 LABEL description="Unitree GO2 Gazebo Simulation"
 
 # 安装 Gazebo Harmonic (ros_gz) 和导航、SLAM 依赖
-# ROS2 Jazzy 使用 Gazebo Harmonic，包名为 ros-jazzy-ros-gz
+# ROS2 humble 使用 Gazebo Harmonic，包名为 ros-humble-ros-gz
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ros-jazzy-ros-gz \
-    ros-jazzy-slam-toolbox \
-    ros-jazzy-nav2-bringup \
-    ros-jazzy-teleop-twist-keyboard \
+    ros-humble-ros-gz \
+    ros-humble-slam-toolbox \
+    ros-humble-nav2-bringup \
+    ros-humble-teleop-twist-keyboard \
     && rm -rf /var/lib/apt/lists/*
 
 # 克隆 go2_gz_sim 源码
@@ -18,7 +18,7 @@ RUN git clone https://gitee.com/jhaiq/go2_gz_sim.git /opt/go2_gz_sim
 
 # 构建 ROS2 包
 WORKDIR /opt/go2_gz_sim
-RUN . /opt/ros/jazzy/setup.sh && \
+RUN . /opt/ros/humble/setup.sh && \
     colcon build --symlink-install && \
     chown -R root:root /opt/go2_gz_sim
 

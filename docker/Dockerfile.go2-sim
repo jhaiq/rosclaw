@@ -1,12 +1,12 @@
 # Unitree GO2 Simulation Image
 # This is a stub for future Gazebo/Isaac Sim integration
 
-FROM ros:jazzy-ros-base AS base
+FROM ros:humble-ros-base AS base
 
 # Install Unitree GO2 dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ros-jazzy-slam-toolbox \
-    ros-jazzy-nav2-bringup \
+    ros-humble-slam-toolbox \
+    ros-humble-nav2-bringup \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the Unitree GO2 package
@@ -15,7 +15,7 @@ COPY ros2_ws/src/rosclaw_msgs /ros2_ws/src/rosclaw_msgs
 
 # Build ROS2 packages
 WORKDIR /ros2_ws
-RUN . /opt/ros/jazzy/setup.sh && \
+RUN . /opt/ros/humble/setup.sh && \
     colcon build --symlink-install
 
 # Entrypoint
