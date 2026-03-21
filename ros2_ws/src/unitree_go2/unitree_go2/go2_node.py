@@ -18,8 +18,8 @@ Published Topics:
 
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Empty, String
-from geometry_msgs.msg import Twist, WrenchStamped
+from std_msgs.msg import Empty, String, Header
+from geometry_msgs.msg import Twist, WrenchStamped, Wrench, Vector3, Quaternion
 from sensor_msgs.msg import BatteryState, Imu
 from nav_msgs.msg import Odometry
 
@@ -107,9 +107,12 @@ class UnitreeGO2Node(Node):
 
     def publish_state(self):
         """Publish robot state."""
+        now = self.get_clock().now()
+        header = Header(stamp=now.to_msg(), frame_id='base_link')
+
         # Publish battery state
         battery_msg = BatteryState(
-            header=self.get_clock().now().to_msg(),
+            header=header,
             voltage=24.0,
             current=2.5,
             charge=8.0,
@@ -122,20 +125,20 @@ class UnitreeGO2Node(Node):
 
         # Publish dummy IMU data
         imu_msg = Imu(
-            header=self.get_clock().now().to_msg(),
-            orientation={'w': 1.0},
-            angular_velocity={'z': 0.0},
-            linear_acceleration={'z': 9.81}
+            header=header,
+            orientation=Quaternion(w=1.0, x=0.0, y=0.0, z=0.0),
+            angular_velocity=Vector3(x=0.0, y=0.0, z=0.0),
+            linear_acceleration=Vector3(x=0.0, y=0.0, z=9.81)
         )
         self.imu_pub.publish(imu_msg)
 
         # Publish dummy foot force data
         foot_force_msg = WrenchStamped(
-            header=self.get_clock().now().to_msg(),
-            wrench={
-                'force': {'x': 0.0, 'y': 0.0, 'z': -50.0},
-                'torque': {'x': 0.0, 'y': 0.0, 'z': 0.0}
-            }
+            header=header,
+            wrench=Wrench(
+                force=Vector3(x=0.0, y=0.0, z=-50.0),
+                torque=Vector3(x=0.0, y=0.0, z=0.0)
+            )
         )
         self.foot_force_pub.publish(foot_force_msg)
 

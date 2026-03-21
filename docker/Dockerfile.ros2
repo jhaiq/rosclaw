@@ -18,6 +18,7 @@ ENV ROS_DOMAIN_ID=0
 COPY ros2_ws/src/rosclaw_discovery /ros2_ws/src/rosclaw_discovery
 COPY ros2_ws/src/rosclaw_msgs /ros2_ws/src/rosclaw_msgs
 COPY ros2_ws/src/rosclaw_agent /ros2_ws/src/rosclaw_agent
+COPY ros2_ws/src/unitree_go2 /ros2_ws/src/unitree_go2
 
 # Build ROS2 packages
 WORKDIR /ros2_ws
