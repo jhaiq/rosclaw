@@ -46,3 +46,7 @@ docker/.env
 # Logs
 *.log
 npm-debug.log*
+build/
+install/
+node_modules/
+log/
