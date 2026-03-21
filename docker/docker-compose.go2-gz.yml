@@ -1,0 +1,52 @@
+# Unitree GO2 Gazebo Simulation Docker Compose configuration
+# Usage: docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+
+services:
+  # GO2 Gazebo Simulation
+  go2-gz-sim:
+    image: rosclaw/go2-gz-sim:latest
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.go2-gz-sim
+    container_name: rosclaw-go2-gz-sim
+    environment:
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+      - GZ_SIM_RESOURCE_PATH=/opt/go2_gz_sim/models
+      - DISPLAY=${DISPLAY:-:0}
+      - QT_X11_NO_MITSHM=1
+    ports:
+      - "8080:8080"  # Gazebo web interface
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ${GO2_GZ_SIM_PATH:-/opt/go2_gz_sim}:/opt/go2_gz_sim:ro
+    networks:
+      - rosclaw-network
+    profiles:
+      - go2-gz
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    command: ["ros2", "launch", "go2_gz_sim", "go2_sim_launch.py"]
+
+  # GO2 Bridge Node - maps go2_gz_sim topics to RosClaw standard topics
+  go2-bridge-node:
+    image: rosclaw/ros2:latest
+    container_name: rosclaw-go2-bridge
+    command: ["ros2", "launch", "unitree_go2", "go2_gz_bridge_launch.py"]
+    environment:
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+    networks:
+      - rosclaw-network
+    profiles:
+      - go2-gz
+    depends_on:
+      - go2-gz-sim
+
+networks:
+  rosclaw-network:
+    external: true
+    name: ${DOCKER_NETWORK_NAME:-1panel-network}
