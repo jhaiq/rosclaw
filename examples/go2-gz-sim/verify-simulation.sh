@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Unitree GO2 Gazebo Simulation Verification Script
+# Unitree GO2 humble Simulation Verification Script
 # Usage: ./verify-simulation.sh
 
 set -e
@@ -14,7 +14,7 @@ echo ""
 
 # Source ROS2
 echo "[1/6] Sourcing ROS2..."
-source /opt/ros/jazzy/setup.sh
+source /opt/ros/humble/setup.sh
 
 # Source workspace if exists
 if [[ -f "$ROSCLAW_ROOT/ros2_ws/install/setup.sh" ]]; then

@@ -1,3 +1,4 @@
+
 # Unitree GO2 Gazebo 仿真示例
 
 通过 RosClaw 和 OpenClaw 使用自然语言控制 Gazebo 仿真中的 GO2 机器狗。
@@ -6,13 +7,13 @@
 
 - Docker 和 Docker Compose
 - NVIDIA GPU 和 Container Toolkit (可选，用于 GPU 加速)
-- ROS2 Jazzy (本地测试)
+- ROS2 humble (本地测试)
 
 ## 快速开始
 
 ### 1. 启动仿真
 
-```bash
+```sh
 # GPU 模式
 make go2-gz-start
 
@@ -22,7 +23,7 @@ docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 
 ### 2. 验证仿真
 
-```bash
+```sh
 ./verify-simulation.sh
 ```
 
@@ -95,7 +96,7 @@ docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 
 ### 仿真无法启动
 
-```bash
+```sh
 # 查看日志
 make go2-gz-logs
 
@@ -105,7 +106,7 @@ docker run --rm --gpus all nvidia/cuda:12.0-base-ubuntu22.04 nvidia-smi
 
 ### 话题不可用
 
-```bash
+```sh
 # 列出所有节点
 ros2 node list
 
@@ -118,7 +119,7 @@ ros2 run rqt_node rqt_node
 
 ### Docker 网络问题
 
-```bash
+```sh
 # 重启网络
 cd docker
 docker compose down

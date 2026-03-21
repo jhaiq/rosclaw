@@ -26,7 +26,7 @@ test_result() {
 }
 
 # Source ROS2
-source /opt/ros/jazzy/setup.sh
+source /opt/ros/humble/setup.sh
 
 # Source workspace if exists
 if [[ -f "$ROSCLAW_ROOT/ros2_ws/install/setup.sh" ]]; then
