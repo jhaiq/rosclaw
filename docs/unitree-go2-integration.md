@@ -5,7 +5,8 @@
 ## 概述
 
 RosClaw 支持通过自然语言控制 Unitree GO2 机器狗，包括：
-- **仿真模式** - 在 Docker 容器中运行 GO2 控制节点（未来集成 Gazebo/Isaac Sim）
+- **仿真模式** - 在 Docker 容器中运行 GO2 控制节点
+- **Gazebo 仿真模式** - 在 Gazebo Sim 中运行完整的物理仿真（需要 GPU）
 - **硬件模式** - 直接控制真实的 GO2 机器狗
 
 ## 快速开始
@@ -23,6 +24,101 @@ make go2-logs
 # 3. 停止节点
 make go2-stop
 ```
+
+### Gazebo 仿真模式
+
+Gazebo 仿真模式提供完整的物理仿真环境，包括激光雷达、IMU、关节状态等传感器数据。
+
+#### 前置条件
+
+- Docker 和 Docker Compose
+- NVIDIA GPU（推荐，用于 GPU 加速仿真）
+- NVIDIA Container Toolkit
+
+#### 启动仿真
+
+```bash
+# GPU 加速模式
+make go2-gz-start
+
+# CPU 模式（无 GPU 加速）
+docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+```
+
+#### 验证仿真
+
+```bash
+# 运行验证脚本
+./examples/go2-gz-sim/verify-simulation.sh
+
+# 或手动检查
+make go2-gz-status
+make go2-gz-logs
+```
+
+#### 停止仿真
+
+```bash
+make go2-gz-stop
+
+# 清理仿真数据
+make go2-gz-clean
+```
+
+#### 仿真架构
+
+```
+┌─────────────────────────────────────────────────────┐
+│                   go2_gz_sim                        │
+│                  (Gazebo Sim)                       │
+│  - 物理引擎                                         │
+│  - 传感器仿真（激光雷达、IMU、关节编码器）              │
+│  - 渲染引擎                                         │
+└─────────────────┬───────────────────────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────────────────────┐
+│              go2_gz_bridge                          │
+│              (ROS2 Python Node)                     │
+│  - 话题映射：go2_gz_sim → RosClaw 标准话题           │
+│  - /go2_gz_sim/odom → /go2_state/odom              │
+│  - /go2_gz_sim/scan → /scan                        │
+│  - /go2_gz_sim/imu → /go2_state/imu                │
+│  - /cmd_vel → /go2_gz_sim/cmd_vel                  │
+└─────────────────┬───────────────────────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────────────────────┐
+│              rosbridge_server                       │
+│              (WebSocket Bridge)                     │
+│  - ws://ros2:9090                                   │
+└─────────────────┬───────────────────────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────────────────────┐
+│              OpenClaw Gateway                       │
+│              (AI Agent)                             │
+│  - 自然语言理解                                     │
+│  - 工具调用：go2_stand, go2_sit, go2_move, ...     │
+└─────────────────┬───────────────────────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────────────────────┐
+│              Messaging App                          │
+│              (WhatsApp/Telegram/Discord)            │
+└─────────────────────────────────────────────────────┘
+```
+
+#### 仿真话题映射表
+
+| go2_gz_sim 话题 | RosClaw 标准话题 | 消息类型 | 说明 |
+|----------------|-----------------|----------|------|
+| `/go2_gz_sim/cmd_vel` | `/cmd_vel` | `geometry_msgs/Twist` | 速度命令输入 |
+| `/go2_gz_sim/odom` | `/go2_state/odom` | `nav_msgs/Odometry` | 里程计数据 |
+| `/go2_gz_sim/scan` | `/scan` | `sensor_msgs/LaserScan` | 激光雷达数据 |
+| `/go2_gz_sim/imu` | `/go2_state/imu` | `sensor_msgs/Imu` | IMU 数据 |
+| `/go2_gz_sim/battery` | `/go2_state/battery` | `sensor_msgs/BatteryState` | 电池状态 |
+| `/go2_gz_sim/joint_states` | `/joint_states` | `sensor_msgs/JointState` | 关节状态 |
 
 ### 硬件模式
 
