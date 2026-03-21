@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm typecheck:*)",
+      "Bash(docker run:*)",
+      "WebSearch",
+      "WebFetch(domain:1panel.cn)",
+      "Bash(chmod +x /home/jhq/work/code/claw_ws/rosclaw/docker/verify-gpu.sh)"
+    ]
+  }
+}
