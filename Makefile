@@ -57,3 +57,21 @@ go2-stop: ## Stop Unitree GO2 control
 
 go2-hardware: ## Start GO2 control in hardware mode
 	@GO2_MODE=hardware $(MAKE) go2-start
+
+# GO2 Gazebo Simulation commands
+go2-gz-start: ## Start Unitree GO2 Gazebo simulation
+	@echo "[info] Starting GO2 Gazebo simulation..."
+	@echo "[info] Usage:"
+	@echo "[info]   GPU mode:    make go2-gz-start"
+	@echo "[info]   CPU mode:    docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d"
+	@echo ""
+	@$(MAKE) -C docker go2-gz-start
+
+go2-gz-stop: ## Stop Unitree GO2 Gazebo simulation
+	@$(MAKE) -C docker go2-gz-stop
+
+go2-gz-logs: ## Follow logs from GO2 Gazebo simulation
+	@$(MAKE) -C docker go2-gz-logs
+
+go2-gz-status: ## Show status of GO2 Gazebo simulation
+	@$(MAKE) -C docker go2-gz-status

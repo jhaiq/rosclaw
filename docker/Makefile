@@ -135,3 +135,27 @@ go2-stop: ## Stop Unitree GO2 control node
 
 go2-logs: ## Follow logs from GO2 node
 	@$(COMPOSE) --profile go2 logs -f go2-node
+
+# GO2 Gazebo Simulation Commands
+go2-gz-start: ## Start Unitree GO2 Gazebo simulation
+	@echo "[info] Starting GO2 Gazebo simulation..."
+	@docker compose --env-file $(DOTENV) -f docker-compose.yml -f docker-compose.go2-gz.yml --profile go2-gz up -d
+	@echo ""
+	@echo "[ok] GO2 Gazebo simulation started!"
+	@echo "[info] Gazebo web interface: http://localhost:8080"
+
+go2-gz-stop: ## Stop Unitree GO2 Gazebo simulation
+	@echo "[info] Stopping GO2 Gazebo simulation..."
+	@docker compose --env-file $(DOTENV) -f docker-compose.yml -f docker-compose.go2-gz.yml --profile go2-gz stop
+	@echo "[ok] GO2 Gazebo simulation stopped"
+
+go2-gz-logs: ## Follow logs from GO2 Gazebo simulation
+	@docker compose --env-file $(DOTENV) -f docker-compose.yml -f docker-compose.go2-gz.yml --profile go2-gz logs -f
+
+go2-gz-status: ## Show status of GO2 Gazebo simulation
+	@docker compose --env-file $(DOTENV) -f docker-compose.yml -f docker-compose.go2-gz.yml --profile go2-gz ps
+
+go2-gz-clean: ## Stop and remove GO2 Gazebo simulation volumes
+	@echo "[warn] This will remove GO2 Gazebo simulation state!"
+	@docker compose --env-file $(DOTENV) -f docker-compose.yml -f docker-compose.go2-gz.yml --profile go2-gz down -v
+	@echo "[ok] GO2 Gazebo cleanup complete"
