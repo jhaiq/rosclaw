@@ -14,7 +14,7 @@ echo ""
 
 # Source ROS2
 echo "[1/6] Sourcing ROS2..."
-source /opt/ros/humble/setup.sh
+source /opt/ros/$ROS_DISTRO/setup.sh
 
 # Source workspace if exists
 if [[ -f "$ROSCLAW_ROOT/ros2_ws/install/setup.sh" ]]; then

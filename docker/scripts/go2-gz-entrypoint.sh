@@ -1,8 +1,10 @@
 #!/bin/bash
 set -e
 
+export ROS_DISTRO=${ROS_DISTRO:-humble}
+
 # Source ROS2 and go2_gz_sim
-source /opt/ros/jazzy/setup.sh
+source /opt/ros/$ROS_DISTRO/setup.sh
 source /opt/go2_gz_sim/install/setup.sh
 
 # Set environment
