@@ -1,0 +1,31 @@
+# ROS2 Jazzy + Gazebo Sim for Unitree GO2
+FROM ros:jazzy-ros-base AS base
+
+LABEL maintainer="RosClaw Team"
+LABEL description="Unitree GO2 Gazebo Simulation"
+
+# 安装 Gazebo Sim 和依赖
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-jazzy-gz-sim \
+    ros-jazzy-gz-transport \
+    ros-jazzy-ros-gz \
+    ros-jazzy-slam-toolbox \
+    ros-jazzy-nav2-bringup \
+    ros-jazzy-teleop-twist-keyboard \
+    && rm -rf /var/lib/apt/lists/*
+
+# 克隆 go2_gz_sim 源码
+RUN git clone https://gitee.com/jhaiq/go2_gz_sim.git /opt/go2_gz_sim
+
+# 构建 ROS2 包
+WORKDIR /opt/go2_gz_sim
+RUN . /opt/ros/jazzy/setup.sh && \
+    colcon build --symlink-install && \
+    chown -R root:root /opt/go2_gz_sim
+
+# 入口点脚本
+COPY docker/scripts/go2-gz-entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["ros2", "launch", "go2_gz_sim", "go2_sim_launch.py"]
