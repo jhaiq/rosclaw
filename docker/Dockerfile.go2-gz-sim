@@ -1,13 +1,12 @@
-# ROS2 Jazzy + Gazebo Sim for Unitree GO2
+# ROS2 Jazzy + Gazebo Harmonic Sim for Unitree GO2
 FROM ros:jazzy-ros-base AS base
 
 LABEL maintainer="RosClaw Team"
 LABEL description="Unitree GO2 Gazebo Simulation"
 
-# 安装 Gazebo Sim 和依赖
+# 安装 Gazebo Harmonic (ros_gz) 和导航、SLAM 依赖
+# ROS2 Jazzy 使用 Gazebo Harmonic，包名为 ros-jazzy-ros-gz
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ros-jazzy-gz-sim \
-    ros-jazzy-gz-transport \
     ros-jazzy-ros-gz \
     ros-jazzy-slam-toolbox \
     ros-jazzy-nav2-bringup \
