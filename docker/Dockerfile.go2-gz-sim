@@ -1,30 +1,37 @@
 # ROS2 humble + Gazebo Harmonic Sim for Unitree GO2
+# 安装所有 go2_gz_sim 依赖
 FROM ros:humble-ros-base AS base
 
 LABEL maintainer="RosClaw Team"
 LABEL description="Unitree GO2 Gazebo Simulation"
 
-# 安装 Gazebo Harmonic (ros_gz) 和导航、SLAM 依赖
-# ROS2 humble 使用 Gazebo Harmonic，包名为 ros-humble-ros-gz
+# 安装所有 Gazebo 和导航依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-ros-gz \
+    ros-humble-rosbridge-suite \
     ros-humble-slam-toolbox \
     ros-humble-nav2-bringup \
     ros-humble-teleop-twist-keyboard \
+    ros-humble-controller-manager \
+    ros-humble-ros2-control \
+    ros-humble-ros2-controllers \
+    ros-humble-gazebo-ros-pkgs \
+    ros-humble-robot-localization \
+    ros-humble-rqt \
+    ros-humble-rqt-common-plugins \
+    ros-humble-tf-transformations \
+    ros-humble-tf2-ros \
+    ros-humble-tf2-geometry-msgs \
+    ros-humble-gz-ros2-control \
     && rm -rf /var/lib/apt/lists/*
 
-# 克隆 go2_gz_sim 源码
-RUN git clone https://gitee.com/jhaiq/go2_gz_sim.git /opt/go2_gz_sim
-
-# 构建 ROS2 包
-WORKDIR /opt/go2_gz_sim
-RUN . /opt/ros/humble/setup.sh && \
-    colcon build --symlink-install && \
-    chown -R root:root /opt/go2_gz_sim
+# 复制并构建 RosClaw ROS2 包
+COPY ros2_ws/src /opt/rosclaw/src
+RUN bash -c "cd /opt/rosclaw && source /opt/ros/humble/setup.sh && colcon build --install-base /opt/rosclaw/install && rm -rf build log"
 
 # 入口点脚本
 COPY docker/scripts/go2-gz-entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["ros2", "launch", "go2_gz_sim", "go2_sim_launch.py"]
+CMD ["ros2", "launch", "gazebo_sim", "launch.py"]

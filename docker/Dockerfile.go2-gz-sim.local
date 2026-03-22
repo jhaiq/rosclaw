@@ -1,0 +1,29 @@
+# ROS2 humble + Gazebo Harmonic Sim for Unitree GO2
+# 使用本地 go2_gz_sim 源码构建
+# 构建上下文：go2_gz_sim 源码根目录
+FROM ros:humble-ros-base AS base
+
+LABEL maintainer="RosClaw Team"
+LABEL description="Unitree GO2 Gazebo Simulation"
+
+# 安装 Gazebo Harmonic (ros_gz) 和导航、SLAM 依赖
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-humble-ros-gz \
+    ros-humble-slam-toolbox \
+    ros-humble-nav2-bringup \
+    ros-humble-teleop-twist-keyboard \
+    && rm -rf /var/lib/apt/lists/*
+
+# 复制本地 go2_gz_sim 源码并构建
+COPY . /opt/go2_gz_sim
+WORKDIR /opt/go2_gz_sim
+RUN . /opt/ros/humble/setup.sh && \
+    colcon build --symlink-install
+
+# 入口点脚本
+COPY docker/scripts/go2-gz-entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+WORKDIR /opt/go2_gz_sim
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["ros2", "launch", "gazebo_sim", "launch.py"]

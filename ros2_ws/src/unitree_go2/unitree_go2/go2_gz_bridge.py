@@ -3,14 +3,14 @@
 GO2 Gazebo Bridge - 桥接 go2_gz_sim 话题到 RosClaw 标准话题
 
 subscribes:
-  - /go2_gz_sim/odom (nav_msgs/Odometry)
-  - /go2_gz_sim/scan (sensor_msgs/LaserScan)
-  - /go2_gz_sim/joint_states (sensor_msgs/JointState)
-  - /go2_gz_sim/imu (sensor_msgs/Imu)
-  - /go2_gz_sim/battery (sensor_msgs/BatteryState)
+  - /robot1/odometry/filtered (nav_msgs/Odometry) - 里程计
+  - /robot1/scan (sensor_msgs/LaserScan) - 激光雷达
+  - /robot1/joint_states (sensor_msgs/JointState) - 关节状态
+  - /robot1/imu_plugin/out (sensor_msgs/Imu) - IMU
+  - /robot1/battery_state (sensor_msgs/BatteryState) - 电池状态
 
 publishes:
-  - /go2_gz_sim/cmd_vel (geometry_msgs/Twist) - 转发到 Gazebo
+  - /robot1/cmd_vel (geometry_msgs/Twist) - 转发到 Gazebo
   - /go2_state/odom (nav_msgs/Odometry) - RosClaw 标准话题
   - /scan (sensor_msgs/LaserScan) - SLAM/导航
   - /joint_states (sensor_msgs/JointState)
@@ -40,14 +40,15 @@ class Go2GzBridge(Node):
         )
         self.cmd_vel_pub = self.create_publisher(
             Twist,
-            '/go2_gz_sim/cmd_vel',
+            '/robot1/cmd_vel',
             10
         )
 
         # === 里程计桥接 (Gazebo -> RosClaw) ===
+        # 注意：ROS2-Gazebo-GO2 发布的是 /robot1/odometry/filtered 不是 /robot1/odom
         self.odom_sub = self.create_subscription(
             Odometry,
-            '/go2_gz_sim/odom',
+            '/robot1/odometry/filtered',
             self.odom_callback,
             10
         )
@@ -60,7 +61,7 @@ class Go2GzBridge(Node):
         # === 激光雷达桥接 ===
         self.scan_sub = self.create_subscription(
             LaserScan,
-            '/go2_gz_sim/scan',
+            '/robot1/scan',
             self.scan_callback,
             10
         )
@@ -73,7 +74,7 @@ class Go2GzBridge(Node):
         # === 关节状态桥接 ===
         self.joint_sub = self.create_subscription(
             JointState,
-            '/go2_gz_sim/joint_states',
+            '/robot1/joint_states',
             self.joint_callback,
             10
         )
@@ -86,7 +87,7 @@ class Go2GzBridge(Node):
         # === IMU 桥接 ===
         self.imu_sub = self.create_subscription(
             Imu,
-            '/go2_gz_sim/imu',
+            '/robot1/imu_plugin/out',
             self.imu_callback,
             10
         )
@@ -99,7 +100,7 @@ class Go2GzBridge(Node):
         # === 电池状态桥接 ===
         self.battery_sub = self.create_subscription(
             BatteryState,
-            '/go2_gz_sim/battery',
+            '/robot1/battery_state',
             self.battery_callback,
             10
         )

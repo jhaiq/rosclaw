@@ -24,7 +24,7 @@
           "url": {
             "type": "string",
             "description": "Rosbridge WebSocket URL",
-            "default": "ws://ros2:9090"
+            "default": "ws://localhost:9090"
           },
           "reconnect": {
             "type": "boolean",
@@ -95,7 +95,7 @@
           "name": {
             "type": "string",
             "description": "Robot display name",
-            "default": "TurtleBot3 (Sim)"
+            "default": "Unitree GO2 (Gazebo)"
           },
           "namespace": {
             "type": "string",
@@ -138,11 +138,11 @@
     },
     "rosbridge.url": {
       "label": "Rosbridge URL",
-      "placeholder": "ws://ros2:9090"
+      "placeholder": "ws://localhost:9090"
     },
     "robot.name": {
       "label": "Robot Name",
-      "placeholder": "TurtleBot3 (Sim)"
+      "placeholder": "Unitree GO2 (Gazebo)"
     },
     "safety.maxLinearVelocity": {
       "label": "Max Linear Velocity (m/s)",

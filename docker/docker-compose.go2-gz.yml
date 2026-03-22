@@ -1,5 +1,10 @@
 # Unitree GO2 Gazebo Simulation Docker Compose configuration
 # Usage: docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+#
+# 前置条件：本地构建 go2_gz_sim 源码
+#   使用脚本：./docker/build-go2-gz-sim-source.sh
+#
+# 注意：此配置包含 rosbridge_server 服务，OpenClaw 通过 ws://ros2:9090 连接
 
 services:
   # GO2 Gazebo Simulation
@@ -14,15 +19,19 @@ services:
       - GZ_SIM_RESOURCE_PATH=/opt/go2_gz_sim/models
       - DISPLAY=${DISPLAY:-:0}
       - QT_X11_NO_MITSHM=1
+      - GZ_SIM_PLUGIN_PATH=/opt/go2_gz_sim/install
+      - COLCON_CURRENT_PREFIX=/opt/go2_gz_sim/install
     ports:
-      - "8080:8080"  # Gazebo web interface
+      - "8080:8080"
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - ${GO2_GZ_SIM_PATH:-/opt/go2_gz_sim}:/opt/go2_gz_sim:ro
+      # 挂载 go2_gz_sim 源码和构建产物（默认路径）
+      - ${GO2_GZ_SIM_PATH:-/home/jhq/work/code/go2_ws/go2_sim_ws/ROS2-Gazebo-GO2}:/opt/go2_gz_sim:ro
     networks:
       - rosclaw-network
     profiles:
       - go2-gz
+    # GPU 支持（可选）
     deploy:
       resources:
         reservations:
@@ -30,21 +39,68 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
-    command: ["ros2", "launch", "go2_gz_sim", "go2_sim_launch.py"]
+    # 无头模式启动 Gazebo（无 GUI）- 使用 ROS2-Gazebo-GO2 原始 launch.py
+    # 支持环境变量：GO2_WORLD=rmuc_2025_world.sdf|empty.world, GO2_SENSORS=true|false
+    entrypoint: ["/entrypoint.sh"]
+    command:
+      - bash
+      - -c
+      - |
+        # Set COLCON_CURRENT_PREFIX to bypass hard-coded build path
+        export COLCON_CURRENT_PREFIX=/opt/go2_gz_sim/install
 
-  # GO2 Bridge Node - maps go2_gz_sim topics to RosClaw standard topics
+        # Source ROS2
+        source /opt/ros/humble/setup.sh
+        # Source go2_gz_sim
+        source /opt/go2_gz_sim/install/local_setup.sh
+
+        export GO2_WORLD=${GO2_WORLD:-empty.world}
+        export GO2_SENSORS=${GO2_SENSORS:-false}
+        echo "Starting Gazebo with world: $$GO2_WORLD, sensors: $$GO2_SENSORS"
+        ros2 launch gazebo_sim launch.py world:=$$GO2_WORLD sensors:=$$GO2_SENSORS
+
+  # GO2 Bridge Node - 运行 RosClaw bridge
   go2-bridge-node:
-    image: rosclaw/ros2:latest
+    image: rosclaw/go2-gz-sim:latest
     container_name: rosclaw-go2-bridge
-    command: ["ros2", "launch", "unitree_go2", "go2_gz_bridge_launch.py"]
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        export COLCON_CURRENT_PREFIX=/opt/go2_gz_sim/install
+        source /opt/ros/humble/setup.sh
+        source /opt/go2_gz_sim/install/local_setup.sh
+        export COLCON_CURRENT_PREFIX=/opt/rosclaw/install
+        source /opt/rosclaw/install/local_setup.sh
+        ros2 launch unitree_go2 go2_gz_bridge_launch.py
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+    volumes:
+      - ${GO2_GZ_SIM_PATH:-/home/jhq/work/code/go2_ws/go2_sim_ws/ROS2-Gazebo-GO2}:/opt/go2_gz_sim:ro
+      - /home/jhq/work/code/claw_ws/rosclaw/ros2_ws/install:/opt/rosclaw/install:ro
     networks:
       - rosclaw-network
     profiles:
       - go2-gz
     depends_on:
       - go2-gz-sim
+
+  # ROSBridge Server - OpenClaw 连接到此服务
+  ros2:
+    image: rosclaw/go2-gz-sim:latest
+    container_name: rosclaw-rosbridge
+    ports:
+      - "${ROSBRIDGE_PORT:-9090}:${ROSBRIDGE_PORT:-9090}"
+    entrypoint: ["/bin/bash", "-c"]
+    command: ["source /opt/ros/humble/setup.sh && source /opt/rosclaw/install/setup.sh && ros2 launch rosbridge_server rosbridge_websocket_launch.xml"]
+    environment:
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+      - COLCON_CURRENT_PREFIX=/opt/rosclaw/install
+    volumes:
+      - /home/jhq/work/code/claw_ws/rosclaw/ros2_ws/install:/opt/rosclaw/install:ro
+    networks:
+      - rosclaw-network
+    profiles:
+      - go2-gz
 
 networks:
   rosclaw-network:

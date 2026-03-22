@@ -105,6 +105,17 @@
 | `ROS_MASTER_PORT` | 否 | `11311` | ROS master 端口 | `11311` |
 | `GAZEBO_MODEL_PATH` | - | `/opt/ros/jazzy/share/turtlebot3_gazebo/models` | Gazebo 模型路径（容器内） | - |
 
+### Unitree GO2 Gazebo 仿真配置
+
+| 变量 | 必填 | 默认值 | 描述 | 示例 |
+|------|------|--------|------|------|
+| `GO2_GZ_SIM_ENABLED` | 否 | `false` | 启用 GO2 Gazebo 仿真 | `true`, `false` |
+| `GO2_GZ_SIM_PATH` | 否 | `/opt/go2_gz_sim` | GO2 仿真源码路径 | `/home/user/ROS2-Gazebo-GO2` |
+| `GO2_WORLD` | 否 | `empty.world` | Gazebo 世界文件 | `empty.world`, `rmuc_2025_world.sdf` |
+| `GO2_SENSORS` | 否 | `false` | 启用传感器（激光雷达、相机） | `true`, `false` |
+| `DISPLAY` | 否 | `:0` | X11 显示变量（GUI 模式） | `:0` |
+| `QT_X11_NO_MITSHM` | 否 | `1` | 禁用 MIT-SHM 扩展 | `1` |
+
 ### OpenClaw Gateway 配置
 
 | 变量 | 必填 | 默认值 | 描述 | 示例 |
@@ -167,6 +178,52 @@ GPU 加速的 ROS2 容器，需要 NVIDIA Container Toolkit。
 网络别名：ros2
 启动命令：docker compose --profile gpu up -d ros2-gpu
 ```
+
+### GO2 Gazebo 仿真 (Unitree GO2)
+
+Unitree GO2 机器狗的 Gazebo 仿真环境，包含三个服务：
+
+| 服务 | 描述 | 端口 |
+|------|------|------|
+| `go2-gz-sim` | Gazebo 仿真服务器 | 8080 |
+| `go2-bridge-node` | ROS2 话题桥接节点 | - |
+| `ros2` | rosbridge WebSocket 服务器 | 9090 |
+
+**启动命令：**
+
+```bash
+# 启动 GO2 Gazebo 仿真
+docker compose -f docker/docker-compose.go2-gz.yml --profile go2-gz up -d
+
+# 指定世界文件（可选）
+GO2_WORLD=empty.world docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+
+# 启用传感器（激光雷达、相机）
+GO2_SENSORS=true docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+
+# 查看日志
+docker compose -f docker-compose.go2-gz.yml --profile go2-gz logs -f
+
+# 停止服务
+docker compose -f docker-compose.go2-gz.yml --profile go2-gz down
+```
+
+**话题桥接：**
+
+| Gazebo 话题 | RosClaw 标准话题 | 消息类型 |
+|------------|-----------------|----------|
+| `/robot1/odometry/filtered` | `/go2_state/odom` | nav_msgs/Odometry |
+| `/robot1/scan` | `/scan` | sensor_msgs/LaserScan |
+| `/robot1/joint_states` | `/joint_states` | sensor_msgs/JointState |
+| `/robot1/imu_plugin/out` | `/go2_state/imu` | sensor_msgs/Imu |
+| `/robot1/battery_state` | `/go2_state/battery` | sensor_msgs/BatteryState |
+| `/cmd_vel` | `/robot1/cmd_vel` | geometry_msgs/Twist |
+
+**环境要求：**
+
+- 需要挂载 ROS2-Gazebo-GO2 源码路径
+- X11 显示服务器（GUI 模式可选）
+- NVIDIA GPU 和 Container Toolkit（可选，用于 GPU 加速）
 
 ---
 

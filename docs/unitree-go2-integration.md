@@ -113,12 +113,12 @@ make go2-gz-clean
 
 | go2_gz_sim 话题 | RosClaw 标准话题 | 消息类型 | 说明 |
 |----------------|-----------------|----------|------|
-| `/go2_gz_sim/cmd_vel` | `/cmd_vel` | `geometry_msgs/Twist` | 速度命令输入 |
-| `/go2_gz_sim/odom` | `/go2_state/odom` | `nav_msgs/Odometry` | 里程计数据 |
-| `/go2_gz_sim/scan` | `/scan` | `sensor_msgs/LaserScan` | 激光雷达数据 |
-| `/go2_gz_sim/imu` | `/go2_state/imu` | `sensor_msgs/Imu` | IMU 数据 |
-| `/go2_gz_sim/battery` | `/go2_state/battery` | `sensor_msgs/BatteryState` | 电池状态 |
-| `/go2_gz_sim/joint_states` | `/joint_states` | `sensor_msgs/JointState` | 关节状态 |
+| `/robot1/cmd_vel` | `/cmd_vel` | `geometry_msgs/Twist` | 速度命令输入 |
+| `/robot1/odom` | `/go2_state/odom` | `nav_msgs/Odometry` | 里程计数据 |
+| `/robot1/scan` | `/scan` | `sensor_msgs/LaserScan` | 激光雷达数据 |
+| `/robot1/imu_plugin/out` | `/go2_state/imu` | `sensor_msgs/Imu` | IMU 数据 |
+| `/robot1/battery_state` | `/go2_state/battery` | `sensor_msgs/BatteryState` | 电池状态 |
+| `/robot1/joint_states` | `/joint_states` | `sensor_msgs/JointState` | 关节状态 |
 
 ### 硬件模式
 

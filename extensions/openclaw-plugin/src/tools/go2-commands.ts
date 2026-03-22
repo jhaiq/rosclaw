@@ -1,5 +1,6 @@
 /**
  * Unitree GO2 specific commands for OpenClaw
+ * Gazebo Simulation compatible commands
  */
 
 import { Type } from "@sinclair/typebox";
@@ -9,6 +10,7 @@ import { getTransport } from "../service.js";
 /**
  * Register the go2_stand tool with the AI agent.
  * Makes the GO2 robot stand up from sitting position.
+ * For Gazebo simulation: publishes to /robot1/set_pose to reset robot position
  */
 export function registerGo2StandTool(api: OpenClawPluginApi): void {
   api.registerTool({
@@ -21,13 +23,20 @@ export function registerGo2StandTool(api: OpenClawPluginApi): void {
 
     async execute(_toolCallId, _params) {
       const transport = getTransport();
+      // For Gazebo simulation: reset robot to standing pose
       await transport.publish({
-        topic: "/go2_command/stand",
-        type: "std_msgs/msg/Empty",
-        msg: {},
+        topic: "/robot1/set_pose",
+        type: "geometry_msgs/msg/PoseWithCovarianceStamped",
+        msg: {
+          header: { stamp: { sec: 0, nanosec: 0 }, frame_id: "odom" },
+          pose: {
+            pose: { position: { x: 0, y: 0, z: 0.4 }, orientation: { x: 0, y: 0, z: 0, w: 1 } },
+            covariance: [0.1, 0, 0, 0, 0, 0, 0, 0.1, 0, 0, 0, 0, 0, 0, 0.1, 0, 0, 0, 0, 0, 0, 0.1, 0, 0, 0, 0, 0, 0, 0.1, 0, 0, 0, 0, 0, 0, 0.1]
+          }
+        },
       });
 
-      const result = { success: true, message: "GO2 standing up" };
+      const result = { success: true, message: "GO2 standing up (Gazebo simulation)" };
       return {
         content: [{ type: "text", text: JSON.stringify(result) }],
         details: result,
@@ -51,13 +60,20 @@ export function registerGo2SitTool(api: OpenClawPluginApi): void {
 
     async execute(_toolCallId, _params) {
       const transport = getTransport();
+      // For Gazebo simulation: lower robot position
       await transport.publish({
-        topic: "/go2_command/sit",
-        type: "std_msgs/msg/Empty",
-        msg: {},
+        topic: "/robot1/set_pose",
+        type: "geometry_msgs/msg/PoseWithCovarianceStamped",
+        msg: {
+          header: { stamp: { sec: 0, nanosec: 0 }, frame_id: "odom" },
+          pose: {
+            pose: { position: { x: 0, y: 0, z: 0.2 }, orientation: { x: 0, y: 0, z: 0, w: 1 } },
+            covariance: [0.1, 0, 0, 0, 0, 0, 0, 0.1, 0, 0, 0, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0, 0, 0, 0.1, 0, 0, 0, 0, 0, 0, 0.1]
+          }
+        },
       });
 
-      const result = { success: true, message: "GO2 sitting down" };
+      const result = { success: true, message: "GO2 sitting down (Gazebo simulation)" };
       return {
         content: [{ type: "text", text: JSON.stringify(result) }],
         details: result,
@@ -81,9 +97,9 @@ export function registerGo2StopTool(api: OpenClawPluginApi): void {
 
     async execute(_toolCallId, _params) {
       const transport = getTransport();
-      // Publish zero velocity
+      // Publish zero velocity to simulation
       await transport.publish({
-        topic: "/cmd_vel",
+        topic: "/robot1/cmd_vel",
         type: "geometry_msgs/msg/Twist",
         msg: {
           linear: { x: 0, y: 0, z: 0 },
@@ -145,9 +161,9 @@ export function registerGo2MoveTool(api: OpenClawPluginApi): void {
         duration?: number;
       };
 
-      // Publish velocity command
+      // Publish velocity command to simulation
       await transport.publish({
-        topic: "/cmd_vel",
+        topic: "/robot1/cmd_vel",
         type: "geometry_msgs/msg/Twist",
         msg: {
           linear: { x: linear_x, y: linear_y, z: 0 },
@@ -159,7 +175,7 @@ export function registerGo2MoveTool(api: OpenClawPluginApi): void {
       if (duration > 0) {
         setTimeout(async () => {
           await transport.publish({
-            topic: "/cmd_vel",
+            topic: "/robot1/cmd_vel",
             type: "geometry_msgs/msg/Twist",
             msg: {
               linear: { x: 0, y: 0, z: 0 },
