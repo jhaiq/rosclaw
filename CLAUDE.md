@@ -65,3 +65,28 @@ pnpm typecheck        # Type-check all packages
 - rosbridge_suite (WebSocket bridge to ROS2)
 - OpenClaw plugin API
 - Docker / Docker Compose
+
+## Skills
+
+### Robot Adapter Skill
+
+用于快速适配新机器人或仿真环境到 RosClaw 平台。
+
+- **完整流程**: [`docs/skills/robot-adapter.md`](docs/skills/robot-adapter.md)
+- **快速参考**: [`docs/skills/robot-adapter-quickref.md`](docs/skills/robot-adapter-quickref.md)
+- **技能定义**: [`docs/skills/rosclaw-robot-adapter.skill.md`](docs/skills/rosclaw-robot-adapter.skill.md)
+
+#### 核心步骤
+
+1. **分析话题** - 使用 `ros2 topic list/info/hz/echo` 分析机器人接口
+2. **设计映射** - 映射到 RosClaw 标准话题 (`/cmd_vel`, `/scan`, `/joint_states` 等)
+3. **编写桥接** - 创建 ROS2 桥接节点 (Python)
+4. **Docker 封装** - 创建 Dockerfile 和 docker-compose.yml
+5. **插件配置** - 更新 `openclaw.plugin.json` 默认值
+6. **验证测试** - 话题频率、端到端命令执行
+
+#### 参考实现
+
+- GO2 Gazebo: `docker/docker-compose.go2-gz.yml`
+- 桥接节点：`ros2_ws/src/unitree_go2/unitree_go2/go2_gz_bridge.py`
+- 机器人命令：`extensions/openclaw-plugin/src/tools/go2-commands.ts`
