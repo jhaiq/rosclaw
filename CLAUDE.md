@@ -72,9 +72,31 @@ pnpm typecheck        # Type-check all packages
 
 用于快速适配新机器人或仿真环境到 RosClaw 平台。
 
+**文档:**
 - **完整流程**: [`docs/skills/robot-adapter.md`](docs/skills/robot-adapter.md)
 - **快速参考**: [`docs/skills/robot-adapter-quickref.md`](docs/skills/robot-adapter-quickref.md)
 - **技能定义**: [`docs/skills/rosclaw-robot-adapter.skill.md`](docs/skills/rosclaw-robot-adapter.skill.md)
+- **Claude Code 使用**: [`docs/skills/claude-code-skill.md`](docs/skills/claude-code-skill.md)
+
+**在 Claude Code 中使用:**
+
+```
+@rosclaw-robot-adapter 帮我适配一个新的机器人
+```
+
+或
+
+```
+使用 rosclaw-robot-adapter skill
+```
+
+**在 OpenClaw 中使用:**
+
+```bash
+/robot-adapt help
+/robot-adapt start -n "MyRobot" -t simulation
+/robot-adapt generate -n "MyRobot" -m rosbridge
+```
 
 #### 核心步骤
 
@@ -90,3 +112,4 @@ pnpm typecheck        # Type-check all packages
 - GO2 Gazebo: `docker/docker-compose.go2-gz.yml`
 - 桥接节点：`ros2_ws/src/unitree_go2/unitree_go2/go2_gz_bridge.py`
 - 机器人命令：`extensions/openclaw-plugin/src/tools/go2-commands.ts`
+- OpenClaw 命令：`extensions/openclaw-plugin/src/commands/robot-adapter.ts`
