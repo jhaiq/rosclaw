@@ -6,6 +6,7 @@ import { registerSafetyHook } from "./safety/validator.js";
 import { registerRobotContext } from "./context/robot-context.js";
 import { registerEstopCommand } from "./commands/estop.js";
 import { registerTransportCommand } from "./commands/transport.js";
+import { registerRobotAdapterCommand } from "./commands/robot-adapter.js";
 
 /**
  * RosClaw — OpenClaw plugin for ROS2 robot control via natural language.
@@ -34,6 +35,7 @@ export default {
     // Register direct commands (bypass AI)
     registerEstopCommand(api, config);
     registerTransportCommand(api, config);
+    registerRobotAdapterCommand(api, config);
 
     api.logger.info("RosClaw plugin loaded successfully");
   },
