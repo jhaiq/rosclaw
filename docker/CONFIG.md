@@ -94,6 +94,27 @@ cp .env.example .env
 | `GO2_SENSORS` | `false` | 传感器仿真 (`true` 或 `false`) |
 | `GO2_GUI` | `false` | GUI 模式 (`true` 启用 GUI，`false` 无头模式) |
 | `GO2_SIM_LAUNCH` | `launch.py` | 启动文件 (`launch.py` 或 `launch_sim.launch.py`) |
+| `GO2_SCENE` | `none` | 场景模式 (`none`、`cartographer`、`navigation2`) |
+
+**场景模式说明**：
+
+| 场景模式 | 说明 | 启动的额外节点 |
+|----------|------|---------------|
+| `none` | 仅启动 Gazebo 仿真 | 无 |
+| `cartographer` | 启动仿真 + Cartographer 建图 | `go2_cartographer.launch.py` |
+| `navigation2` | 启动仿真 + Nav2 导航 | `go2_navigation2.launch.py` |
+
+**使用示例**：
+```bash
+# 仅仿真
+GO2_SCENE=none docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+
+# 建图场景（仿真 + Cartographer）
+GO2_SCENE=cargo docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+
+# 导航场景（仿真 + Nav2）
+GO2_SCENE=navigation2 docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+```
 
 ### 世界文件加载要求
 

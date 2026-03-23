@@ -87,6 +87,46 @@ services:
     depends_on:
       - go2-gz-sim
 
+  # GO2 Scene Node - 启动场景相关的 launch 文件（建图、导航等）
+  go2-scene-node:
+    image: rosclaw/go2-gz-sim:latest
+    container_name: rosclaw-go2-scene
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        export COLCON_CURRENT_PREFIX=/opt/go2_gz_sim/install
+        source /opt/ros/humble/setup.sh
+        source /opt/go2_gz_sim/install/local_setup.sh
+
+        export GO2_SCENE=${GO2_SCENE:-none}
+        echo "Starting GO2 scene node with scene: $$GO2_SCENE"
+
+        case "$$GO2_SCENE" in
+          cartographer)
+            echo "Starting Cartographer SLAM..."
+            ros2 launch cartographer go2_cartographer.launch.py
+            ;;
+          navigation2)
+            echo "Starting Nav2 Navigation..."
+            ros2 launch navigation2 go2_navigation2.launch.py
+            ;;
+          none|*)
+            echo "No scene node selected (GO2_SCENE=none), skipping..."
+            sleep infinity
+            ;;
+        esac
+    environment:
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+      - GO2_SCENE=${GO2_SCENE:-none}
+    volumes:
+      - ${GO2_GZ_SIM_PATH:-/home/jhq/work/code/go2_ws/go2_sim_ws/ROS2-Gazebo-GO2}:/opt/go2_gz_sim:ro
+    networks:
+      - rosclaw-network
+    profiles:
+      - go2-gz
+    depends_on:
+      - go2-gz-sim
+
   # ROSBridge Server - OpenClaw 连接到此服务
   ros2:
     image: rosclaw/go2-gz-sim:latest

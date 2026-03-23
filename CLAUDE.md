@@ -309,6 +309,28 @@ export COLCON_CURRENT_PREFIX=/opt/rosclaw/install
 source /opt/rosclaw/install/local_setup.sh
 ```
 
+### GO2 Scene Modes
+
+The GO2 Gazebo simulation supports different scene modes via the `GO2_SCENE` environment variable:
+
+| Scene | Description | Additional Launch File |
+|-------|-------------|------------------------|
+| `none` (default) | Simulation only | None |
+| `cartographer` | Simulation + Cartographer SLAM | `go2_cartographer.launch.py` |
+| `navigation2` | Simulation + Nav2 Navigation | `go2_navigation2.launch.py` |
+
+**Usage**:
+```bash
+# Simulation only
+GO2_SCENE=none docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+
+# Mapping mode (Simulation + Cartographer)
+GO2_SCENE=cargo docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+
+# Navigation mode (Simulation + Nav2)
+GO2_SCENE=navigation2 docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+```
+
 ### Transport Modes
 
 The plugin supports three transport modes via `openclaw.plugin.json`:
