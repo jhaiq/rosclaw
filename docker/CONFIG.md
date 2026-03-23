@@ -85,6 +85,43 @@ cp .env.example .env
 | `ROSCLAW_RECONNECT` | `true` | 自动重连 |
 | `ROSCLAW_RECONNECT_INTERVAL` | `3000` | 重连间隔 (ms) |
 
+#### GO2 Gazebo 仿真配置
+
+| 变量名 | 默认值 | 说明 |
+|--------|--------|------|
+| `GO2_GZ_SIM_PATH` | `/home/jhq/work/code/go2_ws/go2_sim_ws/ROS2-Gazebo-GO2` | go2_gz_sim 源码路径 |
+| `GO2_WORLD` | `empty.world` | 世界文件 (`empty.world` 或 `rmuc_2025_world.sdf`) |
+| `GO2_SENSORS` | `false` | 传感器仿真 (`true` 或 `false`) |
+| `GO2_GUI` | `false` | GUI 模式 (`true` 启用 GUI，`false` 无头模式) |
+| `GO2_SIM_LAUNCH` | `launch.py` | 启动文件 (`launch.py` 或 `launch_sim.launch.py`) |
+
+### 世界文件加载要求
+
+使用自定义世界文件（如 `rmuc_2025_world.sdf`）时，必须确保 `GZ_SIM_RESOURCE_PATH` 包含模型和世界文件的所有目录：
+
+```bash
+GZ_SIM_RESOURCE_PATH=/opt/go2_gz_sim/models:/opt/go2_gz_sim/src/gazebo_sim/models:/opt/go2_gz_sim/src/gazebo_sim/world
+```
+
+**模型 URI 解析**：
+- 世界文件中使用 `model://rmuc_2025` 语法引用模型
+- Gazebo 在 `GZ_SIM_RESOURCE_PATH` 指定的所有目录中查找模型
+- 必须包含 `/opt/go2_gz_sim/src/gazebo_sim/models` 才能找到源码中的模型
+
+**GUI 模式说明**：
+
+- `GO2_GUI=false`（默认）：无头模式，适合服务器/容器部署
+- `GO2_GUI=true`：GUI 模式，需要 X11 显示服务器支持，适合本地开发调试
+
+使用示例：
+```bash
+# 无头模式
+docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+
+# GUI 模式
+GO2_GUI=true docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+```
+
 ## 使用方式
 
 ### 快速启动

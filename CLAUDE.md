@@ -113,3 +113,208 @@ pnpm typecheck        # Type-check all packages
 - 桥接节点：`ros2_ws/src/unitree_go2/unitree_go2/go2_gz_bridge.py`
 - 机器人命令：`extensions/openclaw-plugin/src/tools/go2-commands.ts`
 - OpenClaw 命令：`extensions/openclaw-plugin/src/commands/robot-adapter.ts`
+
+## Recent Updates (Updated: 2026-03-23)
+
+### GO2 Gazebo Simulation Integration
+
+**Major addition**: Complete ROS2-Gazebo-GO2 simulation support with Docker Compose deployment.
+
+**New files**:
+- `docker/docker-compose.go2-gz.yml` - Docker Compose with go2-gz profile
+- `docker/Dockerfile.go2-gz-sim` - Gazebo simulation container image
+- `docker/Dockerfile.go2-gz-sim.local` - Local development variant
+- `docker/build-go2-gz-sim-source.sh` - Source build script
+- `docker/build-go2-bridge.sh` - Bridge node build script
+- `docker/scripts/go2-gz-entrypoint.sh` - Container entrypoint with headless support
+- `ros2_ws/src/unitree_go2/unitree_go2/go2_gz_bridge.py` - Topic bridging node
+- `ros2_ws/src/unitree_go2/launch/go2_gz_bridge_launch.py` - Launch configuration
+- `examples/go2-gz-sim/` - Integration tests and verification scripts
+
+**Key features**:
+- Headless Gazebo mode via `ign gazebo -r -s` (server-only, no GUI)
+- GPU acceleration support (NVIDIA Container Toolkit)
+- Environment variable control: `GO2_WORLD`, `GO2_SENSORS`, `ROS_DOMAIN_ID`
+- Three-service architecture: simulation, bridge, rosbridge
+
+**Configuration**:
+```yaml
+# docker-compose.go2-gz.yml --profile go2-gz
+services:
+  go2-gz-sim:     # Gazebo simulation (headless)
+  go2-bridge-node: # Topic bridging to RosClaw standard
+  ros2:           # rosbridge_server (OpenClaw connects here)
+```
+
+**Bug fixes**:
+- Fixed Gazebo world file discovery: added world directory to `GZ_SIM_RESOURCE_PATH`
+- Fixed headless startup: use `ign gazebo -r -s` instead of GUI mode
+- Fixed COLCON_CURRENT_PREFIX for multi-workspace builds
+- Changed default world to `empty.world` (no external model dependencies)
+
+### GO2 Gazebo Model Loading Fix (2026-03-23)
+
+**Problem**: Gazebo failed to load custom world files (e.g., `rmuc_2025_world.sdf`) with error:
+```
+Unable to find uri[model://rmuc_2025]
+```
+
+**Root cause**: `GZ_SIM_RESOURCE_PATH` was missing the source models directory:
+```yaml
+# BEFORE (incorrect)
+GZ_SIM_RESOURCE_PATH=/opt/go2_gz_sim/models:/opt/go2_gz_sim/src/gazebo_sim/world
+
+# AFTER (correct)
+GZ_SIM_RESOURCE_PATH=/opt/go2_gz_sim/models:/opt/go2_gz_sim/src/gazebo_sim/models:/opt/go2_gz_sim/src/gazebo_sim/world
+```
+
+The `rmuc_2025` model exists at `/opt/go2_gz_sim/src/gazebo_sim/models/rmuc_2025/`, but this path was not included in the resource path.
+
+**Launch file fix**: Changed default launch file from `launch_sim.launch.py` to `launch.py`:
+- `launch.py` supports dynamic `world` and `sensors` parameters
+- `launch_sim.launch.py` had hardcoded world path
+
+**Files changed**:
+- `docker/docker-compose.go2-gz.yml` - Added `GO2_WORLD`, `GO2_SENSORS` environment variables, fixed `GZ_SIM_RESOURCE_PATH`
+- `docker/Dockerfile.go2-gz-sim` - Changed CMD to use `launch.py`
+- `docker/.env` - Added `GO2_SIM_LAUNCH=launch.py`
+
+**Usage**:
+```bash
+# Start with custom world file
+GO2_WORLD=rmuc_2025_world.sdf docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+
+# Start with sensors enabled
+GO2_SENSORS=true docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+
+# GUI mode (for local debugging)
+GO2_GUI=true docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+```
+
+### Robot Adapter Skill
+
+**Major addition**: Reusable skill for rapid robot/simulation adaptation to RosClaw.
+
+**New documentation**:
+- `docs/skills/robot-adapter.md` - Complete 7-step adaptation workflow (617 lines)
+- `docs/skills/robot-adapter-quickref.md` - Quick reference card with checklists (224 lines)
+- `docs/skills/rosclaw-robot-adapter.skill.md` - Skill definition (253 lines)
+- `docs/skills/claude-code-skill.md` - Claude Code integration guide (95 lines)
+
+**New commands**:
+- `/robot-adapt` command in OpenClaw for interactive adaptation flow
+- Claude Code skill: `@rosclaw-robot-adapter` for AI-assisted adaptation
+
+**Installation**:
+```bash
+# Skill installed at: ~/.agents/skills/rosclaw-robot-adapter/
+# Symlink: ~/.claude/skills/rosclaw-robot-adapter -> ~/.agents/skills/rosclaw-robot-adapter
+```
+
+### OpenClaw Plugin Enhancements
+
+**New tools**:
+- `extensions/openclaw-plugin/src/tools/go2-commands.ts` - GO2-specific commands (sit, stand, stop)
+- `extensions/openclaw-plugin/src/commands/robot-adapter.ts` - Robot adaptation workflow (459 lines)
+
+**Changes**:
+- `extensions/openclaw-plugin/src/index.ts` - Registered robot-adapt command
+- `extensions/openclaw-plugin/openclaw.plugin.json` - Updated defaults for GO2
+
+### Docker & Build Improvements
+
+**New scripts**:
+- `ros2_ws/.docker_build.sh` - Docker build helper
+- `docker/Makefile` - Added GO2 Gazebo targets (`make go2-gz-up`, `make go2-gz-logs`, etc.)
+- `Makefile` - Root-level convenience targets
+
+**Environment variables** (`.env`):
+- `GO2_GZ_SIM_PATH` - Local path to go2_gz_sim source
+- `GO2_WORLD` - World file selection (`empty.world`, `rmuc_2025_world.sdf`)
+- `GO2_SENSORS` - Enable/disable sensor simulation
+
+## Important Notes
+
+### Gazebo GUI Mode vs Headless Mode
+
+Gazebo 支持两种运行模式，通过 `GO2_GUI` 环境变量控制：
+
+**无头模式（默认）** - 适合服务器部署：
+```bash
+GO2_GUI=false  # 或不设置
+ign gazebo -r -s -v 4 "$GO2_WORLD"
+```
+- `-r`: 作为服务器运行
+- `-s`: 禁用 GUI 渲染（纯服务器模式）
+- 无需 X11 显示服务器
+
+**GUI 模式** - 适合本地开发和调试：
+```bash
+GO2_GUI=true
+ign gazebo -r -v 4 "$GO2_WORLD"
+```
+- 无 `-s` 参数，启动完整 GUI
+- 需要 X11 显示服务器支持
+- 容器内会打开 Gazebo 可视化窗口
+
+**使用示例**：
+```bash
+# 无头模式（生产环境）
+docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+
+# GUI 模式（本地调试）
+GO2_GUI=true docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+```
+
+### launch.py vs launch_sim.launch.py
+
+RosClaw GO2 Gazebo 使用 `launch.py` 作为默认启动文件（而非 `launch_sim.launch.py`）：
+
+| 特性 | launch.py | launch_sim.launch.py |
+|------|-----------|---------------------|
+| 参数支持 | `world`, `sensors` | 硬编码 `empty.world` |
+| 控制器 | 支持 `gz_ros2_control` | 有限支持 |
+| 推荐使用 | 是（默认） | 否 |
+
+**使用方式**：
+```bash
+# 通过环境变量控制
+GO2_WORLD=rmuc_2025_world.sdf GO2_SENSORS=true \
+  docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+```
+
+### World File Discovery
+
+When using custom world files (e.g., `rmuc_2025_world.sdf`), ensure `GZ_SIM_RESOURCE_PATH` includes all model and world directories:
+
+```yaml
+GZ_SIM_RESOURCE_PATH=/opt/go2_gz_sim/models:/opt/go2_gz_sim/src/gazebo_sim/models:/opt/go2_gz_sim/src/gazebo_sim/world
+```
+
+**Why all three paths?**
+- `/opt/go2_gz_sim/models` - Pre-built models
+- `/opt/go2_gz_sim/src/gazebo_sim/models` - Source models (e.g., `rmuc_2025/`)
+- `/opt/go2_gz_sim/src/gazebo_sim/world` - World files (`*.world`, `*.sdf`)
+
+World files reference models using `model://rmuc_2025` syntax. Gazebo searches all directories in `GZ_SIM_RESOURCE_PATH` to resolve these URIs.
+
+### Multi-Workspace Builds
+
+When sourcing multiple ROS2 workspaces, set `COLCON_CURRENT_PREFIX` before each source:
+
+```bash
+export COLCON_CURRENT_PREFIX=/opt/go2_gz_sim/install
+source /opt/go2_gz_sim/install/local_setup.sh
+export COLCON_CURRENT_PREFIX=/opt/rosclaw/install
+source /opt/rosclaw/install/local_setup.sh
+```
+
+### Transport Modes
+
+The plugin supports three transport modes via `openclaw.plugin.json`:
+
+| Mode | Config | Use Case |
+|------|--------|----------|
+| `rosbridge` | `"transport.mode": "rosbridge"` | Docker deployment (default) |
+| `local` | `"transport.mode": "local"` | Same-machine development |
+| `webrtc` | `"transport.mode": "webrtc"` | Remote robots with signaling server |
