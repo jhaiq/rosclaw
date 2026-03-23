@@ -16,7 +16,8 @@ services:
     container_name: rosclaw-go2-gz-sim
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
-      - GZ_SIM_RESOURCE_PATH=/opt/go2_gz_sim/models
+      # GZ_SIM_RESOURCE_PATH 包含模型和世界文件路径
+      - GZ_SIM_RESOURCE_PATH=/opt/go2_gz_sim/models:/opt/go2_gz_sim/src/gazebo_sim/world
       - DISPLAY=${DISPLAY:-:0}
       - QT_X11_NO_MITSHM=1
       - GZ_SIM_PLUGIN_PATH=/opt/go2_gz_sim/install
@@ -39,8 +40,9 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
-    # 无头模式启动 Gazebo（无 GUI）- 使用 ROS2-Gazebo-GO2 原始 launch.py
+    # 无头模式启动 Gazebo（无 GUI）- 直接在容器内运行 Gazebo 服务器
     # 支持环境变量：GO2_WORLD=rmuc_2025_world.sdf|empty.world, GO2_SENSORS=true|false
+    # 注意：Docker 容器内 Gazebo 以服务器模式 (-s) 启动，无需显示服务器
     entrypoint: ["/entrypoint.sh"]
     command:
       - bash
@@ -56,8 +58,11 @@ services:
 
         export GO2_WORLD=${GO2_WORLD:-empty.world}
         export GO2_SENSORS=${GO2_SENSORS:-false}
-        echo "Starting Gazebo with world: $$GO2_WORLD, sensors: $$GO2_SENSORS"
-        ros2 launch gazebo_sim launch.py world:=$$GO2_WORLD sensors:=$$GO2_SENSORS
+        echo "Starting Gazebo headless with world: $$GO2_WORLD, sensors: $$GO2_SENSORS"
+
+        # 启动 Gazebo 服务器（无头模式）
+        # 注意：ign gazebo 命令需要在世界文件前加上完整路径或使用 GZ_SIM_RESOURCE_PATH
+        exec ign gazebo -r -s -v 4 "$$GO2_WORLD"
 
   # GO2 Bridge Node - 运行 RosClaw bridge
   go2-bridge-node:
