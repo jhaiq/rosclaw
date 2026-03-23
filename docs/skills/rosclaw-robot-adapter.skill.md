@@ -45,7 +45,28 @@ type: reference
 
 ## 使用方式
 
-### 模式 1: 完整适配流程
+### 模式 1: OpenClaw 命令（推荐）
+
+在 OpenClaw 中使用 `/robot-adapt` 命令进行交互式适配：
+
+```bash
+# 查看帮助
+/robot-adapt help
+
+# 启动适配流程
+/robot-adapt start -n "MyRobot" -t simulation
+
+# 分析话题
+/robot-adapt analyze --name "MyRobot"
+
+# 生成配置文件
+/robot-adapt generate -n "MyRobot" -m rosbridge
+
+# 验证配置
+/robot-adapt validate --name "MyRobot"
+```
+
+### 模式 2: 文档参考流程
 
 按照 [`robot-adapter.md`](./robot-adapter.md) 的六个阶段执行:
 
