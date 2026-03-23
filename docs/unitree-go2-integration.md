@@ -35,6 +35,36 @@ Gazebo 仿真模式提供完整的物理仿真环境，包括激光雷达、IMU�
 - NVIDIA GPU（推荐，用于 GPU 加速仿真）
 - NVIDIA Container Toolkit
 
+#### 环境变量配置
+
+Gazebo 仿真支持以下环境变量：
+
+| 变量名 | 默认值 | 说明 |
+|--------|--------|------|
+| `GO2_WORLD` | `empty.world` | 世界文件 (`empty.world` 或 `rmuc_2025_world.sdf`) |
+| `GO2_SENSORS` | `false` | 传感器仿真 (`true` 或 `false`) |
+| `GO2_GUI` | `false` | GUI 模式 (`true` 启用 GUI，`false` 无头模式) |
+
+**GUI 模式 vs 无头模式**：
+
+- **无头模式**（`GO2_GUI=false`，默认）：适合服务器/容器部署，无需 X11 显示服务器
+- **GUI 模式**（`GO2_GUI=true`）：适合本地开发调试，需要 X11 显示服务器支持
+
+使用示例：
+```bash
+# 无头模式（默认）
+docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+
+# GUI 模式（本地调试）
+GO2_GUI=true docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+
+# 指定世界文件
+GO2_WORLD=rmuc_2025_world.sdf docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+
+# 启用传感器仿真
+GO2_SENSORS=true docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+```
+
 #### 启动仿真
 
 ```bash

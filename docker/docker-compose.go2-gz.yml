@@ -17,11 +17,16 @@ services:
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
       # GZ_SIM_RESOURCE_PATH 包含模型和世界文件路径
-      - GZ_SIM_RESOURCE_PATH=/opt/go2_gz_sim/models:/opt/go2_gz_sim/src/gazebo_sim/world
-      - DISPLAY=${DISPLAY:-:0}
-      - QT_X11_NO_MITSHM=1
+      # 注意：必须包含 src/gazebo_sim/models 才能找到 rmuc_2025 等源码模型
+      - GZ_SIM_RESOURCE_PATH=/opt/go2_gz_sim/models:/opt/go2_gz_sim/src/gazebo_sim/models:/opt/go2_gz_sim/src/gazebo_sim/world
       - GZ_SIM_PLUGIN_PATH=/opt/go2_gz_sim/install
       - COLCON_CURRENT_PREFIX=/opt/go2_gz_sim/install
+      # GUI 模式配置：true 启用 GUI（需要 X11），false 无头模式（默认）
+      - GO2_GUI=${GO2_GUI:-false}
+      # 世界文件配置：从 .env 读取
+      - GO2_WORLD=${GO2_WORLD:-empty.world}
+      - DISPLAY=${DISPLAY:-:0}
+      - QT_X11_NO_MITSHM=1
     ports:
       - "8080:8080"
     volumes:
@@ -40,29 +45,22 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
-    # 无头模式启动 Gazebo（无 GUI）- 直接在容器内运行 Gazebo 服务器
-    # 支持环境变量：GO2_WORLD=rmuc_2025_world.sdf|empty.world, GO2_SENSORS=true|false
-    # 注意：Docker 容器内 Gazebo 以服务器模式 (-s) 启动，无需显示服务器
+    # 使用入口点脚本，支持 GUI/无头模式切换
+    # entrypoint 脚本会设置环境变量，然后执行 bash -c 传递的 command
     entrypoint: ["/entrypoint.sh"]
     command:
       - bash
       - -c
       - |
-        # Set COLCON_CURRENT_PREFIX to bypass hard-coded build path
-        export COLCON_CURRENT_PREFIX=/opt/go2_gz_sim/install
-
-        # Source ROS2
-        source /opt/ros/humble/setup.sh
-        # Source go2_gz_sim
-        source /opt/go2_gz_sim/install/local_setup.sh
-
         export GO2_WORLD=${GO2_WORLD:-empty.world}
         export GO2_SENSORS=${GO2_SENSORS:-false}
-        echo "Starting Gazebo headless with world: $$GO2_WORLD, sensors: $$GO2_SENSORS"
+        echo "Starting GO2 Gazebo simulation with world: $$GO2_WORLD"
+        echo "GUI mode: $$GO2_GUI"
+        echo "Sensors: $$GO2_SENSORS"
 
-        # 启动 Gazebo 服务器（无头模式）
-        # 注意：ign gazebo 命令需要在世界文件前加上完整路径或使用 GZ_SIM_RESOURCE_PATH
-        exec ign gazebo -r -s -v 4 "$$GO2_WORLD"
+        # 使用 ROS2-Gazebo-GO2 提供的 launch.py 文件
+        # 此 launch 文件支持 world 和 sensors 参数
+        ros2 launch gazebo_sim launch.py world:=$$GO2_WORLD sensors:=$$GO2_SENSORS
 
   # GO2 Bridge Node - 运行 RosClaw bridge
   go2-bridge-node:

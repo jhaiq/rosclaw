@@ -1,37 +1,89 @@
 # ROS2 humble + Gazebo Harmonic Sim for Unitree GO2
-# 安装所有 go2_gz_sim 依赖
-FROM ros:humble-ros-base AS base
+# 基于 ROS2-Gazebo-GO2 项目 Dockerfile 优化
+FROM osrf/ros:humble-desktop-full
 
 LABEL maintainer="RosClaw Team"
 LABEL description="Unitree GO2 Gazebo Simulation"
 
-# 安装所有 Gazebo 和导航依赖
+# 设置非交互模式
+ENV DEBIAN_FRONTEND=noninteractive
+
+# 安装 go2_gz_sim 依赖和 RosClaw 所需包
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    # 基础构建工具
+    build-essential \
+    git \
+    wget \
+    # Gazebo 相关
+    ros-humble-gazebo-ros \
+    ros-humble-gazebo-plugins \
+    ros-humble-gazebo-dev \
     ros-humble-ros-gz \
-    ros-humble-rosbridge-suite \
-    ros-humble-slam-toolbox \
-    ros-humble-nav2-bringup \
-    ros-humble-teleop-twist-keyboard \
+    ros-humble-gz-ros2-control \
+    # 机器人描述和状态发布
+    ros-humble-xacro \
+    ros-humble-urdf \
+    ros-humble-robot-state-publisher \
+    ros-humble-joint-state-publisher \
+    ros-humble-joint-state-broadcaster \
+    # 控制器
     ros-humble-controller-manager \
     ros-humble-ros2-control \
     ros-humble-ros2-controllers \
-    ros-humble-gazebo-ros-pkgs \
+    # 导航和 SLAM
+    ros-humble-slam-toolbox \
+    ros-humble-nav2-bringup \
+    ros-humble-navigation2 \
     ros-humble-robot-localization \
-    ros-humble-rqt \
-    ros-humble-rqt-common-plugins \
+    # 通信和桥接
+    ros-humble-rosbridge-suite \
+    ros-humble-rmw-cyclonedds-cpp \
+    ros-humble-cyclonedds \
+    # 坐标变换
     ros-humble-tf-transformations \
     ros-humble-tf2-ros \
     ros-humble-tf2-geometry-msgs \
-    ros-humble-gz-ros2-control \
-    && rm -rf /var/lib/apt/lists/*
+    ros-humble-rqt-tf-tree \
+    # 工具和 UI
+    ros-humble-rqt \
+    ros-humble-rqt-common-plugins \
+    ros-humble-rqt-robot-steering \
+    ros-humble-teleop-twist-keyboard \
+    # 传感器
+    ros-humble-velodyne-description \
+    && apt clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# 恢复前端环境变量
+ENV DEBIAN_FRONTEND=
+
+# 创建非 root 用户（安全性）
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
+RUN groupadd -g ${GROUP_ID} rosuser && \
+    useradd -u ${USER_ID} -g rosuser -m -s /bin/bash rosuser && \
+    echo "rosuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# 设置工作目录
+WORKDIR /opt/go2_gz_sim
 
 # 复制并构建 RosClaw ROS2 包
 COPY ros2_ws/src /opt/rosclaw/src
-RUN bash -c "cd /opt/rosclaw && source /opt/ros/humble/setup.sh && colcon build --install-base /opt/rosclaw/install && rm -rf build log"
+RUN bash -c "source /opt/ros/humble/setup.sh && \
+    colcon build --packages-skip unitree_go2 --install-base /opt/rosclaw/install && \
+    rm -rf build log"
+
+# 设置 ROS2 环境
+RUN echo "source /opt/ros/humble/setup.bash" >> /home/rosuser/.bashrc && \
+    echo "export GZ_SIM_RESOURCE_PATH=/opt/go2_gz_sim/models:/opt/go2_gz_sim/src/gazebo_sim/world" >> /home/rosuser/.bashrc
 
 # 入口点脚本
 COPY docker/scripts/go2-gz-entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+# 切换为非 root 用户
+USER rosuser
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["ros2", "launch", "gazebo_sim", "launch.py"]

@@ -24,7 +24,18 @@ fi
 
 # Set environment
 export ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
-export GZ_SIM_RESOURCE_PATH=${GZ_SIM_RESOURCE_PATH:-/opt/go2_gz_sim/models}
+export GZ_SIM_RESOURCE_PATH=${GZ_SIM_RESOURCE_PATH:-/opt/go2_gz_sim/models:/opt/go2_gz_sim/src/gazebo_sim/world}
+
+# GUI 模式配置
+# GO2_GUI=true: 启动 Gazebo GUI（需要 X11 显示服务器）
+# GO2_GUI=false（默认）：无头模式，仅运行 Gazebo 服务器
+if [[ "${GO2_GUI}" == "true" ]]; then
+    echo "Starting Gazebo in GUI mode..."
+    export QT_X11_NO_MITSHM=${QT_X11_NO_MITSHM:-1}
+    export DISPLAY=${DISPLAY:-:0}
+else
+    echo "Starting Gazebo in headless mode (server-only)..."
+fi
 
 # Execute command
 exec "$@"
