@@ -9,6 +9,7 @@ import { registerCameraTool } from "./ros2-camera.js";
 import {
   registerGo2StandTool,
   registerGo2SitTool,
+  registerGo2WalkTool,
   registerGo2StopTool,
   registerGo2MoveTool,
 } from "./go2-commands.js";
@@ -33,6 +34,7 @@ export function registerTools(api: OpenClawPluginApi): void {
   if (robotType === "go2" || robotName.toLowerCase().includes("go2")) {
     registerGo2StandTool(api);
     registerGo2SitTool(api);
+    registerGo2WalkTool(api);
     registerGo2StopTool(api);
     registerGo2MoveTool(api);
     api.logger.info("GO2-specific tools registered");

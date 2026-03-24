@@ -232,9 +232,46 @@ unitree_go2_node (ROS2 Python 节点)
 
 | 用户输入 | 执行操作 |
 |----------|----------|
-| "站起来" | 调用 `/go2_command/stand` |
-| "坐下" | 调用 `/go2_command/sit` |
-| "趴下" | 调用 `/go2_command/sit` |
+| "站起来" | 调用 `/robot1/robot_behavior_command` (command: "up") |
+| "坐下" | 调用 `/robot1/robot_behavior_command` (command: "sit") |
+| "趴下" | 调用 `/robot1/robot_behavior_command` (command: "sit") |
+| "开始走" | 调用 `/robot1/robot_behavior_command` (command: "walk") |
+
+### GO2 行为命令详解
+
+ROS2-Gazebo-GO2 仿真支持官方行为命令接口，通过服务调用实现：
+
+**服务名称**: `/robot1/robot_behavior_command`
+**服务类型**: `quadropted_msgs/srv/RobotBehaviorCommand`
+
+**支持的动作**:
+| 命令 | 说明 | 控制器模式 | 身体高度 |
+|------|------|-----------|---------|
+| `sit` | 坐下/趴下 | REST 模式 | -0.15m |
+| `up` | 站立 | STAND 模式 | 0.0m |
+| `walk` | 行走模式 | TROT 模式 | 0.0m |
+
+**使用示例**:
+```bash
+# 坐下
+ros2 service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'sit'}"
+
+# 站起
+ros2 service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'up'}"
+
+# 开始行走
+ros2 service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'walk'}"
+```
+
+**在 OpenClaw 中使用**:
+```
+/robot-adapt start -n "GO2" -t simulation
+# 然后使用自然语言命令：
+"让机器人坐下"
+"站起来"
+"开始行走"
+"向前移动 1 米"
+```
 
 ### 状态查询
 

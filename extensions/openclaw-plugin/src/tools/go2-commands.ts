@@ -10,33 +10,27 @@ import { getTransport } from "../service.js";
 /**
  * Register the go2_stand tool with the AI agent.
  * Makes the GO2 robot stand up from sitting position.
- * For Gazebo simulation: publishes to /robot1/set_pose to reset robot position
+ * Uses the official RobotBehaviorCommand service for proper behavior control.
  */
 export function registerGo2StandTool(api: OpenClawPluginApi): void {
   api.registerTool({
     name: "go2_stand",
     label: "GO2 Stand",
     description:
-      "Make the Unitree GO2 robot stand up from sitting position. " +
-      "Use this command when you want the robot to transition from sitting to standing.",
+      "Make the Unitree GO2 robot stand up from sitting position using the official behavior command service. " +
+      "This triggers the proper standing animation and controller mode change.",
     parameters: Type.Object({}),
 
     async execute(_toolCallId, _params) {
       const transport = getTransport();
-      // For Gazebo simulation: reset robot to standing pose
-      await transport.publish({
-        topic: "/robot1/set_pose",
-        type: "geometry_msgs/msg/PoseWithCovarianceStamped",
-        msg: {
-          header: { stamp: { sec: 0, nanosec: 0 }, frame_id: "odom" },
-          pose: {
-            pose: { position: { x: 0, y: 0, z: 0.4 }, orientation: { x: 0, y: 0, z: 0, w: 1 } },
-            covariance: [0.1, 0, 0, 0, 0, 0, 0, 0.1, 0, 0, 0, 0, 0, 0, 0.1, 0, 0, 0, 0, 0, 0, 0.1, 0, 0, 0, 0, 0, 0, 0.1, 0, 0, 0, 0, 0, 0, 0.1]
-          }
-        },
+      // Call the official RobotBehaviorCommand service
+      await transport.callService({
+        service: "/robot1/robot_behavior_command",
+        type: "quadropted_msgs/srv/RobotBehaviorCommand",
+        request: { command: "up" },
       });
 
-      const result = { success: true, message: "GO2 standing up (Gazebo simulation)" };
+      const result = { success: true, message: "GO2 standing up (official behavior command)" };
       return {
         content: [{ type: "text", text: JSON.stringify(result) }],
         details: result,
@@ -47,33 +41,58 @@ export function registerGo2StandTool(api: OpenClawPluginApi): void {
 
 /**
  * Register the go2_sit tool with the AI agent.
- * Makes the GO2 robot sit down.
+ * Makes the GO2 robot sit down using the official behavior command.
  */
 export function registerGo2SitTool(api: OpenClawPluginApi): void {
   api.registerTool({
     name: "go2_sit",
     label: "GO2 Sit",
     description:
-      "Make the Unitree GO2 robot sit down. " +
-      "Use this command when you want the robot to transition from standing to sitting.",
+      "Make the Unitree GO2 robot sit down using the official behavior command service. " +
+      "This triggers the proper sitting animation and controller mode change.",
     parameters: Type.Object({}),
 
     async execute(_toolCallId, _params) {
       const transport = getTransport();
-      // For Gazebo simulation: lower robot position
-      await transport.publish({
-        topic: "/robot1/set_pose",
-        type: "geometry_msgs/msg/PoseWithCovarianceStamped",
-        msg: {
-          header: { stamp: { sec: 0, nanosec: 0 }, frame_id: "odom" },
-          pose: {
-            pose: { position: { x: 0, y: 0, z: 0.2 }, orientation: { x: 0, y: 0, z: 0, w: 1 } },
-            covariance: [0.1, 0, 0, 0, 0, 0, 0, 0.1, 0, 0, 0, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0, 0, 0, 0.1, 0, 0, 0, 0, 0, 0, 0.1]
-          }
-        },
+      // Call the official RobotBehaviorCommand service
+      await transport.callService({
+        service: "/robot1/robot_behavior_command",
+        type: "quadropted_msgs/srv/RobotBehaviorCommand",
+        request: { command: "sit" },
       });
 
-      const result = { success: true, message: "GO2 sitting down (Gazebo simulation)" };
+      const result = { success: true, message: "GO2 sitting down (official behavior command)" };
+      return {
+        content: [{ type: "text", text: JSON.stringify(result) }],
+        details: result,
+      };
+    },
+  });
+}
+
+/**
+ * Register the go2_walk tool with the AI agent.
+ * Makes the GO2 robot start walking using the official behavior command.
+ */
+export function registerGo2WalkTool(api: OpenClawPluginApi): void {
+  api.registerTool({
+    name: "go2_walk",
+    label: "GO2 Walk",
+    description:
+      "Make the Unitree GO2 robot start walking mode using the official behavior command service. " +
+      "After calling this, use go2_move to specify movement direction and speed.",
+    parameters: Type.Object({}),
+
+    async execute(_toolCallId, _params) {
+      const transport = getTransport();
+      // Call the official RobotBehaviorCommand service
+      await transport.callService({
+        service: "/robot1/robot_behavior_command",
+        type: "quadropted_msgs/srv/RobotBehaviorCommand",
+        request: { command: "walk" },
+      });
+
+      const result = { success: true, message: "GO2 walking mode activated (official behavior command)" };
       return {
         content: [{ type: "text", text: JSON.stringify(result) }],
         details: result,
