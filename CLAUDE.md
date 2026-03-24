@@ -114,9 +114,119 @@ pnpm typecheck        # Type-check all packages
 - 机器人命令：`extensions/openclaw-plugin/src/tools/go2-commands.ts`
 - OpenClaw 命令：`extensions/openclaw-plugin/src/commands/robot-adapter.ts`
 
-## Recent Updates (Updated: 2026-03-23)
+## Recent Updates (Updated: 2026-03-24)
 
-### GO2 Gazebo Simulation Integration
+### GO2 Behavior Commands (2026-03-24)
+
+**Major addition**: Official Unitree GO2 behavior command support using ROS2 service interface.
+
+**Problem**: Existing `go2_stand` and `go2_sit` tools used topic publishing (`/robot1/set_pose`) instead of the official behavior control interface.
+
+**Solution**: Refactored to use `transport.callService()` with the official `/robot1/robot_behavior_command` service from ROS2-Gazebo-GO2 project.
+
+**New tools**:
+- `go2_stand` - Uses service call with `command: "up"` for STAND controller mode (body height: 0.0m)
+- `go2_sit` - Uses service call with `command: "sit"` for REST controller mode (body height: -0.15m)
+- `go2_walk` - Uses service call with `command: "walk"` for TROT controller mode (body height: 0.0m)
+
+**Files changed**:
+- `extensions/openclaw-plugin/src/tools/go2-commands.ts` - Refactored stand/sit, added walk tool
+- `extensions/openclaw-plugin/src/tools/index.ts` - Registered go2_walk tool
+- `docs/unitree-go2-integration.md` - Added behavior commands reference table
+
+**Behavior Commands Reference**:
+| Command | Service | Controller | Body Height |
+|---------|---------|------------|-------------|
+| `sit` | `command: "sit"` | REST | -0.15m |
+| `up` | `command: "up"` | STAND | 0.0m |
+| `walk` | `command: "walk"` | TROT | 0.0m |
+
+**Usage**:
+```bash
+# Via ROS2 CLI
+ros2 service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'sit'}"
+
+# Via OpenClaw natural language
+"让机器人坐下"
+"站起来"
+"开始行走"
+```
+
+**Reference**: ROS2-Gazebo-GO2/src/quadropted_controller/scripts/RobotController/RobotController.py
+
+### GO2 Scene Modes (2026-03-23)
+
+**Major addition**: Scene-based operational mode selection via `GO2_SCENE` environment variable.
+
+**New service**: `go2-scene-node` - Docker Compose service that launches scene-specific ROS2 nodes based on environment variable.
+
+**Supported scenes**:
+| Scene | Description | Additional Launch File |
+|-------|-------------|------------------------|
+| `none` (default) | Simulation only | None |
+| `cartographer` | Simulation + Cartographer SLAM for mapping | `go2_cartographer.launch.py` |
+| `navigation2` | Simulation + Nav2 for autonomous navigation | `go2_navigation2.launch.py` |
+
+**Files changed**:
+- `docker/docker-compose.go2-gz.yml` - Added go2-scene-node service with case-based launch logic
+- `docker/.env` - Added `GO2_SCENE` variable (default: none)
+- `docker/CONFIG.md` - Added scene mode documentation
+- `CLAUDE.md` - Added GO2 Scene Modes section
+
+**Usage**:
+```bash
+# Mapping mode (Cartographer SLAM)
+GO2_SCENE=cartographer docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+
+# Navigation mode (Nav2)
+GO2_SCENE=navigation2 docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+
+# Simulation only
+GO2_SCENE=none docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+```
+
+**Reference**: ROS2-Gazebo-GO2 README.md section 2.3 (建图和导航)
+
+### GO2 Gazebo Model Loading Fix (2026-03-23)
+
+**Problem**: Gazebo failed to load custom world files (e.g., `rmuc_2025_world.sdf`) with error:
+```
+Unable to find uri[model://rmuc_2025]
+```
+
+**Root cause**: `GZ_SIM_RESOURCE_PATH` was missing the source models directory:
+```yaml
+# BEFORE (incorrect)
+GZ_SIM_RESOURCE_PATH=/opt/go2_gz_sim/models:/opt/go2_gz_sim/src/gazebo_sim/world
+
+# AFTER (correct)
+GZ_SIM_RESOURCE_PATH=/opt/go2_gz_sim/models:/opt/go2_gz_sim/src/gazebo_sim/models:/opt/go2_gz_sim/src/gazebo_sim/world
+```
+
+The `rmuc_2025` model exists at `/opt/go2_gz_sim/src/gazebo_sim/models/rmuc_2025/`, but this path was not included in the resource path.
+
+**Launch file fix**: Changed default launch file from `launch_sim.launch.py` to `launch.py`:
+- `launch.py` supports dynamic `world` and `sensors` parameters
+- `launch_sim.launch.py` had hardcoded world path
+
+**Files changed**:
+- `docker/docker-compose.go2-gz.yml` - Added `GO2_WORLD`, `GO2_SENSORS` environment variables, fixed `GZ_SIM_RESOURCE_PATH`
+- `docker/Dockerfile.go2-gz-sim` - Changed CMD to use `launch.py`
+- `docker/.env` - Added `GO2_SIM_LAUNCH=launch.py`
+
+**Usage**:
+```bash
+# Start with custom world file
+GO2_WORLD=rmuc_2025_world.sdf docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+
+# Start with sensors enabled
+GO2_SENSORS=true docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+
+# GUI mode (for local debugging)
+GO2_GUI=true docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
+```
+
+### Initial GO2 Gazebo Integration
 
 **Major addition**: Complete ROS2-Gazebo-GO2 simulation support with Docker Compose deployment.
 

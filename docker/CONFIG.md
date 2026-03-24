@@ -116,6 +116,38 @@ GO2_SCENE=cargo docker compose -f docker-compose.go2-gz.yml --profile go2-gz up 
 GO2_SCENE=navigation2 docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 ```
 
+**GO2 行为命令**：
+
+ROS2-Gazebo-GO2 仿真支持官方行为命令接口，通过服务调用实现：
+
+| 命令 | 服务参数 | 控制器模式 | 身体高度 |
+|------|---------|-----------|---------|
+| `sit` | `command: "sit"` | REST | -0.15m |
+| `up` | `command: "up"` | STAND | 0.0m |
+| `walk` | `command: "walk"` | TROT | 0.0m |
+
+**服务调用示例**：
+```bash
+# 坐下
+ros2 service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'sit'}"
+
+# 站起
+ros2 service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'up'}"
+
+# 开始行走
+ros2 service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'walk'}"
+```
+
+**在 OpenClaw 中使用**：
+```
+/robot-adapt start -n "GO2" -t simulation
+# 然后使用自然语言命令：
+"让机器人坐下"
+"站起来"
+"开始行走"
+"向前移动 1 米"
+```
+
 ### 世界文件加载要求
 
 使用自定义世界文件（如 `rmuc_2025_world.sdf`）时，必须确保 `GZ_SIM_RESOURCE_PATH` 包含模型和世界文件的所有目录：
