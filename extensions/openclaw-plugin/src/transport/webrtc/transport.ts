@@ -69,6 +69,7 @@ export class WebRTCTransport implements RosTransport {
   private roomId: string | null = null;
   private peerId: string | null = null;
   private robotPeerId: string | null = null;
+  private advertisedTopics = new Set<string>();
 
   constructor(options: WebRTCTransportOptions) {
     this.options = options;
@@ -147,10 +148,18 @@ export class WebRTCTransport implements RosTransport {
   }
 
   publish(options: PublishOptions): void {
+    const topic = options.topic;
+    if (!this.advertisedTopics.has(topic)) {
+      this.sendOverDataChannel({
+        op: "advertise",
+        topic,
+        type: options.type,
+      });
+      this.advertisedTopics.add(topic);
+    }
     this.sendOverDataChannel({
       op: "publish",
-      topic: options.topic,
-      type: options.type,
+      topic,
       msg: options.msg,
     });
   }

@@ -3,20 +3,33 @@ import type { MessageHandler } from "./types.js";
 
 /**
  * Helper for publishing messages to a ROS2 topic.
+ *
+ * Rosbridge requires an "advertise" message before any "publish" on a topic.
+ * This class tracks whether the topic has been advertised and sends the
+ * advertise exactly once per publisher instance.
  */
 export class TopicPublisher {
+  private advertised = false;
+
   constructor(
     private client: RosbridgeClient,
     private topic: string,
     private type: string,
   ) {}
 
-  /** Publish a message to the topic. */
+  /** Publish a message to the topic. Advertises on first call. */
   publish(msg: Record<string, unknown>): void {
+    if (!this.advertised) {
+      this.client.send({
+        op: "advertise",
+        topic: this.topic,
+        type: this.type,
+      });
+      this.advertised = true;
+    }
     this.client.send({
       op: "publish",
       topic: this.topic,
-      type: this.type,
       msg,
     });
   }
