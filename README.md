@@ -1,3 +1,4 @@
+
 # RosClaw
 
 > [!IMPORTANT]
@@ -67,14 +68,16 @@ rosclaw/
 
 ### Install & Build
 
-```bash
+```sh
 pnpm install
 pnpm build
 ```
 
+
+
 ### Run the Demo Stack
 
-```bash
+```sh
 cd docker
 docker compose up
 ```
@@ -116,7 +119,7 @@ The AI agent has access to these ROS2 tools:
 
 ## Development
 
-```bash
+```sh
 pnpm install          # Install dependencies
 pnpm build            # Build all packages
 pnpm typecheck        # Type-check without emitting
@@ -126,3 +129,4 @@ pnpm clean            # Remove build artifacts
 ## License
 
 Apache-2.0
+

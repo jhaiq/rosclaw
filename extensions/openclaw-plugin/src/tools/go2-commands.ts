@@ -27,7 +27,7 @@ export function registerGo2StandTool(api: OpenClawPluginApi): void {
       await transport.callService({
         service: "/robot1/robot_behavior_command",
         type: "quadropted_msgs/srv/RobotBehaviorCommand",
-        request: { command: "up" },
+        args: { command: "up" },
       });
 
       const result = { success: true, message: "GO2 standing up (official behavior command)" };
@@ -58,7 +58,7 @@ export function registerGo2SitTool(api: OpenClawPluginApi): void {
       await transport.callService({
         service: "/robot1/robot_behavior_command",
         type: "quadropted_msgs/srv/RobotBehaviorCommand",
-        request: { command: "sit" },
+        args: { command: "sit" },
       });
 
       const result = { success: true, message: "GO2 sitting down (official behavior command)" };
@@ -89,7 +89,7 @@ export function registerGo2WalkTool(api: OpenClawPluginApi): void {
       await transport.callService({
         service: "/robot1/robot_behavior_command",
         type: "quadropted_msgs/srv/RobotBehaviorCommand",
-        request: { command: "walk" },
+        args: { command: "walk" },
       });
 
       const result = { success: true, message: "GO2 walking mode activated (official behavior command)" };

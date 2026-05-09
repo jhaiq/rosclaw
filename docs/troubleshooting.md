@@ -227,7 +227,40 @@ cat extensions/openclaw-plugin/openclaw.plugin.json
 
 ---
 
-### 问题 8: 插件加载失败
+### 问题 8: 插件已注册但网关启动时不加载
+
+**症状:**
+```
+http server listening (2 plugins: browser, memory-core)
+# 预期：3 plugins: browser, memory-core, rosclaw
+```
+
+CLI 显示插件已启用（`openclaw plugins list`），但 `http server listening` 日志中不包含 rosclaw。
+
+**原因:**
+`openclaw.plugin.json` 缺少 `activation.onStartup` 字段。OpenClaw 的 `shouldConsiderForGatewayStartup` 函数检查插件 manifest 中的 `activation.onStartup`，非内置插件（`origin === "config"`）如果未设置此字段，会被排除在 `startup.pluginIds` 之外。
+
+**解决方案:**
+在 `extensions/openclaw-plugin/openclaw.plugin.json` 中添加：
+
+```json
+{
+  "activation": {
+    "onStartup": true
+  }
+}
+```
+
+**验证:**
+```bash
+# 重启容器后检查
+docker logs 1Panel-openclaw-SRjc | grep "http server listening"
+# 应显示 3 plugins: browser, memory-core, rosclaw
+```
+
+---
+
+### 问题 9: 插件加载失败
 
 **错误信息:**
 ```

@@ -1,4 +1,4 @@
-version: "3.8"
+# version: "3.8"
 
 # OpenClaw Gateway (containerized) + RosClaw plugin (mounted from this repo)
 # Configuration is loaded from .env file

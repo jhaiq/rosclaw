@@ -47,12 +47,11 @@ pnpm build
 ### 步骤 2：添加插件到 OpenClaw
 
 ```sh
-# 从本地路径安装
-openclaw plugins install /opt/rosclaw/extensions/openclaw-plugin
+# 从本地路径安装（--link / -l 表示本地路径）
+openclaw plugins install -l /opt/rosclaw/extensions/openclaw-plugin
 
 # 或从 npm 安装（如果已发布）
 openclaw plugins install @rosclaw/rosclaw
-
 ```
 
 ### 步骤 3：配置 `openclaw.json`
@@ -371,6 +370,30 @@ Token: 见 docker/openclaw/.env
 | `local` | 直接 DDS 通信 | 本机 ROS2 + OpenClaw 同机 |
 | `webrtc` | WebRTC 数据通道 | 远程/真机机器人（开发中） |
 
+### 插件 Manifest 要求 (`openclaw.plugin.json`)
+
+非内置插件（通过 `load.paths` 或 `plugins install -l` 加载的插件）**必须**在 manifest 中声明以下字段才能正常启动：
+
+```json
+{
+  "id": "rosclaw",
+  "activation": {
+    "onStartup": true
+  },
+  "contracts": {
+    "tools": ["go2_", "ros2_"]
+  }
+}
+```
+
+| 字段 | 必填 | 说明 |
+|------|------|------|
+| `activation.onStartup` | **是** | 非内置插件必须设为 `true`，否则网关启动时跳过该插件 |
+| `contracts.tools` | 推荐 | 声明插件注册的工具前缀，消除 contracts.tools 警告 |
+
+> **为什么 `activation.onStartup` 必须设置？**
+> OpenClaw 的 `shouldConsiderForGatewayStartup` 函数要求非内置插件的 manifest 中 `activation.onStartup === true`，否则 `pluginIds` 中不包含该插件，即使已正确注册和启用。
+
 ---
 
 ## 常见问题
@@ -387,7 +410,34 @@ Error: Cannot find module '/home/node/rosclaw/extensions/openclaw-plugin'
 
 ---
 
-### 2. 无法连接 rosbridge
+### 2. 插件已注册但不加载（`http server listening (2 plugins)` 缺少 rosclaw）
+
+```
+http server listening (2 plugins: browser, memory-core)
+# 预期：3 plugins: browser, memory-core, rosclaw
+```
+
+**原因**：`openclaw.plugin.json` 缺少 `activation.onStartup: true`，导致 `shouldConsiderForGatewayStartup` 过滤掉了非内置插件。
+
+**解决**：在 `openclaw.plugin.json` 中添加：
+
+```json
+{
+  "activation": {
+    "onStartup": true
+  }
+}
+```
+
+重启容器后验证：
+```sh
+docker logs 1Panel-openclaw-SRjc | grep "http server listening"
+# 应显示 3 plugins: browser, memory-core, rosclaw
+```
+
+---
+
+### 3. 无法连接 rosbridge
 
 ```
 WebSocket connection failed: ws://ros2:9090
@@ -406,7 +456,7 @@ docker network ls          # 确认网络存在
 
 ---
 
-### 3. 端口冲突
+### 4. 端口冲突
 
 ```
 Error: bind: address already in use
@@ -423,7 +473,7 @@ ports:
 
 ---
 
-### 4. 1Panel 编排不显示
+### 5. 1Panel 编排不显示
 
 某些 1Panel 版本需要手动刷新浏览器或重新登录才能看到新创建的编排。
 
