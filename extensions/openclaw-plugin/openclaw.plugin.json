@@ -7,7 +7,21 @@
     "onStartup": true
   },
   "contracts": {
-    "tools": ["go2_", "ros2_"]
+    "tools": [
+      "go2_stand",
+      "go2_sit",
+      "go2_walk",
+      "go2_stop",
+      "go2_move",
+      "ros2_publish",
+      "ros2_subscribe_once",
+      "ros2_service_call",
+      "ros2_action_goal",
+      "ros2_param_get",
+      "ros2_param_set",
+      "ros2_list_topics",
+      "ros2_camera_snapshot"
+    ]
   },
   "configSchema": {
     "type": "object",

@@ -370,6 +370,34 @@ Token: 见 docker/openclaw/.env
 | `local` | 直接 DDS 通信 | 本机 ROS2 + OpenClaw 同机 |
 | `webrtc` | WebRTC 数据通道 | 远程/真机机器人（开发中） |
 
+### 多机器人话题命名空间
+
+ROS2 支持通过命名空间（namespace）隔离多机器人话题。不同机器人或仿真场景的话题前缀不同：
+
+| 场景 | cmd_vel | odom |
+|------|---------|------|
+| 单机器人（无命名空间） | `/cmd_vel` | `/odom` |
+| 多机器人 / fleet | `/robot1/cmd_vel` | `/robot1/odom` |
+| GO2 Gazebo 仿真 | `/robot1/cmd_vel` | `/robot1/odom` |
+
+在 `openclaw.json` 中通过 `robot.namespace` 配置命名空间：
+
+```json
+{
+  "plugins": {
+    "entries": {
+      "rosclaw": {
+        "config": {
+          "robot": { "namespace": "/robot1" }
+        }
+      }
+    }
+  }
+}
+```
+
+> **注意**：如果机器人使用命名空间但未配置 `robot.namespace`，RosClaw 会向标准话题 `/cmd_vel` 发送命令，机器人不会响应。请根据实际仿真/硬件环境确认话题前缀。
+
 ### 插件 Manifest 要求 (`openclaw.plugin.json`)
 
 非内置插件（通过 `load.paths` 或 `plugins install -l` 加载的插件）**必须**在 manifest 中声明以下字段才能正常启动：
@@ -381,7 +409,16 @@ Token: 见 docker/openclaw/.env
     "onStartup": true
   },
   "contracts": {
-    "tools": ["go2_", "ros2_"]
+    "tools": [
+      "ros2_publish",
+      "ros2_subscribe_once",
+      "ros2_service_call",
+      "ros2_action_goal",
+      "ros2_param_get",
+      "ros2_param_set",
+      "ros2_list_topics",
+      "ros2_camera_snapshot"
+    ]
   }
 }
 ```
@@ -389,7 +426,7 @@ Token: 见 docker/openclaw/.env
 | 字段 | 必填 | 说明 |
 |------|------|------|
 | `activation.onStartup` | **是** | 非内置插件必须设为 `true`，否则网关启动时跳过该插件 |
-| `contracts.tools` | 推荐 | 声明插件注册的工具前缀，消除 contracts.tools 警告 |
+| `contracts.tools` | 注册工具时**必须** | 列出插件注册的所有工具名（**精确匹配**，非前缀），缺失会导致工具静默注册失败 |
 
 > **为什么 `activation.onStartup` 必须设置？**
 > OpenClaw 的 `shouldConsiderForGatewayStartup` 函数要求非内置插件的 manifest 中 `activation.onStartup === true`，否则 `pluginIds` 中不包含该插件，即使已正确注册和启用。

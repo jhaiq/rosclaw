@@ -158,6 +158,9 @@ function buildDynamicContext(
 - Use \`ros2_list_topics\` to discover all available topics
 - Use \`ros2_subscribe_once\` to read the current value of any topic
 - Use \`ros2_camera_snapshot\` to see what the robot sees
+- Use \`go2_stand\`, \`go2_sit\`, \`go2_walk\`, \`go2_move\`, \`go2_stop\` for GO2-specific commands
+- In multi-robot/simulation environments, velocity commands use namespace prefix (e.g., \`/robot1/cmd_vel\` instead of \`/cmd_vel\`)
+- Check the Available Topics list above to find the correct topic names for your environment
 - The user can say /estop at any time to immediately stop the robot`;
 
   return context;
