@@ -1,11 +1,11 @@
 import type { OpenClawPluginApi } from "../plugin-api.js";
-import { registerPublishTool } from "./ros2-publish.js";
-import { registerSubscribeTool } from "./ros2-subscribe.js";
-import { registerServiceTool } from "./ros2-service.js";
-import { registerActionTool } from "./ros2-action.js";
-import { registerParamTools } from "./ros2-param.js";
-import { registerIntrospectTool } from "./ros2-introspect.js";
-import { registerCameraTool } from "./ros2-camera.js";
+import { registerPublishTool } from "./agiros-publish.js";
+import { registerSubscribeTool } from "./agiros-subscribe.js";
+import { registerServiceTool } from "./agiros-service.js";
+import { registerActionTool } from "./agiros-action.js";
+import { registerParamTools } from "./agiros-param.js";
+import { registerIntrospectTool } from "./agiros-introspect.js";
+import { registerCameraTool } from "./agiros-camera.js";
 import {
   registerGo2StandTool,
   registerGo2SitTool,
