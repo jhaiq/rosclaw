@@ -58,11 +58,11 @@ cp .env.example .env
 | `DOCKER_NETWORK_NAME` | `1panel-network` | Docker 网络名称 |
 | `DOCKER_NETWORK_EXTERNAL` | `true` | 是否使用外部网络 |
 
-#### ROS2 配置
+#### AGIROS 配置
 
 | 变量名 | 默认值 | 说明 |
 |--------|--------|------|
-| `ROS_DOMAIN_ID` | `0` | ROS2 域 ID |
+| `ROS_DOMAIN_ID` | `0` | AGIROS 域 ID |
 | `TURTLEBOT3_MODEL` | `burger` | TurtleBot3 型号 |
 | `ROSBRIDGE_PORT` | `9090` | rosbridge WebSocket 端口 |
 | `ROS_MASTER_PORT` | `11311` | ROS master 端口 |
@@ -80,7 +80,7 @@ cp .env.example .env
 | 变量名 | 默认值 | 说明 |
 |--------|--------|------|
 | `ROSCLAW_TRANSPORT_MODE` | `rosbridge` | 传输模式 |
-| `ROSCLAW_ROSBRIDGE_URL` | `ws://ros2:9090` | rosbridge URL |
+| `ROSCLAW_ROSBRIDGE_URL` | `ws://agiros:9090` | rosbridge URL |
 | `ROSCLAW_ROBOT_NAME` | `TurtleBot3 (Sim)` | 机器人名称 |
 | `ROSCLAW_RECONNECT` | `true` | 自动重连 |
 | `ROSCLAW_RECONNECT_INTERVAL` | `3000` | 重连间隔 (ms) |
@@ -129,13 +129,13 @@ ROS2-Gazebo-GO2 仿真支持官方行为命令接口，通过服务调用实现�
 **服务调用示例**：
 ```bash
 # 坐下
-ros2 service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'sit'}"
+agiros service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'sit'}"
 
 # 站起
-ros2 service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'up'}"
+agiros service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'up'}"
 
 # 开始行走
-ros2 service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'walk'}"
+agiros service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'walk'}"
 ```
 
 **在 OpenClaw 中使用**：
@@ -260,7 +260,7 @@ OPENCLAW_PORT=18790       # 修改 OpenClaw 端口
 
 ```env
 ROSCLAW_TRANSPORT_MODE=rosbridge
-ROSCLAW_ROSBRIDGE_URL=ws://192.168.1.100:9090  # 外部 ROS2 地址
+ROSCLAW_ROSBRIDGE_URL=ws://192.168.1.100:9090  # 外部 AGIROS 地址
 ```
 
 ### 场景 5：本地开发（无 Docker）
@@ -280,7 +280,7 @@ cat docker/openclaw/openclaw.json
 # 查看容器环境变量
 docker exec openclaw-gateway env | grep OPENCLAW
 
-# 查看 ros2 服务
+# 查看 agiros 服务
 docker compose -f docker-compose.yml -f docker-compose.openclaw.yml ps
 ```
 

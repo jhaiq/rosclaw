@@ -1,6 +1,6 @@
 /**
  * Rosbridge WebSocket protocol types.
- * @see https://github.com/RobotWebTools/rosbridge_suite/blob/ros2/ROSBRIDGE_PROTOCOL.md
+ * @see https://github.com/RobotWebTools/rosbridge_suite/blob/agiros/ROSBRIDGE_PROTOCOL.md
  */
 
 // --- Connection ---

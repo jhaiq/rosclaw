@@ -12,10 +12,10 @@
 
 ```bash
 # 启动机器人/仿真后执行
-ros2 topic list                    # 列出所有话题
-ros2 topic info /topic --verbose   # 查看话题类型
-ros2 topic hz /topic               # 测量发布频率
-ros2 topic echo /topic --once      # 查看消息内容
+agiros topic list                    # 列出所有话题
+agiros topic info /topic --verbose   # 查看话题类型
+agiros topic hz /topic               # 测量发布频率
+agiros topic echo /topic --once      # 查看消息内容
 ```
 
 输出记录模板:
@@ -90,21 +90,21 @@ if __name__ == '__main__': main()
 ```yaml
 services:
   robot:
-    image: ros:humble-ros-base
+    image: ros:loong-ros-base
     command: >
-      bash -c "source /opt/ros/humble/setup.sh &&
-               ros2 launch robot_bringup robot_launch.py"
+      bash -c "source /opt/agiros/loong/setup.sh &&
+               agiros launch robot_bringup robot_launch.py"
     network_mode: host  # 或使用 networks
     environment:
       - ROS_DOMAIN_ID=0
 
   rosbridge:
-    image: ros:humble-ros-base
+    image: ros:loong-ros-base
     ports:
       - "9090:9090"
     command: >
-      bash -c "source /opt/ros/humble/setup.sh &&
-               ros2 launch rosbridge_server rosbridge_websocket_launch.xml"
+      bash -c "source /opt/agiros/loong/setup.sh &&
+               agiros launch rosbridge_server rosbridge_websocket_launch.xml"
     network_mode: host
 ```
 
@@ -131,13 +131,13 @@ services:
 
 ```bash
 # 1. 检查话题是否存在
-ros2 topic list | grep rosclaw
+agiros topic list | grep rosclaw
 
 # 2. 检查话题频率
-ros2 topic hz /rosclaw/odom
+agiros topic hz /rosclaw/odom
 
 # 3. 检查数据类型
-ros2 topic info /rosclaw/odom --verbose
+agiros topic info /rosclaw/odom --verbose
 
 # 4. OpenClaw 测试命令
 "请机器人向前移动 1 米"
@@ -165,7 +165,7 @@ robot-integration/
 │   ├── docker-compose.robot.yml
 │   └── scripts/
 │       └── entrypoint.sh
-├── ros2_ws/
+├── agiros_ws/
 │   └── src/robot_bringup/
 │       ├── CMakeLists.txt
 │       ├── package.xml

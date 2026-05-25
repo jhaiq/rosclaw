@@ -24,7 +24,7 @@ type: reference
                               │
                               ▼
         ┌─────────────────────────────────────────┐
-        │  Step 2: ROS2 节点/话题分析              │
+        │  Step 2: AGIROS 节点/话题分析              │
         │  - 列出所有发布的话题                   │
         │  - 列出所有订阅的话题                   │
         │  - 识别消息类型                         │
@@ -69,7 +69,7 @@ type: reference
 
 | 模式 | 名称 | 适用场景 | 配置位置 |
 |------|------|----------|----------|
-| **Mode A** | Local DDS | 开发机与 ROS2 在同一机器 | `transport.mode: "local"` |
+| **Mode A** | Local DDS | 开发机与 AGIROS 在同一机器 | `transport.mode: "local"` |
 | **Mode B** | rosbridge | Docker 容器化部署 | `transport.mode: "rosbridge"` |
 | **Mode C** | WebRTC | 远程机器人、低延迟需求 | `transport.mode: "webrtc"` |
 
@@ -83,22 +83,22 @@ rosbridge:
   url: "ws://localhost:9090"  # OpenClaw 连接到此地址
 ```
 
-### Step 2: ROS2 节点/话题分析
+### Step 2: AGIROS 节点/话题分析
 
 #### 分析方法
 
 ```bash
 # 1. 列出所有活跃话题
-ros2 topic list
+agiros topic list
 
 # 2. 查看话题类型
-ros2 topic info /topic_name --verbose
+agiros topic info /topic_name --verbose
 
 # 3. 查看消息发布频率
-ros2 topic hz /topic_name
+agiros topic hz /topic_name
 
 # 4. 查看消息内容示例
-ros2 topic echo /topic_name --once
+agiros topic echo /topic_name --once
 ```
 
 #### GO2 Gazebo 话题清单
@@ -213,14 +213,14 @@ if __name__ == '__main__':
 #### 4.1 创建 Dockerfile
 
 ```dockerfile
-FROM ros:humble-ros-base
+FROM ros:loong-ros-base
 
 # 安装依赖
 RUN apt-get update && apt-get install -y \
-    ros-humble-rosbridge-server \
-    ros-humble-nav-msgs \
-    ros-humble-sensor-msgs \
-    ros-humble-geometry-msgs \
+    agiros-loong-rosbridge-server \
+    agiros-loong-nav-msgs \
+    agiros-loong-sensor-msgs \
+    agiros-loong-geometry-msgs \
     && rm -rf /var/lib/apt/lists/*
 
 # 设置工作目录
@@ -243,7 +243,7 @@ ENTRYPOINT ["/entrypoint.sh"]
 #!/bin/bash
 set -e
 
-export ROS_DISTRO=${ROS_DISTRO:-humble}
+export ROS_DISTRO=${ROS_DISTRO:-loong}
 
 # Source ROS2
 source /opt/ros/$ROS_DISTRO/setup.sh
@@ -285,12 +285,12 @@ services:
     image: rosclaw/robot-sim:latest
     container_name: rosclaw-robot-bridge
     command: >
-      bash -c "source /opt/ros/humble/setup.sh &&
+      bash -c "source /opt/agiros/loong/setup.sh &&
                source /opt/robot_workspace/install/local_setup.sh &&
-               ros2 launch robot_bridge bridge_launch.py"
+               agiros launch robot_bridge bridge_launch.py"
     volumes:
       - ${ROBOT_WORKSPACE_PATH}:/opt/robot_workspace:ro
-      - /path/to/rosclaw/ros2_ws/install:/opt/rosclaw/install:ro
+      - /path/to/rosclaw/agiros_ws/install:/opt/rosclaw/install:ro
     networks:
       - rosclaw-network
     profiles:
@@ -305,11 +305,11 @@ services:
     ports:
       - "${ROSBRIDGE_PORT:-9090}:${ROSBRIDGE_PORT:-9090}"
     command: >
-      bash -c "source /opt/ros/humble/setup.sh &&
+      bash -c "source /opt/agiros/loong/setup.sh &&
                source /opt/rosclaw/install/setup.sh &&
-               ros2 launch rosbridge_server rosbridge_websocket_launch.xml"
+               agiros launch rosbridge_server rosbridge_websocket_launch.xml"
     volumes:
-      - /path/to/rosclaw/ros2_ws/install:/opt/rosclaw/install:ro
+      - /path/to/rosclaw/agiros_ws/install:/opt/rosclaw/install:ro
     networks:
       - rosclaw-network
     profiles:
@@ -415,8 +415,8 @@ export function registerTools(api: OpenClawPluginApi): void {
 
 ```bash
 # 验证桥接节点发布的话题
-ros2 topic hz /go2_state/odom
-ros2 topic hz /scan
+agiros topic hz /go2_state/odom
+agiros topic hz /scan
 ```
 
 预期输出:
@@ -429,10 +429,10 @@ average rate: 29.500
 
 ```bash
 # 查看话题数据类型
-ros2 topic info /go2_state/odom --verbose
+agiros topic info /go2_state/odom --verbose
 
 # 查看实际数据
-ros2 topic echo /go2_state/odom --once
+agiros topic echo /go2_state/odom --once
 ```
 
 #### 6.3 端到端测试
@@ -470,7 +470,7 @@ docker compose -f docker-compose.robot.yml logs -f robot-bridge
 
 **症状:**
 ```
-Package 'gazebo_sim' not found: "package 'gazebo_sim' not found, searching: ['/opt/ros/humble']"
+Package 'gazebo_sim' not found: "package 'gazebo_sim' not found, searching: ['/opt/ros/loong']"
 ```
 
 **原因:** local_setup.sh 中硬编码了构建时的路径 `/home/ROS2/ROS2-Gazebo-GO2/install`
@@ -486,10 +486,10 @@ source /opt/go2_gz_sim/install/local_setup.sh
 
 **症状:**
 ```
-⚠️ 无法连接到 TurtleBot3 模拟器 - 当前没有连接到 ROS2 桥接服务器
+⚠️ 无法连接到 TurtleBot3 模拟器 - 当前没有连接到 AGIROS 桥接服务器
 ```
 
-**原因:** 默认 rosbridge URL 是 `ws://ros2:9090` (Docker 内部 hostname)
+**原因:** 默认 rosbridge URL 是 `ws://agiros:9090` (Docker 内部 hostname)
 
 **解决方案:** 更新 openclaw.plugin.json:
 ```json
@@ -509,7 +509,7 @@ malformed launch argument 'world=rmuc_2025_world.sdf', expected format '<name>:=
 
 **解决方案:** docker-compose command 中使用 `:=` 语法:
 ```yaml
-command: ros2 launch gazebo_sim launch.py world:=$$GO2_WORLD sensors:=$$GO2_SENSORS
+command: agiros launch gazebo_sim launch.py world:=$$GO2_WORLD sensors:=$$GO2_SENSORS
 ```
 
 #### 问题 4: 模型文件找不到
@@ -531,7 +531,7 @@ environment:
 
 适配新机器人时，按以下清单逐项检查:
 
-### 4.1 ROS2 层
+### 4.1 AGIROS 层
 
 - [ ] 列出所有机器人发布的话题
 - [ ] 列出所有机器人订阅的话题
@@ -574,13 +574,13 @@ environment:
 
 ```bash
 # 通用环境变量
-export ROS_DOMAIN_ID=0              # ROS2 域 ID
+export ROS_DOMAIN_ID=0              # AGIROS 域 ID
 export ROSBRIDGE_PORT=9090          # rosbridge 端口
 
 # 机器人特定环境变量
 export ROBOT_WORKSPACE_PATH=/path/to/robot  # 机器人工作空间路径
 export ROBOT_NAME="Robot Name"              # 机器人显示名称
-export ROBOT_NAMESPACE="/robot"             # ROS2 命名空间
+export ROBOT_NAMESPACE="/robot"             # AGIROS 命名空间
 
 # 仿真特定环境变量
 export SIM_WORLD="world.sdf"        # 仿真世界文件
@@ -613,5 +613,5 @@ docker compose -f docker-compose.robot.yml --profile robot down
   - `docker/docker-compose.go2-gz.yml` - Docker Compose 配置
   - `docker/Dockerfile.go2-gz-sim` - Dockerfile
   - `docker/scripts/go2-gz-entrypoint.sh` - 入口脚本
-  - `ros2_ws/src/unitree_go2/unitree_go2/go2_gz_bridge.py` - 桥接节点
+  - `agiros_ws/src/unitree_go2/unitree_go2/go2_gz_bridge.py` - 桥接节点
   - `extensions/openclaw-plugin/src/tools/go2-commands.ts` - 机器人命令

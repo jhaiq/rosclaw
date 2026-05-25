@@ -50,7 +50,7 @@ Skill 已安装在：`/home/jhq/.agents/skills/rosclaw-robot-adapter/`
 
 当调用此 Skill 时，我会：
 
-1. **分析机器人接口** - 帮你识别 ROS2 话题和消息类型
+1. **分析机器人接口** - 帮你识别 AGIROS 话题和消息类型
 2. **设计话题映射** - 将机器人话题映射到 RosClaw 标准
 3. **生成配置文件** - 创建 Docker Compose、桥接节点代码
 4. **配置 OpenClaw** - 更新 plugin.json 配置
@@ -63,11 +63,11 @@ Skill 已安装在：`/home/jhq/.agents/skills/rosclaw-robot-adapter/`
 
 Skill: 好的，我来帮你适配 Webero 移动机器人。首先让我分析现有配置...
 
-1. 请提供 Webero 的 ROS2 话题列表：
-   ros2 topic list
+1. 请提供 Webero 的 AGIROS 话题列表：
+   agiros topic list
 
 2. 确认里程计话题类型：
-   ros2 topic info /webero/odom --verbose
+   agiros topic info /webero/odom --verbose
 
 3. 我将生成话题映射和桥接节点代码...
 ```

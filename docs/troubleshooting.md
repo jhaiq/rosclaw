@@ -22,7 +22,7 @@
 
 **错误信息:**
 ```
-service "ros2" refers to undefined network 1panel-network: invalid compose project
+service "agiros" refers to undefined network 1panel-network: invalid compose project
 ```
 
 **原因:**
@@ -45,7 +45,7 @@ networks:
 在服务引用中使用固定的网络名称：
 ```yaml
 services:
-  ros2:
+  agiros:
     networks:
       - rosclaw-network
 ```
@@ -62,12 +62,12 @@ docker network ls | grep 1panel-network
 
 **错误信息:**
 ```
-WebSocket connection to 'ws://ros2:9090' failed
+WebSocket connection to 'ws://agiros:9090' failed
 Error: connect ECONNREFUSED
 ```
 
 **原因:**
-OpenClaw 容器和 ROS2 容器不在同一个 Docker 网络中。
+OpenClaw 容器和 AGIROS 容器不在同一个 Docker 网络中。
 
 **解决方案:**
 1. 确保两个容器使用相同的外部网络：
@@ -100,10 +100,10 @@ Bind for 0.0.0.0:9090 failed: port is already allocated
 **解决方案:**
 ```bash
 # 停止占用端口的容器
-docker compose stop ros2
+docker compose stop agiros
 
 # 启动新容器
-docker compose --profile gpu up -d ros2-gpu
+docker compose --profile gpu up -d agiros-gpu
 ```
 
 或者修改 `.env` 中的端口配置：
@@ -126,13 +126,13 @@ ROSBRIDGE_PORT=9091
 **排查步骤:**
 ```bash
 # 查看容器日志
-docker compose logs ros2
+docker compose logs agiros
 
 # 检查容器退出码
-docker ps -a | grep ros2
+docker ps -a | grep agiros
 
 # 进入容器调试
-docker run --rm -it rosclaw/ros2:latest /bin/bash
+docker run --rm -it rosclaw/agiros:latest /bin/bash
 ```
 
 ---
@@ -173,7 +173,7 @@ docker run --rm --gpus all nvidia/cuda:12.0-base nvidia-smi
 
 **错误信息:**
 ```bash
-docker exec rosclaw-ros2-gpu nvidia-smi
+docker exec rosclaw-agiros-gpu nvidia-smi
 # 命令失败或无输出
 ```
 
@@ -185,7 +185,7 @@ docker exec rosclaw-ros2-gpu nvidia-smi
 确保 docker-compose.yml 包含：
 ```yaml
 services:
-  ros2-gpu:
+  agiros-gpu:
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute
@@ -303,10 +303,10 @@ Error in 'rosclaw' service: Connection closed
 **解决方案:**
 ```bash
 # 检查 rosbridge 服务状态
-docker compose ps ros2
+docker compose ps agiros
 
 # 查看 rosbridge 日志
-docker compose logs ros2 | grep rosbridge
+docker compose logs agiros | grep rosbridge
 
 # 测试 WebSocket 连接
 wscat -c ws://localhost:9090
@@ -389,10 +389,10 @@ Gazebo 仿真帧率低，卡顿明显。
 make gpu-start
 
 # 验证 GPU 使用
-docker exec rosclaw-ros2-gpu glxinfo | grep "OpenGL renderer"
+docker exec rosclaw-agiros-gpu glxinfo | grep "OpenGL renderer"
 
 # 设置正确的模型路径
-GAZEBO_MODEL_PATH=/opt/ros/jazzy/share/turtlebot3_gazebo/models
+GAZEBO_MODEL_PATH=/opt/agiros/pixiu/share/turtlebot3_gazebo/models
 ```
 
 ---

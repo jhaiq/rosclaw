@@ -1,10 +1,10 @@
 version: "3.8"
 
-# Mode A: Same Machine — OpenClaw + ROS2 on the robot itself.
+# Mode A: Same Machine — OpenClaw + AGIROS on the robot itself.
 # The plugin uses LocalTransport (direct DDS, no network needed).
 
 services:
-  # ROS2 stack + OpenClaw + RosClaw plugin, all in one container
+  # AGIROS stack + OpenClaw + RosClaw plugin, all in one container
   rosclaw:
     build:
       context: ..

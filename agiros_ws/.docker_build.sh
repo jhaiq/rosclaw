@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
 
-echo "Sourcing ROS2 Humble..."
-source /opt/ros/humble/setup.sh
+echo "Sourcing AGIROS Humble..."
+source /opt/agiros/loong/setup.sh
 
 echo "Building unitree_go2 package..."
-cd /opt/rosclaw/ros2_ws
+cd /opt/rosclaw/agiros_ws
 colcon build --packages-select unitree_go2 --symlink-install
 
 echo "Build complete!"

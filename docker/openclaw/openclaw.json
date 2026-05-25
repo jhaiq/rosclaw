@@ -25,7 +25,7 @@
         "config": {
           "transport": { "mode": "rosbridge" },
           "rosbridge": {
-            "url": "ws://ros2:9090",
+            "url": "ws://agiros:9090",
             "reconnect": true,
             "reconnectInterval": 3000
           },

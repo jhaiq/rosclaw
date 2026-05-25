@@ -30,7 +30,7 @@ OpenClaw Gateway (AI 智能体 + 工具)
         ▼  RosClaw 插件
 rosbridge_server (WebSocket 端口 9090)
         │
-        ▼  ROS2 DDS
+        ▼  AGIROS DDS
 机器人：Nav2, MoveIt2, 摄像头，传感器
 ```
 
@@ -38,7 +38,7 @@ rosbridge_server (WebSocket 端口 9090)
 
 | 容器 | 服务 | 端口 | 网络 | 描述 |
 |------|------|------|------|------|
-| `rosclaw-ros2-gpu` | ros2-gpu | 9090, 11311 | 1panel-network | ROS2 + rosbridge + Gazebo |
+| `rosclaw-agiros-gpu` | agiros-gpu | 9090, 11311 | 1panel-network | AGIROS + rosbridge + Gazebo |
 | `1Panel-openclaw-*` | openclaw | 18789 | 1panel-network | OpenClaw Gateway |
 
 ---
@@ -78,7 +78,7 @@ make start
 
 # 5. 验证部署
 make status
-make logs-ros2
+make logs-agiros
 ```
 
 ### GPU 部署
@@ -91,7 +91,7 @@ make verify-gpu
 make gpu-start
 
 # 3. 验证 GPU 访问
-docker exec rosclaw-ros2-gpu nvidia-smi
+docker exec rosclaw-agiros-gpu nvidia-smi
 ```
 
 ### 1Panel 集成部署
@@ -104,7 +104,7 @@ docker network create 1panel-network 2>/dev/null || true
 export DOCKER_NETWORK_NAME=1panel-network
 export DOCKER_NETWORK_EXTERNAL=true
 
-# 3. 部署 ROS2 容器
+# 3. 部署 AGIROS 容器
 make start
 
 # 4. 连接 1Panel 网络
@@ -121,14 +121,14 @@ make connect-1panel
 |------|------|----------|
 | `http://localhost:9090/` | rosbridge WebSocket | HTTP 400 (WebSocket only) |
 | `http://localhost:18789/` | OpenClaw Gateway | HTTP 200 |
-| `ws://ros2:9090` | rosbridge WebSocket (容器内) | WebSocket 连接成功 |
+| `ws://agiros:9090` | rosbridge WebSocket (容器内) | WebSocket 连接成功 |
 
 ### 健康检查脚本
 
 ```bash
 #!/bin/bash
 # 检查 rosbridge
-if docker exec rosclaw-ros2-gpu curl -s http://localhost:9090/ 2>&1 | grep -q "WebSocket"; then
+if docker exec rosclaw-agiros-gpu curl -s http://localhost:9090/ 2>&1 | grep -q "WebSocket"; then
     echo "[OK] rosbridge is running"
 else
     echo "[FAIL] rosbridge not responding"
@@ -150,7 +150,7 @@ fi
 make ps
 
 # 检查特定容器
-docker inspect rosclaw-ros2-gpu --format='{{.State.Status}}'
+docker inspect rosclaw-agiros-gpu --format='{{.State.Status}}'
 docker inspect 1Panel-openclaw-SRjc --format='{{.State.Status}}'
 ```
 
@@ -183,13 +183,13 @@ docker inspect 1Panel-openclaw-SRjc --format='{{.State.Status}}'
 make logs
 
 # GPU 状态
-docker exec rosclaw-ros2-gpu nvidia-smi
+docker exec rosclaw-agiros-gpu nvidia-smi
 
 # 网络连接
 docker network inspect 1panel-network
 
 # 资源使用
-docker stats rosclaw-ros2-gpu 1Panel-openclaw-SRjc
+docker stats rosclaw-agiros-gpu 1Panel-openclaw-SRjc
 ```
 
 ---
@@ -198,28 +198,28 @@ docker stats rosclaw-ros2-gpu 1Panel-openclaw-SRjc
 
 ### 问题 1: rosbridge 连接失败
 
-**症状**: `WebSocket error connecting to ws://ros2:9090`
+**症状**: `WebSocket error connecting to ws://agiros:9090`
 
 **诊断**:
 ```bash
-# 检查 ros2 容器
-docker compose ps ros2
+# 检查 agiros 容器
+docker compose ps agiros
 
 # 检查 DNS 解析
-docker exec 1Panel-openclaw-SRjc getent hosts ros2
+docker exec 1Panel-openclaw-SRjc getent hosts agiros
 
 # 检查 rosbridge 进程
-docker exec rosclaw-ros2-gpu ps aux | grep rosbridge
+docker exec rosclaw-agiros-gpu ps aux | grep rosbridge
 ```
 
 **解决方案**:
 ```bash
-# 重启 ros2 容器
+# 重启 agiros 容器
 make restart
 
 # 或重新连接网络
-docker network disconnect 1panel-network rosclaw-ros2-gpu
-docker network connect 1panel-network rosclaw-ros2-gpu
+docker network disconnect 1panel-network rosclaw-agiros-gpu
+docker network connect 1panel-network rosclaw-agiros-gpu
 
 # 重启 OpenClaw
 docker restart 1Panel-openclaw-SRjc
@@ -251,7 +251,7 @@ make restart
 **诊断**:
 ```bash
 make verify-gpu
-docker logs rosclaw-ros2-gpu
+docker logs rosclaw-agiros-gpu
 ```
 
 **解决方案**:
@@ -278,7 +278,7 @@ xhost +local:docker
 echo $DISPLAY
 
 # 检查 volume 挂载
-docker inspect rosclaw-ros2-gpu | grep -A5 "Mounts"
+docker inspect rosclaw-agiros-gpu | grep -A5 "Mounts"
 ```
 
 ---
@@ -308,10 +308,10 @@ make logs | grep "ROS2 transport"
 make stop
 
 # 2. 拉取旧版本镜像
-docker pull rosclaw/ros2:<previous-version>
+docker pull rosclaw/agiros:<previous-version>
 
 # 3. 更新 docker-compose.yml 指定版本
-# image: rosclaw/ros2:<previous-version>
+# image: rosclaw/agiros:<previous-version>
 
 # 4. 重启服务
 make start

@@ -25,7 +25,7 @@
 |------|------|------|
 | Node.js | >= 20.0.0 | TypeScript 运行环境 |
 | pnpm | >= 9.0.0 | 包管理器 |
-| Docker | 最新版 | ROS2 容器化部署 |
+| Docker | 最新版 | AGIROS 容器化部署 |
 | NVIDIA Container Toolkit | 可选 | GPU 加速支持 |
 
 ### 安装步骤
@@ -57,10 +57,10 @@ rosclaw/
 ├── extensions/
 │   ├── openclaw-plugin/    # 核心 OpenClaw 扩展
 │   └── openclaw-canvas/    # 实时仪表盘 (Phase 3)
-├── ros2_ws/src/
-│   ├── rosclaw_discovery/  # ROS2 发现节点
-│   ├── rosclaw_msgs/       # ROS2 消息定义
-│   └── rosclaw_agent/      # ROS2 代理节点
+├── agiros_ws/src/
+│   ├── rosclaw_discovery/  # AGIROS 发现节点
+│   ├── rosclaw_msgs/       # AGIROS 消息定义
+│   └── rosclaw_agent/      # AGIROS 代理节点
 ├── docker/
 │   ├── docker-compose.yml
 │   ├── .env.example
@@ -164,7 +164,7 @@ docker logs 1Panel-openclaw-SRjc | grep "connected"
 
 | 类型 | 约定 | 示例 |
 |------|------|------|
-| ROS2 包 | `rosclaw_*` 前缀 | `rosclaw_discovery` |
+| AGIROS 包 | `rosclaw_*` 前缀 | `rosclaw_discovery` |
 | npm 包 | `@rosclaw/` 作用域 | `@rosclaw/openclaw-plugin` |
 | TypeScript 类 | PascalCase | `RosbridgeClient` |
 | 函数/变量 | camelCase | `sendMessage` |

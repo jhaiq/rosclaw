@@ -1,1 +1,0 @@
-# Unitree GO2 ROS2 Python Module

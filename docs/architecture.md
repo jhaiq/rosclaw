@@ -1,7 +1,7 @@
 # RosClaw System Architecture
 
 RosClaw supports three deployment modes depending on where OpenClaw runs
-relative to the robot. The AI Gateway layer and ROS2 layer remain the same
+relative to the robot. The AI Gateway layer and AGIROS layer remain the same
 across all modes — only the transport between them changes.
 
 ---
@@ -36,9 +36,9 @@ across all modes — only the transport between them changes.
 │  │  ┌─────────────────────────────────────────────────────────────────────┐   │  │
 │  │  │                    TOOL REGISTRY                                     │   │  │
 │  │  │                                                                      │   │  │
-│  │  │  ros2_publish    ros2_subscribe_once    ros2_service_call            │   │  │
-│  │  │  ros2_action_goal   ros2_param_get/set  ros2_list_topics            │   │  │
-│  │  │  ros2_camera_snapshot                                                │   │  │
+│  │  │  agiros_publish    agiros_subscribe_once    agiros_service_call            │   │  │
+│  │  │  agiros_action_goal   agiros_param_get/set  agiros_list_topics            │   │  │
+│  │  │  agiros_camera_snapshot                                                │   │  │
 │  │  └──────────────────────────────┬──────────────────────────────────────┘   │  │
 │  │                                 │                                          │  │
 │  │  ┌──────────────┐  ┌───────────▼──────────┐  ┌─────────────────────┐      │  │
@@ -64,13 +64,13 @@ across all modes — only the transport between them changes.
                                           └───────────────────────┘
 ```
 
-## ROS2 Layer (common to all modes)
+## AGIROS Layer (common to all modes)
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────────┐
-│                              ROS2 LAYER                                          │
+│                              AGIROS LAYER                                          │
 │                                                                                  │
-│                           ROS2 DDS Bus                                           │
+│                           AGIROS DDS Bus                                           │
 │         ┌──────────┬──────────┬──────────┬──────────┐                            │
 │         ▼          ▼          ▼          ▼          ▼                            │
 │  ┌────────────┐┌────────┐┌────────┐┌─────────┐┌──────────────┐                  │
@@ -121,7 +121,7 @@ internet access.
 │                         │ direct (local DDS / rclnodejs)                 │
 │                         ▼                                                │
 │  ┌────────────────────────────────────────────────────────────────────┐  │
-│  │  ROS2 DDS Bus                                                      │  │
+│  │  AGIROS DDS Bus                                                      │  │
 │  │  /cmd_vel  /odom  /camera  /battery  /diagnostics  ...            │  │
 │  └──────────────────────┬─────────────────────────────────────────────┘  │
 │                         ▼                                                │
@@ -157,12 +157,12 @@ where everything is on the same network.
 │                                │     │                                 │
 │  ┌──────────────────────────┐  │     │  ┌───────────────────────────┐  │
 │  │  OPENCLAW + ROSCLAW      │  │     │  │  rosbridge_server         │  │
-│  │  PLUGIN                  │──┼─────┼─►│  (WebSocket → ROS2 DDS)   │  │
+│  │  PLUGIN                  │──┼─────┼─►│  (WebSocket → AGIROS DDS)   │  │
 │  │                          │  │ LAN │  └─────────────┬─────────────┘  │
 │  │  rosbridge-client lib    │  │ WS  │                │                │
 │  └──────────────────────────┘  │     │                ▼                │
 │                                │     │  ┌───────────────────────────┐  │
-└ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘     │  │  ROS2 DDS Bus             │  │
+└ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘     │  │  AGIROS DDS Bus             │  │
                                        │  │  /cmd_vel  /odom  ...     │  │
                                        │  └─────────────┬─────────────┘  │
                                        │                ▼                │
@@ -207,7 +207,7 @@ when operators and robots are in different locations.
 └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘                  │               │ local DDS      │
                                        ┌─────────┐ │               ▼                │
                                        │  STUN / │ │  ┌──────────────────────────┐  │
-                                       │  TURN   │ │  │  ROS2 DDS Bus            │  │
+                                       │  TURN   │ │  │  AGIROS DDS Bus            │  │
                                        │  Server │ │  │  /cmd_vel  /odom  ...    │  │
                                        └─────────┘ │  └────────────┬─────────────┘  │
                                                     │               ▼                │
@@ -223,7 +223,7 @@ NAT issue:  solved — both sides connect outbound to STUN/TURN, then P2P
 ```
 
 In Mode C, the robot runs a **RosClaw Agent Node** (`rosclaw_agent`) — a
-lightweight ROS2 node that connects outbound to the signaling/TURN server
+lightweight AGIROS node that connects outbound to the signaling/TURN server
 and establishes a WebRTC data channel with the cloud-side plugin. Commands
 and feedback flow over this encrypted peer-to-peer channel. Neither side
 needs a public IP or open inbound ports.
@@ -237,19 +237,19 @@ client library. The `RosTransport` interface (`@rosclaw/transport`) provides
 a unified API for all three deployment modes:
 
 ```
-  Plugin Tools (ros2_publish, ros2_subscribe_once, ...)
+  Plugin Tools (agiros_publish, agiros_subscribe_once, ...)
        │
        ▼
   getTransport(): RosTransport
        │
        ├── RosbridgeTransport  (Mode B — @rosclaw/rosbridge-client)
-       │     └── WebSocket → rosbridge_server → ROS2 DDS
+       │     └── WebSocket → rosbridge_server → AGIROS DDS
        │
        ├── LocalTransport      (Mode A — @rosclaw/transport-local, stub)
-       │     └── rclnodejs → ROS2 DDS directly
+       │     └── rclnodejs → AGIROS DDS directly
        │
        └── WebRTCTransport     (Mode C — @rosclaw/transport-webrtc, stub)
-             └── WebRTC data channel → rosclaw_agent → ROS2 DDS
+             └── WebRTC data channel → rosclaw_agent → AGIROS DDS
 ```
 
 The `createTransport(config)` factory in `@rosclaw/transport` uses dynamic
@@ -266,7 +266,7 @@ dependencies are never loaded.
        │  "Move forward 2 meters"   │                              │
        │───────────────────────────►│                              │
        │                            │                              │
-       │              AI Agent selects ros2_publish                │
+       │              AI Agent selects agiros_publish                │
        │              Safety hook validates (0.5 m/s < 1.0 limit) │
        │                            │                              │
        │                            │  publish /cmd_vel            │

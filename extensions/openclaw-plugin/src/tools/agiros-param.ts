@@ -3,14 +3,14 @@ import type { OpenClawPluginApi } from "../plugin-api.js";
 import { getTransport } from "../service.js";
 
 /**
- * Register ros2_param_get and ros2_param_set tools with the AI agent.
+ * Register agiros_param_get and agiros_param_set tools with the AI agent.
  */
 export function registerParamTools(api: OpenClawPluginApi): void {
   api.registerTool({
-    name: "ros2_param_get",
-    label: "ROS2 Get Parameter",
+    name: "agiros_param_get",
+    label: "AGIROS  Get Parameter",
     description:
-      "Get the value of a ROS2 parameter from a node. " +
+      "Get the value of a AGIROS parameter from a node. " +
       "Use this to check robot configuration values.",
     parameters: Type.Object({
       node: Type.String({ description: "The fully qualified node name (e.g., '/turtlebot3/controller')" }),
@@ -42,10 +42,10 @@ export function registerParamTools(api: OpenClawPluginApi): void {
   });
 
   api.registerTool({
-    name: "ros2_param_set",
-    label: "ROS2 Set Parameter",
+    name: "agiros_param_set",
+    label: "AGIROS  Set Parameter",
     description:
-      "Set the value of a ROS2 parameter on a node. " +
+      "Set the value of a AGIROS parameter on a node. " +
       "Use this to change robot configuration at runtime.",
     parameters: Type.Object({
       node: Type.String({ description: "The fully qualified node name" }),

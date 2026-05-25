@@ -4,11 +4,11 @@
 > [!IMPORTANT]
 > **本项目正在进行重大架构重构并向独立仓库迁移。** 请稍后回来看更新，或关注 X [@irvinxyz](https://x.com/irvinxyz) 获取最新进展。
 
-**通过 AI 智能体实现消息应用对 ROS2 机器人的自然语言控制。**
+**通过 AI 智能体实现消息应用对 AGIROS 机器人的自然语言控制。**
 
 RosClaw 将 [OpenClaw](https://github.com/openclaw) 与 [ROS2](https://docs.ros.org/)（机器人操作系统）通过智能插件层连接。在 Telegram、WhatsApp、Discord 或 Slack 上发送消息 — 机器人就会行动。您可以连接自己的机器人，或"租赁"注册到我们门户的任何机器人。每个机器人都会在门户注册自己的能力和配置信息。
 
-无论是可爱的桌面机器人还是人形机器人，您只需安装我们的 OpenClaw 扩展并运行 ROS2 包即可。
+无论是可爱的桌面机器人还是人形机器人，您只需安装我们的 OpenClaw 扩展并运行 AGIROS 包即可。
 
 
 ## 工作原理
@@ -22,13 +22,13 @@ OpenClaw 网关 (AI 智能体 + 工具 + 记忆)
         v  RosClaw 插件
 rosbridge_server (WebSocket)
         |
-        v  ROS2 DDS
+        v  AGIROS DDS
 机器人：Nav2, MoveIt2, 摄像头，传感器
 ```
 
 1. 用户通过任何消息应用发送自然语言消息
-2. OpenClaw 的 AI 智能体接收消息并使用 RosClaw 插件注册的 ROS2 工具
-3. 智能体将意图转换为 ROS2 操作（话题发布、服务调用、动作目标）
+2. OpenClaw 的 AI 智能体接收消息并使用 RosClaw 插件注册的 AGIROS 工具
+3. 智能体将意图转换为 AGIROS 操作（话题发布、服务调用、动作目标）
 4. 机器人执行动作，智能体将反馈流式传输回聊天
 
 ## 项目结构
@@ -40,9 +40,9 @@ rosclaw/
 ├── extensions/
 │   ├── openclaw-plugin/          # @rosclaw/openclaw-plugin — 核心 OpenClaw 扩展
 │   └── openclaw-canvas/          # @rosclaw/openclaw-canvas — 实时仪表盘 (Phase 3)
-├── ros2_ws/src/
-│   ├── rosclaw_discovery/        # ROS2 能力自动发现节点
-│   └── rosclaw_msgs/             # 自定义 ROS2 消息/服务定义
+├── agiros_ws/src/
+│   ├── rosclaw_discovery/        # AGIROS 能力自动发现节点
+│   └── rosclaw_msgs/             # 自定义 AGIROS 消息/服务定义
 ├── docker/                       # Docker Compose 配置
 └── examples/                     # 演示项目
 ```
@@ -69,7 +69,7 @@ cd docker
 docker compose up
 ```
 
-这将启动 ROS2 + rosbridge + Gazebo。然后配置您的 OpenClaw 实例使用 RosClaw 插件，地址为 `ws://localhost:9090`。
+这将启动 AGIROS + rosbridge + Gazebo。然后配置您的 OpenClaw 实例使用 RosClaw 插件，地址为 `ws://localhost:9090`。
 
 ### 尝试一下
 
@@ -85,24 +85,24 @@ docker compose up
 | 包 | 描述 |
 |---|---|
 | [`@rosclaw/rosbridge-client`](packages/rosbridge-client/) | 独立的 rosbridge WebSocket 协议 TypeScript 客户端 |
-| [`@rosclaw/openclaw-plugin`](extensions/openclaw-plugin/) | OpenClaw 扩展：用于 ROS2 控制的工具、钩子、技能、命令 |
+| [`@rosclaw/openclaw-plugin`](extensions/openclaw-plugin/) | OpenClaw 扩展：用于 AGIROS 控制的工具、钩子、技能、命令 |
 | [`@rosclaw/openclaw-canvas`](extensions/openclaw-canvas/) | 实时机器人仪表盘 (Phase 3) |
-| [`rosclaw_discovery`](ros2_ws/src/rosclaw_discovery/) | ROS2 Python 节点，用于能力自动发现 |
-| [`rosclaw_msgs`](ros2_ws/src/rosclaw_msgs/) | 自定义 ROS2 消息/服务定义 |
+| [`rosclaw_discovery`](agiros_ws/src/rosclaw_discovery/) | AGIROS Python 节点，用于能力自动发现 |
+| [`rosclaw_msgs`](agiros_ws/src/rosclaw_msgs/) | 自定义 AGIROS 消息/服务定义 |
 
 ## 智能体工具
 
-AI 智能体可以访问以下 ROS2 工具：
+AI 智能体可以访问以下 AGIROS 工具：
 
 | 工具 | 描述 |
 |---|---|
-| `ros2_publish` | 发布消息到任何 ROS2 话题 |
-| `ros2_subscribe_once` | 读取话题的最新消息 |
-| `ros2_service_call` | 调用 ROS2 服务 |
-| `ros2_action_goal` | 发送带反馈的动作目标 (Phase 2) |
-| `ros2_param_get/set` | 获取/设置 ROS2 节点参数 |
-| `ros2_list_topics` | 发现可用的话题 |
-| `ros2_camera_snapshot` | 捕获摄像头画面 |
+| `agiros_publish` | 发布消息到任何 AGIROS 话题 |
+| `agiros_subscribe_once` | 读取话题的最新消息 |
+| `agiros_service_call` | 调用 AGIROS 服务 |
+| `agiros_action_goal` | 发送带反馈的动作目标 (Phase 2) |
+| `agiros_param_get/set` | 获取/设置 AGIROS 节点参数 |
+| `agiros_list_topics` | 发现可用的话题 |
+| `agiros_camera_snapshot` | 捕获摄像头画面 |
 
 ## 开发
 
@@ -166,38 +166,38 @@ docker compose restart openclaw
 docker compose logs openclaw    
 ```
 ##### 失败日志：
-2026-03-20T05:50:05.677+00:00 [plugins] plugin service failed (ros2-transport): Error: WebSocket error connecting to ws://ros2:9090
+2026-03-20T05:50:05.677+00:00 [plugins] plugin service failed (agiros-transport): Error: WebSocket error connecting to ws://agiros:9090
 2026-03-20T05:50:07.232+00:00 [ws] Proxy headers detected from untrusted address. Connection will not be treated as local. Configure gateway.trustedProxies to restore local client detection behind your proxy.
 2026-03-20T05:50:07.253+00:00 [ws] webchat connected conn=5be36229-7ea4-435c-ad74-fdb21b477e5c remote=127.0.0.1 client=openclaw-control-ui webchat v2026.3.13
-2026-03-20T05:50:08.678+00:00 [gateway] ROS2 transport status: connecting
-2026-03-20T05:50:08.681+00:00 [gateway] ROS2 transport status: disconnected
-2026-03-20T05:50:08.682+00:00 [gateway] ROS2 transport status: disconnected
+2026-03-20T05:50:08.678+00:00 [gateway] AGIROS transport status: connecting
+2026-03-20T05:50:08.681+00:00 [gateway] AGIROS transport status: disconnected
+2026-03-20T05:50:08.682+00:00 [gateway] AGIROS transport status: disconnected
 
 ##### 成功日志：
-2026-03-20T05:53:20.741+00:00 [gateway] ROS2 transport status: connected
+2026-03-20T05:53:20.741+00:00 [gateway] AGIROS transport status: connected
 
-### 启动ros2环境
+### 启动agiros环境
 ```bash
-source /opt/ros/humble/setup.bash
+source /opt/agiros/loong/setup.bash
 source ~/rosclaw/install/setup.bash
 ``` 
 
 ###启动 rosbridge_server
 ```bash
-ros2 launch rosbridge_server rosbridge_server.launch.py
+agiros launch rosbridge_server rosbridge_server.launch.py
 ```
 
 ### 启动turtlebot3_gazebo
 ```bash
-source /opt/ros/jazzy/setup.bash
-ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+source /opt/agiros/pixiu/setup.bash
+agiros launch turtlebot3_gazebo turtlebot3_world.launch.py
 ````
 
 #### 启动日志
-root@f8fcd141dd84:/ros2_ws# ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
-bash: ros2: command not found
-root@f8fcd141dd84:/ros2_ws# source /opt/ros/jazzy/setup.bash 
-root@f8fcd141dd84:/ros2_ws# ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+root@f8fcd141dd84:/agiros_ws# agiros launch turtlebot3_gazebo turtlebot3_world.launch.py
+bash: agiros: command not found
+root@f8fcd141dd84:/agiros_ws# source /opt/agiros/pixiu/setup.bash 
+root@f8fcd141dd84:/agiros_ws# agiros launch turtlebot3_gazebo turtlebot3_world.launch.py
 
 turtlebot3_gazebo界面
 ![turtlebot3_gazebo](turtlebot3_gazebo.png)
@@ -285,7 +285,7 @@ Tool 14:23
 
 ### 启动 turtlebot3 世界
 ```bash
-ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+agiros launch turtlebot3_gazebo turtlebot3_world.launch.py
 ```
 
 ```

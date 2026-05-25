@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-export ROS_DISTRO=${ROS_DISTRO:-humble}
+export ROS_DISTRO=${ROS_DISTRO:-loong}
 
 # Source ROS2
 source /opt/ros/$ROS_DISTRO/setup.sh

@@ -3,15 +3,15 @@ import type { OpenClawPluginApi } from "../plugin-api.js";
 import { getTransport } from "../service.js";
 
 /**
- * Register the ros2_list_topics tool with the AI agent.
- * Allows the agent to discover available ROS2 topics at runtime.
+ * Register the agiros_list_topics tool with the AI agent.
+ * Allows the agent to discover available AGIROS topics at runtime.
  */
 export function registerIntrospectTool(api: OpenClawPluginApi): void {
   api.registerTool({
-    name: "ros2_list_topics",
-    label: "ROS2 List Topics",
+    name: "agiros_list_topics",
+    label: "AGIROS  List Topics",
     description:
-      "List all available ROS2 topics and their message types. " +
+      "List all available AGIROS topics and their message types. " +
       "Use this to discover what data the robot publishes and what commands it accepts.",
     parameters: Type.Object({}),
 

@@ -1,3 +1,4 @@
+
 # Unitree GO2 机器狗控制 Demo
 
 通过 RosClaw 和 OpenClaw 使用自然语言控制 Unitree GO2 机器狗。支持仿真模式和真实硬件控制。
@@ -25,10 +26,10 @@
 ### 仿真模式
 
 1. **启动 RosClaw 和 GO2 仿真**
-   ```bash
+```sh
    cd docker
-   GO2_MODE=simulation docker compose up -d ros2 go2-node
-   ```
+   GO2_MODE=simulation docker compose up -d agiros go2-node
+```
 
 2. **配置 OpenClaw 插件**
    ```
@@ -47,25 +48,25 @@
 ### 真实硬件模式
 
 1. **配置机器人连接**
-   ```bash
+```sh
    export GO2_MODE=hardware
    export GO2_ROBOT_IP=192.168.123.2  # GO2 默认 IP
-   ```
+```
 
 2. **启动 GO2 控制节点**
-   ```bash
-   ros2 launch unitree_go2 go2_launch.py mode:=hardware
-   ```
+```sh
+   agiros launch unitree_go2 go2_launch.py mode:=hardware
+```
 
 3. **启动 OpenClaw 和 RosClaw**
-   ```bash
+```sh
    cd docker
    docker compose up -d
-   ```
+```
 
 ## 可用命令
 
-| 自然语言指令 | ROS2 操作 | 说明 |
+| 自然语言指令 | AGIROS 操作 | 说明 |
 |-------------|----------|------|
 | "向前走 1 米" | 发布 `/cmd_vel` | 线速度控制 |
 | "向后移动" | 发布 `/cmd_vel` | 反向移动 |
@@ -76,7 +77,7 @@
 | "电池电量" | 读取 `/go2_state/battery` | 电池状态 |
 | "平衡状态" | 读取 `/go2_state/imu` | IMU 数据 |
 
-## ROS2 接口
+## AGIROS 接口
 
 ### 订阅的话题 (Subscribed Topics)
 
@@ -113,7 +114,7 @@
 | `GO2_MAX_VELOCITY` | `1.0` | 最大线速度 (m/s) |
 | `GO2_MAX_ANGULAR_VELOCITY` | `2.0` | 最大角速度 (rad/s) |
 
-### ROS2 参数
+### AGIROS 参数
 
 ```yaml
 /unitree_go2_node:
@@ -153,15 +154,15 @@ unitree_go2_node (ROS2)
 **症状**: 节点启动后显示连接超时
 
 **解决方案**:
-```bash
+```sh
 # 检查网络连接
 ping 192.168.123.2
 
-# 检查 ROS2 域 ID
+# 检查 AGIROS 域 ID
 export ROS_DOMAIN_ID=0
 
 # 查看节点日志
-ros2 node info /unitree_go2_node
+agiros node info /unitree_go2_node
 ```
 
 ### 问题 2: 仿真模式无响应
@@ -169,15 +170,15 @@ ros2 node info /unitree_go2_node
 **症状**: 发送命令后机器人不移动
 
 **解决方案**:
-```bash
+```sh
 # 检查话题连接
-ros2 topic echo /cmd_vel
+agiros topic echo /cmd_vel
 
 # 验证节点状态
-ros2 node list
+agiros node list
 
 # 查看日志
-ros2 launch unitree_go2 go2_launch.py --show-log
+agiros launch unitree_go2 go2_launch.py --show-log
 ```
 
 ## 进阶使用
@@ -186,23 +187,23 @@ ros2 launch unitree_go2 go2_launch.py --show-log
 
 ```python
 # 示例：执行一个舞蹈动作序列
-ros2 topic pub /go2_command/stand std_msgs/Empty
+agiros topic pub /go2_command/stand std_msgs/Empty
 sleep 1
-ros2 topic pub /cmd_vel geometry_msgs/Twist "{linear: {x: 0.5}, angular: {z: 0.5}}"
+agiros topic pub /cmd_vel geometry_msgs/Twist "{linear: {x: 0.5}, angular: {z: 0.5}}"
 sleep 2
-ros2 topic pub /cmd_vel geometry_msgs/Twist "{linear: {x: 0.0}, angular: {z: 0.0}}"
+agiros topic pub /cmd_vel geometry_msgs/Twist "{linear: {x: 0.0}, angular: {z: 0.0}}"
 ```
 
 ### 集成激光雷达
 
 如果 GO2 配备了激光雷达：
 
-```bash
+```sh
 # 启动 SLAM
-ros2 launch slam_toolbox online_async_launch.py
+agiros launch slam_toolbox online_async_launch.py
 
 # 导航
-ros2 launch nav2_bringup navigation_launch.py
+agiros launch nav2_bringup navigation_launch.py
 ```
 
 ## 相关资源
@@ -214,3 +215,4 @@ ros2 launch nav2_bringup navigation_launch.py
 ## 许可证
 
 Apache-2.0
+

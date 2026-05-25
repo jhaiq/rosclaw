@@ -18,7 +18,7 @@
 
 ## 项目概述
 
-**RosClaw** 是一个 ROS2 + OpenClaw 集成项目，通过 AI 智能体实现消息应用对 ROS2 机器人的自然语言控制。
+**RosClaw** 是一个 AGIROS + OpenClaw 集成项目，通过 AI 智能体实现消息应用对 AGIROS 机器人的自然语言控制。
 
 | 属性 | 值 |
 |------|-----|
@@ -61,13 +61,13 @@
 | 命令 | 描述 |
 |------|------|
 | `make setup` | 创建 .env 并生成所有配置文件 |
-| `make start` | 启动所有服务 (ros2 + openclaw-gateway) |
+| `make start` | 启动所有服务 (agiros + openclaw-gateway) |
 | `make stop` | 停止所有服务 |
 | `make restart` | 重启所有服务 |
 | `make down` | 停止并移除容器和网络 |
 | `make clean` | 停止并移除 volumes（重置所有状态） |
 | `make logs` | 跟踪所有服务的日志 |
-| `make logs-ros2` | 跟踪 ros2 服务日志 |
+| `make logs-agiros` | 跟踪 agiros 服务日志 |
 | `make logs-openclaw` | 跟踪 openclaw-gateway 日志 |
 | `make gen-config` | 从 .env 重新生成 openclaw.json |
 | `make gen-plugin-config` | 重新生成 openclaw.plugin.json |
@@ -75,8 +75,8 @@
 | `make ps` | 显示运行中的容器 |
 | `make pull` | 拉取最新镜像 |
 | `make build` | 从源码构建镜像 |
-| `make gpu-start` | 启动 GPU 加速的 ros2 容器 |
-| `make gpu-stop` | 停止 GPU 加速的 ros2 容器 |
+| `make gpu-start` | 启动 GPU 加速的 agiros 容器 |
+| `make gpu-stop` | 停止 GPU 加速的 agiros 容器 |
 | `make verify-gpu` | 验证 GPU 支持和配置 |
 | `make status` | 显示状态和配置信息 |
 
@@ -95,15 +95,15 @@
 | `DOCKER_NETWORK_NAME` | 否 | `1panel-network` | Docker 网络名称 | `1panel-network` |
 | `DOCKER_NETWORK_EXTERNAL` | 否 | `true` | 是否使用外部网络 | `true` |
 
-### ROS2 配置
+### AGIROS 配置
 
 | 变量 | 必填 | 默认值 | 描述 | 示例 |
 |------|------|--------|------|------|
-| `ROS_DOMAIN_ID` | 否 | `0` | ROS2 域 ID | `0` |
+| `ROS_DOMAIN_ID` | 否 | `0` | AGIROS 域 ID | `0` |
 | `TURTLEBOT3_MODEL` | 否 | `burger` | TurtleBot3 模型 | `burger`, `waffle`, `waffle_pi` |
 | `ROSBRIDGE_PORT` | 否 | `9090` | rosbridge WebSocket 端口 | `9090` |
 | `ROS_MASTER_PORT` | 否 | `11311` | ROS master 端口 | `11311` |
-| `GAZEBO_MODEL_PATH` | - | `/opt/ros/jazzy/share/turtlebot3_gazebo/models` | Gazebo 模型路径（容器内） | - |
+| `GAZEBO_MODEL_PATH` | - | `/opt/agiros/pixiu/share/turtlebot3_gazebo/models` | Gazebo 模型路径（容器内） | - |
 
 ### Unitree GO2 Gazebo 仿真配置
 
@@ -130,7 +130,7 @@
 | 变量 | 必填 | 默认值 | 描述 | 示例 |
 |------|------|--------|------|------|
 | `ROSCLAW_TRANSPORT_MODE` | 否 | `rosbridge` | 传输模式 | `rosbridge`, `local`, `webrtc` |
-| `ROSCLAW_ROSBRIDGE_URL` | 否 | `ws://ros2:9090` | rosbridge WebSocket URL | `ws://localhost:9090` |
+| `ROSCLAW_ROSBRIDGE_URL` | 否 | `ws://agiros:9090` | rosbridge WebSocket URL | `ws://localhost:9090` |
 | `ROSCLAW_ROBOT_NAME` | 否 | `TurtleBot3 (Sim)` | 机器人名称 | `TurtleBot3 (Sim)` |
 | `ROSCLAW_RECONNECT` | 否 | `true` | 启用重连 | `true`, `false` |
 | `ROSCLAW_RECONNECT_INTERVAL` | 否 | `3000` | 重连间隔 (ms) | `3000` |
@@ -156,27 +156,27 @@
 
 ## Docker 服务
 
-### ros2 (CPU 模式)
+### agiros (CPU 模式)
 
-默认的 CPU-only ROS2 容器，运行 rosbridge_server 和 Gazebo 仿真。
+默认的 CPU-only AGIROS 容器，运行 rosbridge_server 和 Gazebo 仿真。
 
 ```yaml
-服务名：ros2
-镜像：rosclaw/ros2:latest
+服务名：agiros
+镜像：rosclaw/agiros:latest
 端口：9090 (rosbridge), 11311 (ROS master)
 网络：rosclaw-network (外部)
 ```
 
-### ros2-gpu (GPU 模式)
+### agiros-gpu (GPU 模式)
 
-GPU 加速的 ROS2 容器，需要 NVIDIA Container Toolkit。
+GPU 加速的 AGIROS 容器，需要 NVIDIA Container Toolkit。
 
 ```yaml
-服务名：ros2-gpu
-镜像：rosclaw/ros2:latest
-容器名：rosclaw-ros2-gpu
-网络别名：ros2
-启动命令：docker compose --profile gpu up -d ros2-gpu
+服务名：agiros-gpu
+镜像：rosclaw/agiros:latest
+容器名：rosclaw-agiros-gpu
+网络别名：agiros
+启动命令：docker compose --profile gpu up -d agiros-gpu
 ```
 
 ### GO2 Gazebo 仿真 (Unitree GO2)
@@ -186,8 +186,8 @@ Unitree GO2 机器狗的 Gazebo 仿真环境，包含三个服务：
 | 服务 | 描述 | 端口 |
 |------|------|------|
 | `go2-gz-sim` | Gazebo 仿真服务器 | 8080 |
-| `go2-bridge-node` | ROS2 话题桥接节点 | - |
-| `ros2` | rosbridge WebSocket 服务器 | 9090 |
+| `go2-bridge-node` | AGIROS 话题桥接节点 | - |
+| `agiros` | rosbridge WebSocket 服务器 | 9090 |
 
 **启动命令：**
 
@@ -233,7 +233,7 @@ docker compose -f docker-compose.go2-gz.yml --profile go2-gz down
 
 | 包 | 版本 | 描述 | 入口 |
 |------|------|------|------|
-| `@rosclaw/openclaw-plugin` | 0.0.1 | OpenClaw 扩展，用于 ROS2 机器人控制 | `./src/index.ts` |
+| `@rosclaw/openclaw-plugin` | 0.0.1 | OpenClaw 扩展，用于 AGIROS 机器人控制 | `./src/index.ts` |
 | `@rosclaw/openclaw-canvas` | 0.0.1 | 实时机器人仪表盘（Phase 3） | `./dist/index.js` |
 
 ### 依赖项
@@ -251,15 +251,15 @@ docker compose -f docker-compose.go2-gz.yml --profile go2-gz down
 
 | 包 | 用途 |
 |------|------|
-| `rclnodejs` | ROS2 Node.js 客户端（本地模式） |
+| `rclnodejs` | AGIROS Node.js 客户端（本地模式） |
 
-### ROS2 包 (ros2_ws/src/)
+### AGIROS 包 (agiros_ws/src/)
 
 | 包 | 描述 |
 |------|------|
-| `rosclaw_discovery` | ROS2 能力自动发现节点 |
-| `rosclaw_msgs` | 自定义 ROS2 消息/服务定义 |
-| `rosclaw_agent` | ROS2 代理节点（WebRTC ↔ DDS 桥接） |
+| `rosclaw_discovery` | AGIROS 能力自动发现节点 |
+| `rosclaw_msgs` | 自定义 AGIROS 消息/服务定义 |
+| `rosclaw_agent` | AGIROS 代理节点（WebRTC ↔ DDS 桥接） |
 
 ---
 

@@ -15,7 +15,7 @@ import type {
 } from "./types.js";
 
 /**
- * Unified transport interface for ROS2 communication.
+ * Unified transport interface for AGIROS communication.
  *
  * All deployment modes (local DDS, rosbridge WebSocket, WebRTC data channel)
  * implement this interface so that plugin tools work identically regardless
@@ -38,20 +38,20 @@ export interface RosTransport {
 
   // --- Topics ---
 
-  /** Publish a message to a ROS2 topic. */
+  /** Publish a message to a AGIROS topic. */
   publish(options: PublishOptions): void;
 
-  /** Subscribe to a ROS2 topic. Returns a Subscription handle. */
+  /** Subscribe to a AGIROS topic. Returns a Subscription handle. */
   subscribe(options: SubscribeOptions, handler: MessageHandler): Subscription;
 
   // --- Services ---
 
-  /** Call a ROS2 service and return the result. */
+  /** Call a AGIROS service and return the result. */
   callService(options: ServiceCallOptions): Promise<ServiceCallResult>;
 
   // --- Actions ---
 
-  /** Send a goal to a ROS2 action server. */
+  /** Send a goal to a AGIROS action server. */
   sendActionGoal(options: ActionGoalOptions): Promise<ActionResult>;
 
   /** Cancel an in-progress action goal. */
@@ -59,12 +59,12 @@ export interface RosTransport {
 
   // --- Introspection ---
 
-  /** List all available ROS2 topics. */
+  /** List all available AGIROS topics. */
   listTopics(): Promise<TopicInfo[]>;
 
-  /** List all available ROS2 services. */
+  /** List all available AGIROS services. */
   listServices(): Promise<ServiceInfo[]>;
 
-  /** List all available ROS2 action servers. */
+  /** List all available AGIROS action servers. */
   listActions(): Promise<ActionInfo[]>;
 }

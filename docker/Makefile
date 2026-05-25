@@ -29,7 +29,7 @@ setup: ## Create .env from template and generate all configs
 
 start: ## Start all services
 	@echo "[info] Starting services..."
-	@$(COMPOSE) up -d ros2 openclaw-gateway
+	@$(COMPOSE) up -d agiros openclaw-gateway
 	@echo ""
 	@echo "[ok] Services started!"
 	@echo "[info] Control UI: http://127.0.0.1:18789/"
@@ -58,8 +58,8 @@ clean: ## Stop and remove volumes (resets all state)
 logs: ## Follow logs from all services
 	@$(COMPOSE) logs -f
 
-logs-ros2: ## Follow logs from ros2 service
-	@$(COMPOSE) logs -f ros2
+logs-agiros: ## Follow logs from agiros service
+	@$(COMPOSE) logs -f agiros
 
 logs-openclaw: ## Follow logs from openclaw-gateway
 	@$(COMPOSE) logs -f openclaw-gateway
@@ -85,9 +85,9 @@ build: ## Build images from source
 	@$(COMPOSE) build
 
 # 1Panel specific commands
-connect-1panel: ## Connect ros2 container to 1panel-network
-	@echo "[info] Connecting ros2 to 1panel-network..."
-	@docker network connect 1panel-network docker-ros2-1 2>/dev/null || echo "[info] Already connected or container not running"
+connect-1panel: ## Connect agiros container to 1panel-network
+	@echo "[info] Connecting agiros to 1panel-network..."
+	@docker network connect 1panel-network docker-agiros-1 2>/dev/null || echo "[info] Already connected or container not running"
 	@echo "[ok] Done"
 
 status: ## Show status and configuration
@@ -105,17 +105,17 @@ status: ## Show status and configuration
 	fi
 
 # GPU commands
-gpu-start: ## Start ros2 with GPU acceleration (requires NVIDIA Container Toolkit)
-	@echo "[info] Starting ros2 with GPU acceleration..."
-	@$(COMPOSE) --profile gpu up -d ros2-gpu
+gpu-start: ## Start agiros with GPU acceleration (requires NVIDIA Container Toolkit)
+	@echo "[info] Starting agiros with GPU acceleration..."
+	@$(COMPOSE) --profile gpu up -d agiros-gpu
 	@echo ""
-	@echo "[ok] GPU-accelerated ros2 started!"
-	@echo "[info] Verify with: docker exec rosclaw-ros2-gpu nvidia-smi"
+	@echo "[ok] GPU-accelerated agiros started!"
+	@echo "[info] Verify with: docker exec rosclaw-agiros-gpu nvidia-smi"
 
-gpu-stop: ## Stop GPU-accelerated ros2 container
-	@echo "[info] Stopping GPU-accelerated ros2..."
-	@$(COMPOSE) --profile gpu stop ros2-gpu
-	@echo "[ok] ros2-gpu stopped"
+gpu-stop: ## Stop GPU-accelerated agiros container
+	@echo "[info] Stopping GPU-accelerated agiros..."
+	@$(COMPOSE) --profile gpu stop agiros-gpu
+	@echo "[ok] agiros-gpu stopped"
 
 verify-gpu: ## Verify GPU support and configuration
 	@bash verify-gpu.sh

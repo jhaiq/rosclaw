@@ -9,7 +9,7 @@ import { registerTransportCommand } from "./commands/transport.js";
 import { registerRobotAdapterCommand } from "./commands/robot-adapter.js";
 
 /**
- * RosClaw — OpenClaw plugin for ROS2 robot control via natural language.
+ * RosClaw — OpenClaw plugin for AGIROS robot control via natural language.
  */
 export default {
   id: "rosclaw",
@@ -23,7 +23,7 @@ export default {
     // Register the rosbridge WebSocket connection as a managed service
     registerService(api, config);
 
-    // Register all ROS2 tools with the AI agent
+    // Register all AGIROS tools with the AI agent
     registerTools(api);
 
     // Register safety validation hook (before_tool_call)

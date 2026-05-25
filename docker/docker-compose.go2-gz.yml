@@ -4,7 +4,7 @@
 # 前置条件：本地构建 go2_gz_sim 源码
 #   使用脚本：./docker/build-go2-gz-sim-source.sh
 #
-# 注意：此配置包含 rosbridge_server 服务，OpenClaw 通过 ws://ros2:9090 连接
+# 注意：此配置包含 rosbridge_server 服务，OpenClaw 通过 ws://agiros:9090 连接
 
 services:
   # GO2 Gazebo Simulation
@@ -60,7 +60,7 @@ services:
 
         # 使用 ROS2-Gazebo-GO2 提供的 launch.py 文件
         # 此 launch 文件支持 world 和 sensors 参数
-        ros2 launch gazebo_sim launch.py world:=$$GO2_WORLD sensors:=$$GO2_SENSORS
+        agiros launch gazebo_sim launch.py world:=$$GO2_WORLD sensors:=$$GO2_SENSORS
 
   # GO2 Bridge Node - 运行 RosClaw bridge
   go2-bridge-node:
@@ -70,16 +70,16 @@ services:
     command:
       - |
         export COLCON_CURRENT_PREFIX=/opt/go2_gz_sim/install
-        source /opt/ros/humble/setup.sh
+        source /opt/agiros/loong/setup.sh
         source /opt/go2_gz_sim/install/local_setup.sh
         export COLCON_CURRENT_PREFIX=/opt/rosclaw/install
         source /opt/rosclaw/install/local_setup.sh
-        ros2 launch unitree_go2 go2_gz_bridge_launch.py
+        agiros launch unitree_go2 go2_gz_bridge_launch.py
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
     volumes:
       - ${GO2_GZ_SIM_PATH:-/home/jhq/work/code/go2_ws/go2_sim_ws/ROS2-Gazebo-GO2}:/opt/go2_gz_sim:ro
-      - /home/jhq/work/code/claw_ws/rosclaw/ros2_ws/install:/opt/rosclaw/install:ro
+      - /home/jhq/work/code/claw_ws/rosclaw/agiros_ws/install:/opt/rosclaw/install:ro
     networks:
       - rosclaw-network
     profiles:
@@ -95,7 +95,7 @@ services:
     command:
       - |
         export COLCON_CURRENT_PREFIX=/opt/go2_gz_sim/install
-        source /opt/ros/humble/setup.sh
+        source /opt/agiros/loong/setup.sh
         source /opt/go2_gz_sim/install/local_setup.sh
 
         export GO2_SCENE=${GO2_SCENE:-none}
@@ -104,11 +104,11 @@ services:
         case "$$GO2_SCENE" in
           cartographer)
             echo "Starting Cartographer SLAM..."
-            ros2 launch cartographer go2_cartographer.launch.py
+            agiros launch cartographer go2_cartographer.launch.py
             ;;
           navigation2)
             echo "Starting Nav2 Navigation..."
-            ros2 launch navigation2 go2_navigation2.launch.py
+            agiros launch navigation2 go2_navigation2.launch.py
             ;;
           none|*)
             echo "No scene node selected (GO2_SCENE=none), skipping..."
@@ -128,18 +128,18 @@ services:
       - go2-gz-sim
 
   # ROSBridge Server - OpenClaw 连接到此服务
-  ros2:
+  agiros:
     image: rosclaw/go2-gz-sim:latest
     container_name: rosclaw-rosbridge
     ports:
       - "${ROSBRIDGE_PORT:-9090}:${ROSBRIDGE_PORT:-9090}"
     entrypoint: ["/bin/bash", "-c"]
-    command: ["source /opt/ros/humble/setup.sh && source /opt/rosclaw/install/setup.sh && ros2 launch rosbridge_server rosbridge_websocket_launch.xml"]
+    command: ["source /opt/agiros/loong/setup.sh && source /opt/rosclaw/install/setup.sh && agiros launch rosbridge_server rosbridge_websocket_launch.xml"]
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
       - COLCON_CURRENT_PREFIX=/opt/rosclaw/install
     volumes:
-      - /home/jhq/work/code/claw_ws/rosclaw/ros2_ws/install:/opt/rosclaw/install:ro
+      - /home/jhq/work/code/claw_ws/rosclaw/agiros_ws/install:/opt/rosclaw/install:ro
     networks:
       - rosclaw-network
     profiles:

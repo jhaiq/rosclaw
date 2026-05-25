@@ -28,11 +28,11 @@ Thumbs.db
 *.d.ts.map
 
 # ROS2
-ros2_ws/build/
-ros2_ws/install/
-ros2_ws/log/
-ros2_ws/src/*/build/
-ros2_ws/src/*/*.egg-info/
+agiros_ws/build/
+agiros_ws/install/
+agiros_ws/log/
+agiros_ws/src/*/build/
+agiros_ws/src/*/*.egg-info/
 
 # Python
 __pycache__/

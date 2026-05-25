@@ -1,7 +1,7 @@
 """
 RosClaw Discovery Node
 
-Introspects the running ROS2 system and publishes a capability manifest
+Introspects the running AGIROS system and publishes a capability manifest
 describing available topics, services, and actions. This manifest is consumed
 by the OpenClaw plugin to inform the AI agent about what the robot can do.
 
@@ -27,7 +27,7 @@ from rosclaw_msgs.msg import CapabilityManifest
 from rosclaw_msgs.srv import GetCapabilities
 
 
-# Internal ROS2 topics/services that clutter the manifest
+# Internal AGIROS topics/services that clutter the manifest
 _INTERNAL_PREFIXES = (
     "/rosout",
     "/parameter_events",
@@ -36,7 +36,7 @@ _INTERNAL_PREFIXES = (
 
 
 class DiscoveryNode(Node):
-    """Periodically discovers ROS2 capabilities and publishes a manifest."""
+    """Periodically discovers AGIROS capabilities and publishes a manifest."""
 
     def __init__(self) -> None:
         super().__init__("rosclaw_discovery")
@@ -103,7 +103,7 @@ class DiscoveryNode(Node):
         return response
 
     def _build_manifest(self) -> CapabilityManifest:
-        """Query the ROS2 graph and build a CapabilityManifest message."""
+        """Query the AGIROS graph and build a CapabilityManifest message."""
         manifest = CapabilityManifest()
         manifest.robot_name = self.robot_name
         manifest.robot_namespace = self.robot_namespace
@@ -147,7 +147,7 @@ class DiscoveryNode(Node):
         if ns_prefix and not name.startswith(ns_prefix):
             return False
 
-        # Exclude ROS2 internal topics
+        # Exclude AGIROS internal topics
         for prefix in _INTERNAL_PREFIXES:
             if name.startswith(prefix):
                 return False

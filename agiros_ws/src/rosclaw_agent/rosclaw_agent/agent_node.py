@@ -1,7 +1,7 @@
 """
 RosClaw Agent Node — robot-side bridge for Mode C (Cloud/Remote) deployments.
 
-This ROS2 node runs on the robot and connects outbound to the signaling server,
+This AGIROS node runs on the robot and connects outbound to the signaling server,
 establishing a WebRTC data channel with the cloud-side RosClaw plugin. All ROS2
 commands and responses flow over this encrypted peer-to-peer channel.
 
@@ -17,7 +17,7 @@ Connection flow:
 Message flow:
   - Receive rosbridge JSON on the data channel (publish, subscribe,
     call_service, send_action_goal, etc.)
-  - Execute against the local ROS2 DDS bus via rclpy
+  - Execute against the local AGIROS DDS bus via rclpy
   - Send responses back over the data channel
 
 Configuration (ROS2 parameters with env var fallback):
@@ -26,10 +26,10 @@ Configuration (ROS2 parameters with env var fallback):
   robot_key      / ROSCLAW_ROBOT_KEY      — Secret key validated by this node
   robot_id       / ROSCLAW_ROBOT_ID       — This robot's ID on the signaling server
 
-  Pass via ROS2 parameters:
-    ros2 run rosclaw_agent agent_node --ros-args -p signaling_url:=wss://example.com
+  Pass via AGIROS parameters:
+    agiros run rosclaw_agent agent_node --ros-args -p signaling_url:=wss://example.com
   Or via environment variables:
-    ROSCLAW_SIGNALING_URL=wss://example.com ros2 run rosclaw_agent agent_node
+    ROSCLAW_SIGNALING_URL=wss://example.com agiros run rosclaw_agent agent_node
 """
 
 from __future__ import annotations
@@ -88,7 +88,7 @@ class RosClawAgentNode(Node):
         self.current_room_id: str = ""
         self.frontend_peer_id: str = ""
 
-        # ROS2 bridge state — tracks active publishers, subscribers, service clients
+        # AGIROS bridge state — tracks active publishers, subscribers, service clients
         # Prefixed with _ to avoid shadowing Node's read-only properties
         self._pubs: dict[str, Any] = {}
         self._subs: dict[str, Any] = {}
@@ -272,7 +272,7 @@ class RosClawAgentNode(Node):
             # typically completes with STUN.
             self.get_logger().debug(f"Received ICE candidate: {candidate_str[:60]}...")
 
-    # --- ROS2 Bridge ---
+    # --- AGIROS Bridge ---
 
     async def _handle_data_channel_message(self, raw: str) -> None:
         """Parse rosbridge JSON and execute against local ROS2."""
@@ -310,7 +310,7 @@ class RosClawAgentNode(Node):
                 })
 
     def _handle_publish(self, msg: dict) -> None:
-        """Publish a message to a local ROS2 topic."""
+        """Publish a message to a local AGIROS topic."""
         topic = msg["topic"]
         msg_type_str = msg.get("type", "")
         payload = msg.get("msg", {})
@@ -324,7 +324,7 @@ class RosClawAgentNode(Node):
         pub.publish(ros_msg)
 
     def _handle_subscribe(self, msg: dict) -> None:
-        """Subscribe to a local ROS2 topic and forward messages over data channel."""
+        """Subscribe to a local AGIROS topic and forward messages over data channel."""
         topic = msg["topic"]
         msg_type_str = msg.get("type", "")
 
@@ -345,13 +345,13 @@ class RosClawAgentNode(Node):
         self._subs[topic] = sub
 
     def _handle_unsubscribe(self, msg: dict) -> None:
-        """Unsubscribe from a local ROS2 topic."""
+        """Unsubscribe from a local AGIROS topic."""
         topic = msg["topic"]
         if topic in self._subs:
             self.destroy_subscription(self._subs.pop(topic))
 
     async def _handle_call_service(self, msg: dict, msg_id: str | None) -> None:
-        """Call a local ROS2 service and send the response."""
+        """Call a local AGIROS service and send the response."""
         service = msg["service"]
         srv_type_str = msg.get("type", "")
         args = msg.get("args", {})
@@ -420,7 +420,7 @@ class RosClawAgentNode(Node):
         })
 
     async def _handle_send_action_goal(self, msg: dict, msg_id: str | None) -> None:
-        """Send a goal to a local ROS2 action server."""
+        """Send a goal to a local AGIROS action server."""
         action_name = msg["action"]
         action_type_str = msg.get("action_type", "")
         args = msg.get("args", {})
@@ -515,7 +515,7 @@ class RosClawAgentNode(Node):
         self.data_channel = None
 
     def _cleanup_ros_bridge(self) -> None:
-        """Clean up all ROS2 subscriptions and publishers created for the session."""
+        """Clean up all AGIROS subscriptions and publishers created for the session."""
         for sub in self._subs.values():
             self.destroy_subscription(sub)
         self._subs.clear()
@@ -530,13 +530,13 @@ class RosClawAgentNode(Node):
 
 
 async def async_main() -> None:
-    """Async entry point: run ROS2 spinning + signaling concurrently."""
+    """Async entry point: run AGIROS spinning + signaling concurrently."""
     rclpy.init()
     node = RosClawAgentNode()
     executor = SingleThreadedExecutor()
     executor.add_node(node)
 
-    # Run ROS2 spin in a background thread
+    # Run AGIROS spin in a background thread
     loop = asyncio.get_event_loop()
     spin_task = loop.run_in_executor(None, executor.spin)
 

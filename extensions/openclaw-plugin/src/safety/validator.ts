@@ -9,7 +9,7 @@ export function registerSafetyHook(api: OpenClawPluginApi, config: RosClawConfig
   const safety = config.safety;
 
   api.on("before_tool_call", async (event, _ctx) => {
-    if (event.toolName === "ros2_publish") {
+    if (event.toolName === "agiros_publish") {
       const msg = event.params["message"] as Record<string, unknown> | undefined;
       if (msg) {
         // Check velocity limits for Twist messages

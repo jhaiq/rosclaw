@@ -24,7 +24,7 @@ export interface LocalTransportOptions {
   domainId?: number;
 }
 
-/** Internal ROS2 topics/services to filter from introspection results. */
+/** Internal AGIROS topics/services to filter from introspection results. */
 const INTERNAL_TOPIC_PREFIXES = ["/rosout", "/parameter_events", "/rosclaw/"];
 const INTERNAL_SERVICE_SUFFIXES = [
   "/describe_parameters",

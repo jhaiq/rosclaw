@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
 
-# Source ROS2 and workspace
-source /opt/ros/jazzy/setup.bash
-if [ -f /ros2_ws/install/setup.bash ]; then
-  source /ros2_ws/install/setup.bash
+# Source AGIROS and workspace
+source /opt/agiros/pixiu/setup.bash
+if [ -f /agiros_ws/install/setup.bash ]; then
+  source /agiros_ws/install/setup.bash
 fi
 
 exec "$@"

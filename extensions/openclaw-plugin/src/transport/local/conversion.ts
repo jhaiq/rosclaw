@@ -22,7 +22,7 @@ function getRclnodejs(): any {
 }
 
 /**
- * Normalize a ROS2 type string to the format rclnodejs expects.
+ * Normalize a AGIROS type string to the format rclnodejs expects.
  * Accepts: "geometry_msgs/msg/Twist", "geometry_msgs/Twist", etc.
  */
 function normalizeType(typeStr: string): string {
@@ -35,7 +35,7 @@ function normalizeType(typeStr: string): string {
 }
 
 /**
- * Load a ROS2 message/service/action class via rclnodejs, with caching.
+ * Load a AGIROS message/service/action class via rclnodejs, with caching.
  */
 export function loadMessageClass(typeStr: string): any {
   const normalized = normalizeType(typeStr);

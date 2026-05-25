@@ -1,12 +1,13 @@
+
 # RosClaw 与 go2_gz_sim Gazebo 仿真集成计划
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use `superpowers:subagent-driven-development` (recommended) or `superpowers:executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 实现 RosClaw 通过 OpenClaw 插件控制 Gazebo 仿真中的 Unitree GO2 机器人，支持运动控制、状态反馈、SLAM 建图和自主导航。
 
-**Architecture:** 通过话题桥接节点将 go2_gz_sim 的 ROS2 话题映射到 RosClaw 标准接口，OpenClaw 插件通过 rosbridge 协议与仿真环境通信。
+**Architecture:** 通过话题桥接节点将 go2_gz_sim 的 AGIROS 话题映射到 RosClaw 标准接口，OpenClaw 插件通过 rosbridge 协议与仿真环境通信。
 
-**Tech Stack:** ROS2 Jazzy, Gazebo Sim, TypeScript (OpenClaw Plugin), Python (ROS2 Nodes), Docker Compose
+**Tech Stack:** AGIROS Jazzy, Gazebo Sim, TypeScript (OpenClaw Plugin), Python (ROS2 Nodes), Docker Compose
 
 ---
 
@@ -18,8 +19,8 @@
 |------|------|
 | `docker/Dockerfile.go2-gz-sim` | Gazebo 仿真镜像 |
 | `docker/docker-compose.go2-gz.yml` | GO2 仿真 Docker Compose 配置 |
-| `ros2_ws/src/unitree_go2/launch/go2_gz_bridge_launch.py` | 桥接启动文件 |
-| `ros2_ws/src/unitree_go2/unitree_go2/go2_gz_bridge.py` | 话题桥接节点 |
+| `agiros_ws/src/unitree_go2/launch/go2_gz_bridge_launch.py` | 桥接启动文件 |
+| `agiros_ws/src/unitree_go2/unitree_go2/go2_gz_bridge.py` | 话题桥接节点 |
 | `extensions/openclaw-plugin/src/tools/go2-commands.ts` | GO2 专用命令工具 |
 | `examples/go2-gz-sim/README.md` | 仿真实例文档 |
 | `examples/go2-gz-sim/verify-simulation.sh` | 仿真验证脚本 |
@@ -35,7 +36,7 @@
 
 ---
 
-## Phase 1: ROS2 桥接层
+## Phase 1: AGIROS 桥接层
 
 ### Task 1: 创建 Gazebo 仿真 Dockerfile
 
@@ -46,7 +47,7 @@
 - [ ] **Step 1: 创建 Dockerfile.go2-gz-sim**
 
 ```dockerfile
-# ROS2 Jazzy + Gazebo Sim for Unitree GO2
+# AGIROS S S S Jazzy + Gazebo Sim for Unitree GO2
 FROM ros:jazzy-ros-base AS base
 
 LABEL maintainer="RosClaw Team"
@@ -65,9 +66,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # 克隆 go2_gz_sim 源码
 RUN git clone https://gitee.com/jhaiq/go2_gz_sim.git /opt/go2_gz_sim
 
-# 构建 ROS2 包
+# 构建 AGIROS S S S 包
 WORKDIR /opt/go2_gz_sim
-RUN . /opt/ros/jazzy/setup.sh && \
+RUN . /opt/agiros/pixiu/setup.sh && \
     colcon build --symlink-install && \
     chown -R root:root /opt/go2_gz_sim
 
@@ -76,17 +77,17 @@ COPY docker/scripts/go2-gz-entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["ros2", "launch", "go2_gz_sim", "go2_sim_launch.py"]
+CMD ["agiros", "launch", "go2_gz_sim", "go2_sim_launch.py"]
 ```
 
 - [ ] **Step 2: 创建入口点脚本 docker/scripts/go2-gz-entrypoint.sh**
 
-```bash
+```sh
 #!/bin/bash
 set -e
 
-# Source ROS2 and go2_gz_sim
-source /opt/ros/jazzy/setup.sh
+# Source AGIROS S S S and go2_gz_sim
+source /opt/agiros/pixiu/setup.sh
 source /opt/go2_gz_sim/install/setup.sh
 
 # Set environment
@@ -99,7 +100,7 @@ exec "$@"
 
 - [ ] **Step 3: 构建并验证 Docker 镜像**
 
-```bash
+```sh
 cd /home/jhq/work/code/claw_ws/rosclaw/docker
 docker build -f Dockerfile.go2-gz-sim -t rosclaw/go2-gz-sim:latest ..
 docker run --rm rosclaw/go2-gz-sim:latest echo "Image build successful"
@@ -109,7 +110,7 @@ Expected: Docker build completes without errors, container prints "Image build s
 
 - [ ] **Step 4: Commit**
 
-```bash
+```sh
 git add docker/Dockerfile.go2-gz-sim docker/scripts/go2-gz-entrypoint.sh
 git commit -m "feat: add Gazebo simulation Dockerfile for GO2"
 ```
@@ -150,7 +151,7 @@ services:
     profiles:
       - go2-gz
     depends_on:
-      - ros2
+      - agiros
     deploy:
       resources:
         reservations:
@@ -161,9 +162,9 @@ services:
 
   # GO2 Bridge Node - maps go2_gz_sim topics to RosClaw standard topics
   go2-bridge-node:
-    image: rosclaw/ros2:latest
+    image: rosclaw/agiros:latest
     container_name: rosclaw-go2-bridge
-    command: ["ros2", "launch", "unitree_go2", "go2_gz_bridge_launch.py"]
+    command: ["agiros", "launch", "unitree_go2", "go2_gz_bridge_launch.py"]
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
     networks:
@@ -181,7 +182,7 @@ networks:
 
 - [ ] **Step 2: 更新 docker/.env.example 添加 GO2 GZ 配置**
 
-```bash
+```sh
 # GO2 Gazebo Simulation
 GO2_GZ_SIM_ENABLED=false
 GO2_GZ_SIM_PATH=/opt/go2_gz_sim
@@ -192,7 +193,7 @@ NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute
 
 - [ ] **Step 3: 验证 docker compose 配置**
 
-```bash
+```sh
 cd /home/jhq/work/code/claw_ws/rosclaw/docker
 docker compose -f docker-compose.go2-gz.yml config
 ```
@@ -201,7 +202,7 @@ Expected: Valid YAML output with all services configured
 
 - [ ] **Step 4: Commit**
 
-```bash
+```sh
 git add docker/docker-compose.go2-gz.yml docker/.env.example
 git commit -m "feat: add Docker Compose configuration for GO2 Gazebo simulation"
 ```
@@ -211,9 +212,9 @@ git commit -m "feat: add Docker Compose configuration for GO2 Gazebo simulation"
 ### Task 3: 创建话题桥接节点
 
 **Files:**
-- Create: `ros2_ws/src/unitree_go2/unitree_go2/go2_gz_bridge.py`
-- Create: `ros2_ws/src/unitree_go2/launch/go2_gz_bridge_launch.py`
-- Test: `ros2_ws/src/unitree_go2/test/test_go2_gz_bridge.py`
+- Create: `agiros_ws/src/unitree_go2/unitree_go2/go2_gz_bridge.py`
+- Create: `agiros_ws/src/unitree_go2/launch/go2_gz_bridge_launch.py`
+- Test: `agiros_ws/src/unitree_go2/test/test_go2_gz_bridge.py`
 
 - [ ] **Step 1: 创建桥接节点 go2_gz_bridge.py**
 
@@ -403,7 +404,7 @@ def generate_launch_description():
 
 - [ ] **Step 3: 更新 CMakeLists.txt 安装桥接脚本**
 
-修改 `ros2_ws/src/unitree_go2/CMakeLists.txt`:
+修改 `agiros_ws/src/unitree_go2/CMakeLists.txt`:
 
 ```cmake
 ament_python_install_module(${PROJECT_NAME}/go2_gz_bridge.py)
@@ -417,29 +418,29 @@ install(PROGRAMS
 
 - [ ] **Step 4: 构建并测试桥接节点**
 
-```bash
-cd /home/jhq/work/code/claw_ws/rosclaw/ros2_ws
-source /opt/ros/jazzy/setup.sh
+```sh
+cd /home/jhq/work/code/claw_ws/rosclaw/agiros_ws
+source /opt/agiros/pixiu/setup.sh
 colcon build --packages-select unitree_go2
 source install/setup.bash
 
 # 测试启动
-ros2 launch unitree_go2 go2_gz_bridge_launch.py --show-log &
+agiros launch unitree_go2 go2_gz_bridge_launch.py --show-log &
 sleep 3
 
 # 验证节点运行
-ros2 node list | grep go2_gz_bridge
-ros2 topic list | grep -E "(cmd_vel|go2_state|scan)"
+agiros node list | grep go2_gz_bridge
+agiros topic list | grep -E "(cmd_vel|go2_state|scan)"
 ```
 
 Expected: Node starts successfully, topics are registered
 
 - [ ] **Step 5: Commit**
 
-```bash
-git add ros2_ws/src/unitree_go2/unitree_go2/go2_gz_bridge.py \
-    ros2_ws/src/unitree_go2/launch/go2_gz_bridge_launch.py \
-    ros2_ws/src/unitree_go2/CMakeLists.txt
+```sh
+git add agiros_ws/src/unitree_go2/unitree_go2/go2_gz_bridge.py \
+    agiros_ws/src/unitree_go2/launch/go2_gz_bridge_launch.py \
+    agiros_ws/src/unitree_go2/CMakeLists.txt
 git commit -m "feat: add topic bridge node for GO2 Gazebo simulation"
 ```
 
@@ -455,7 +456,7 @@ git commit -m "feat: add topic bridge node for GO2 Gazebo simulation"
 
 - [ ] **Step 1: 创建 GO2 命令工具 go2-commands.ts**
 
-```typescript
+```ts
 /**
  * Unitree GO2 specific commands for OpenClaw
  */
@@ -582,7 +583,7 @@ export const go2MoveTool: OpenClawTool = {
 
 - [ ] **Step 2: 创建测试文件 go2-commands.test.ts**
 
-```typescript
+```ts
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { go2StandTool, go2SitTool, go2StopTool, go2MoveTool } from "./go2-commands";
 
@@ -668,7 +669,7 @@ describe("GO2 Commands Tools", () => {
 
 - [ ] **Step 3: 运行测试验证**
 
-```bash
+```sh
 cd /home/jhq/work/code/claw_ws/rosclaw/extensions/openclaw-plugin
 pnpm test -- go2-commands.test.ts
 ```
@@ -677,7 +678,7 @@ Expected: All tests pass
 
 - [ ] **Step 4: Commit**
 
-```bash
+```sh
 git add extensions/openclaw-plugin/src/tools/go2-commands.ts \
     extensions/openclaw-plugin/src/tools/go2-commands.test.ts
 git commit -m "feat: add GO2 specific command tools for OpenClaw"
@@ -695,7 +696,7 @@ git commit -m "feat: add GO2 specific command tools for OpenClaw"
 
 修改 `extensions/openclaw-plugin/src/index.ts`:
 
-```typescript
+```ts
 import { go2StandTool, go2SitTool, go2StopTool, go2MoveTool } from "./tools/go2-commands.js";
 
 export function register(config: RosClawConfig) {
@@ -718,7 +719,7 @@ export function register(config: RosClawConfig) {
 
 修改 `extensions/openclaw-plugin/src/config.ts`:
 
-```typescript
+```ts
 export const rosClawConfigSchema = z.object({
   // ...existing fields...
   robot_name: z.string().optional().default("TurtleBot3 (Sim)"),
@@ -729,7 +730,7 @@ export const rosClawConfigSchema = z.object({
 
 - [ ] **Step 3: 类型检查验证**
 
-```bash
+```sh
 cd /home/jhq/work/code/claw_ws/rosclaw/extensions/openclaw-plugin
 pnpm typecheck
 ```
@@ -738,7 +739,7 @@ Expected: No type errors
 
 - [ ] **Step 4: Commit**
 
-```bash
+```sh
 git add extensions/openclaw-plugin/src/index.ts \
     extensions/openclaw-plugin/src/config.ts
 git commit -m "feat: register GO2 tools when robot is GO2"
@@ -799,7 +800,7 @@ go2-gz-status:
 
 - [ ] **Step 3: 验证 Make 命令**
 
-```bash
+```sh
 cd /home/jhq/work/code/claw_ws/rosclaw
 make go2-gz-status
 ```
@@ -808,7 +809,7 @@ Expected: Shows help or empty status (no containers running)
 
 - [ ] **Step 4: Commit**
 
-```bash
+```sh
 git add docker/Makefile Makefile
 git commit -m "feat: add Makefile targets for GO2 Gazebo simulation"
 ```
@@ -825,7 +826,7 @@ git commit -m "feat: add Makefile targets for GO2 Gazebo simulation"
 
 - [ ] **Step 1: 创建验证脚本**
 
-```bash
+```sh
 #!/usr/bin/env bash
 # Unitree GO2 Gazebo Simulation Verification Script
 # Usage: ./verify-simulation.sh
@@ -842,11 +843,11 @@ echo ""
 
 # Source ROS2
 echo "[1/6] Sourcing ROS2..."
-source /opt/ros/jazzy/setup.sh
+source /opt/agiros/pixiu/setup.sh
 
 # Source workspace if exists
-if [[ -f "$ROSCLAW_ROOT/ros2_ws/install/setup.sh" ]]; then
-    source "$ROSCLAW_ROOT/ros2_ws/install/setup.sh"
+if [[ -f "$ROSCLAW_ROOT/agiros_ws/install/setup.sh" ]]; then
+    source "$ROSCLAW_ROOT/agiros_ws/install/setup.sh"
     echo "[OK] Workspace sourced"
 else
     echo "[WARN] Workspace not built yet"
@@ -864,9 +865,9 @@ else
 fi
 echo ""
 
-# Check ROS2 nodes
-echo "[3/6] Checking ROS2 nodes..."
-NODES=$(ros2 node list 2>/dev/null || echo "")
+# Check AGIROS S S S nodes
+echo "[3/6] Checking AGIROS S S S nodes..."
+NODES=$(agiros node list 2>/dev/null || echo "")
 if echo "$NODES" | grep -q "go2_gz_bridge"; then
     echo "[OK] GO2 bridge node running"
 else
@@ -875,8 +876,8 @@ fi
 echo ""
 
 # Check topics
-echo "[4/6] Checking ROS2 topics..."
-TOPICS=$(ros2 topic list 2>/dev/null || echo "")
+echo "[4/6] Checking AGIROS S S S topics..."
+TOPICS=$(agiros topic list 2>/dev/null || echo "")
 REQUIRED_TOPICS=("/cmd_vel" "/go2_state/odom" "/go2_state/battery" "/scan")
 
 for topic in "${REQUIRED_TOPICS[@]}"; do
@@ -890,14 +891,14 @@ echo ""
 
 # Test publishing
 echo "[5/6] Testing velocity command..."
-ros2 topic pub /cmd_vel geometry_msgs/msg/Twist \
+agiros topic pub /cmd_vel geometry_msgs/msg/Twist \
   "{linear: {x: 0.1}, angular: {z: 0.0}}" --once
 echo "[OK] Velocity command published"
 echo ""
 
 # Test service call
 echo "[6/6] Testing stand command..."
-ros2 topic pub /go2_command/stand std_msgs/msg/Empty --once
+agiros topic pub /go2_command/stand std_msgs/msg/Empty --once
 echo "[OK] Stand command published"
 echo ""
 
@@ -925,13 +926,14 @@ echo ""
 
 - Docker 和 Docker Compose
 - NVIDIA GPU 和 Container Toolkit (可选，用于 GPU 加速)
-- ROS2 Jazzy (本地测试)
+- AGIROS S S S Jazzy (本地测试)
 
 ## 快速开始
 
 ### 1. 启动仿真
 
-```bash
+```
+
 # GPU 模式
 make go2-gz-start
 
@@ -941,7 +943,7 @@ docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 
 ### 2. 验证仿真
 
-```bash
+```sh
 ./verify-simulation.sh
 ```
 
@@ -955,7 +957,7 @@ docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 - "坐下"
 - "电池电量多少？"
 
-## 可用的 ROS2 话题
+## 可用的 AGIROS 话题
 
 | 话题 | 类型 | 说明 |
 |------|------|------|
@@ -971,7 +973,7 @@ docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 
 ### 仿真无法启动
 
-```bash
+```sh
 # 查看日志
 make go2-gz-logs
 
@@ -981,27 +983,28 @@ docker run --rm --gpus all nvidia/cuda:12.0-base-ubuntu22.04 nvidia-smi
 
 ### 话题不可用
 
-```bash
+```sh
 # 列出所有节点
-ros2 node list
+agiros node list
 
 # 列出所有话题
-ros2 topic list
+agiros topic list
 
 # 检查桥接节点
-ros2 run rqt_node rqt_node
+agiros run rqt_node rqt_node
 ```
+
 ```
 
 - [ ] **Step 3: 使脚本可执行**
 
-```bash
+```sh
 chmod +x /home/jhq/work/code/claw_ws/rosclaw/examples/go2-gz-sim/verify-simulation.sh
 ```
 
 - [ ] **Step 4: Commit**
 
-```bash
+```sh
 git add examples/go2-gz-sim/
 git commit -m "docs: add GO2 Gazebo simulation example and verification script"
 ```
@@ -1028,7 +1031,8 @@ git commit -m "docs: add GO2 Gazebo simulation example and verification script"
 
 ### 启动仿真
 
-```bash
+```
+
 # GPU 加速模式
 make go2-gz-start
 
@@ -1068,7 +1072,7 @@ OpenClaw Gateway
 
 - [ ] **Step 3: Commit**
 
-```bash
+```sh
 git add docs/unitree-go2-integration.md
 git commit -m "docs: add Gazebo simulation section to GO2 integration guide"
 ```
@@ -1084,10 +1088,10 @@ git commit -m "docs: add Gazebo simulation section to GO2 integration guide"
 
 - [ ] **Step 1: 创建集成测试脚本**
 
-```bash
+```sh
 #!/usr/bin/env bash
 # GO2 Gazebo Integration Test
-# Tests the full stack from ROS2 topics to OpenClaw tools
+# Tests the full stack from AGIROS S S S topics to OpenClaw tools
 
 set -e
 
@@ -1111,8 +1115,8 @@ test_result() {
 
 # Test 1: Bridge node publishes topics
 echo "[Test 1] Bridge node publishes expected topics..."
-source /opt/ros/jazzy/setup.sh
-TOPICS=$(ros2 topic list)
+source /opt/agiros/pixiu/setup.sh
+TOPICS=$(agiros topic list)
 echo "$TOPICS" | grep -q "/go2_state/odom"
 test_result $? "Odom topic published"
 
@@ -1125,9 +1129,9 @@ echo ""
 
 # Test 2: Velocity commands are forwarded
 echo "[Test 2] Velocity commands are forwarded to Gazebo..."
-ros2 topic pub /cmd_vel geometry_msgs/msg/Twist \
+agiros topic pub /cmd_vel geometry_msgs/msg/Twist \
   "{linear: {x: 0.5}, angular: {z: 0.0}}" --once
-GO2_CMD=$(ros2 topic echo /go2_gz_sim/cmd_vel --once --timeout 2)
+GO2_CMD=$(agiros topic echo /go2_gz_sim/cmd_vel --once --timeout 2)
 if [[ -n "$GO2_CMD" ]]; then
     test_result 0 "Velocity forwarded"
 else
@@ -1158,7 +1162,7 @@ fi
 
 - [ ] **Step 2: 运行测试**
 
-```bash
+```sh
 cd /home/jhq/work/code/claw_ws/rosclaw/examples/go2-gz-sim
 ./test-integration.sh
 ```
@@ -1167,7 +1171,7 @@ Expected: All tests pass
 
 - [ ] **Step 3: Commit**
 
-```bash
+```sh
 git add examples/go2-gz-sim/test-integration.sh
 git commit -m "test: add integration test for GO2 Gazebo simulation"
 ```
@@ -1193,3 +1197,4 @@ git commit -m "test: add integration test for GO2 Gazebo simulation"
 2. **自主导航**: 集成 Nav2 导航栈
 3. **视觉识别**: 添加摄像头图像处理
 4. **多机器人支持**: 同时控制多个仿真机器人
+

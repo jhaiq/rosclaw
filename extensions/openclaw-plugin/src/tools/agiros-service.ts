@@ -3,19 +3,19 @@ import type { OpenClawPluginApi } from "../plugin-api.js";
 import { getTransport } from "../service.js";
 
 /**
- * Register the ros2_service_call tool with the AI agent.
- * Allows calling any ROS2 service.
+ * Register the agiros_service_call tool with the AI agent.
+ * Allows calling any AGIROS service.
  */
 export function registerServiceTool(api: OpenClawPluginApi): void {
   api.registerTool({
-    name: "ros2_service_call",
-    label: "ROS2 Service Call",
+    name: "agiros_service_call",
+    label: "AGIROS  Service Call",
     description:
-      "Call a ROS2 service and return the response. Use this for request/response operations " +
+      "Call a AGIROS service and return the response. Use this for request/response operations " +
       "like setting parameters, triggering behaviors, or querying node state.",
     parameters: Type.Object({
-      service: Type.String({ description: "The ROS2 service name (e.g., '/spawn_entity')" }),
-      type: Type.Optional(Type.String({ description: "The ROS2 service type (e.g., 'gazebo_msgs/srv/SpawnEntity')" })),
+      service: Type.String({ description: "The AGIROS service name (e.g., '/spawn_entity')" }),
+      type: Type.Optional(Type.String({ description: "The AGIROS service type (e.g., 'gazebo_msgs/srv/SpawnEntity')" })),
       args: Type.Optional(Type.Record(Type.String(), Type.Unknown(), {
         description: "The service request arguments",
       })),

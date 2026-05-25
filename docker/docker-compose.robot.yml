@@ -1,19 +1,19 @@
 version: "3.8"
 
-# Mode C: Robot-side — ROS2 + rosclaw_agent on the robot.
+# Mode C: Robot-side — AGIROS + rosclaw_agent on the robot.
 # The agent connects outbound to the signaling server and bridges
-# WebRTC data channel messages to local ROS2 DDS.
+# WebRTC data channel messages to local AGIROS DDS.
 
 services:
-  # ROS2 stack (no rosbridge needed — agent talks directly to DDS)
-  ros2:
+  # AGIROS stack (no rosbridge needed — agent talks directly to DDS)
+  agiros:
     build:
       context: .
-      dockerfile: Dockerfile.ros2
-    image: rosclaw/ros2:latest
+      dockerfile: Dockerfile.agiros
+    image: rosclaw/agiros:latest
     environment:
       - ROS_DOMAIN_ID=0
-      - GAZEBO_MODEL_PATH=/opt/ros/jazzy/share/turtlebot3_gazebo/models
+      - GAZEBO_MODEL_PATH=/opt/agiros/pixiu/share/turtlebot3_gazebo/models
       - TURTLEBOT3_MODEL=burger
     network_mode: host
 
@@ -21,9 +21,9 @@ services:
   rosclaw-agent:
     build:
       context: .
-      dockerfile: Dockerfile.ros2
-    image: rosclaw/ros2:latest
-    command: ["ros2", "run", "rosclaw_agent", "agent_node"]
+      dockerfile: Dockerfile.agiros
+    image: rosclaw/agiros:latest
+    command: ["agiros", "run", "rosclaw_agent", "agent_node"]
     environment:
       - ROS_DOMAIN_ID=0
       - ROSCLAW_SIGNALING_URL=${SIGNALING_URL}
@@ -31,5 +31,5 @@ services:
       - ROSCLAW_ROBOT_KEY=${ROBOT_KEY}
       - ROSCLAW_ROBOT_ID=${ROBOT_ID}
     depends_on:
-      - ros2
+      - agiros
     network_mode: host

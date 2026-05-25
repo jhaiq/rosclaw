@@ -2,7 +2,7 @@
   "name": "@rosclaw/rosclaw",
   "version": "0.0.1",
   "type": "module",
-  "description": "OpenClaw extension for ROS2 robot control via natural language",
+  "description": "OpenClaw extension for AGIROS robot control via natural language",
   "openclaw": {
     "extensions": [
       "./src/index.ts"

@@ -21,5 +21,5 @@ Use this skill when the user wants the robot to pick up or manipulate an object:
 ## Dependencies
 
 - MoveIt2 action server
-- `ros2_action_goal` tool (Phase 2)
+- `agiros_action_goal` tool (Phase 2)
 - Camera for object detection (optional)

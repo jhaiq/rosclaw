@@ -12,8 +12,8 @@
 # PARAMETERS:
 #   env_name     Optional. Name of the environment to activate.
 #                Default: ros_env
-#   ros_distro   Optional. ROS2 distribution to use.
-#                Default: humble
+#   ros_distro   Optional. AGIROS distribution to use.
+#                Default: loong
 #
 # EXAMPLES:
 #   # Use defaults (ros_env, jazzy)
@@ -23,7 +23,7 @@
 #   source scripts/activate_workspace.sh my_ros_env
 #
 #   # Use specific ROS distribution
-#   source scripts/activate_workspace.sh ros_env humble
+#   source scripts/activate_workspace.sh ros_env loong
 #
 # NOTE:
 #   This script must be SOURCED, not executed, to modify the current shell environment.
@@ -37,13 +37,13 @@ fi
 
 # Default values
 DEFAULT_ENV_NAME="ros_env"
-DEFAULT_ROS_DISTRO="humble"
+DEFAULT_ROS_DISTRO="loong"
 ENV_NAME="${1:-$DEFAULT_ENV_NAME}"
 ROS_DISTRO="${2:-$DEFAULT_ROS_DISTRO}"
 
 # Find the repository root
 REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-ROS2_WS_PATH="$REPO_ROOT/ros2_ws"
+ROS2_WS_PATH="$REPO_ROOT/agiros_ws"
 
 # Colors for output
 RED='\033[0;31m'
@@ -148,7 +148,7 @@ activate_ubuntu() {
     log_info "[1/3] Activating virtual environment..."
     source "$venv_path/bin/activate"
 
-    log_info "[2/3] Sourcing ROS2 environment..."
+    log_info "[2/3] Sourcing AGIROS environment..."
     if [ -f "/opt/ros/$ROS_DISTRO/setup.bash" ]; then
         source "/opt/ros/$ROS_DISTRO/setup.bash"
     else
@@ -179,7 +179,7 @@ activate_macos() {
         $manager activate "$ENV_NAME"
     fi
 
-    if ! command -v ros2 &> /dev/null; then
+    if ! command -v agiros &> /dev/null; then
         log_error "ROS2 not available in environment. Check RoboStack installation."
         return 1
     fi
@@ -196,7 +196,7 @@ activate_macos() {
 verify_setup() {
     log_info "Verifying environment..."
 
-    if ! command -v ros2 &> /dev/null; then
+    if ! command -v agiros &> /dev/null; then
         log_error "ROS2 command not available"
         return 1
     fi
@@ -206,7 +206,7 @@ verify_setup() {
 
     # Check for rosclaw packages
     for pkg in rosclaw_msgs rosclaw_discovery rosclaw_agent; do
-        if ros2 pkg list 2>/dev/null | grep -q "$pkg"; then
+        if agiros pkg list 2>/dev/null | grep -q "$pkg"; then
             log_success "Package found: $pkg"
         else
             log_warning "Package not found: $pkg (workspace may need to be built)"
@@ -270,15 +270,15 @@ main() {
     echo "Environment Details:"
     echo "  Platform:     $PLATFORM"
     echo "  Environment:  $ENV_NAME"
-    echo "  ROS2 Distro:  $ROS_DISTRO"
+    echo "  AGIROS Distro:  $ROS_DISTRO"
     echo "  Python:       $(which python3)"
     echo "  Workspace:    $ROS2_WS_PATH"
     echo ""
     echo "Ready for development! You can now:"
-    echo "  - Build packages:  cd ros2_ws && colcon build --symlink-install"
-    echo "  - Run discovery:   ros2 run rosclaw_discovery discovery_node"
-    echo "  - Run agent:       ros2 run rosclaw_agent agent_node"
-    echo "  - List topics:     ros2 topic list"
+    echo "  - Build packages:  cd agiros_ws && colcon build --symlink-install"
+    echo "  - Run discovery:   agiros run rosclaw_discovery discovery_node"
+    echo "  - Run agent:       agiros run rosclaw_agent agent_node"
+    echo "  - List topics:     agiros topic list"
     echo ""
 }
 

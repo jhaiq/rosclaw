@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Unitree GO2 humble Simulation Verification Script
+# Unitree GO2 loong Simulation Verification Script
 # Usage: ./verify-simulation.sh
 
 set -e
@@ -17,8 +17,8 @@ echo "[1/6] Sourcing ROS2..."
 source /opt/ros/$ROS_DISTRO/setup.sh
 
 # Source workspace if exists
-if [[ -f "$ROSCLAW_ROOT/ros2_ws/install/setup.sh" ]]; then
-    source "$ROSCLAW_ROOT/ros2_ws/install/setup.sh"
+if [[ -f "$ROSCLAW_ROOT/agiros_ws/install/setup.sh" ]]; then
+    source "$ROSCLAW_ROOT/agiros_ws/install/setup.sh"
     echo "[OK] Workspace sourced"
 else
     echo "[WARN] Workspace not built yet"
@@ -36,9 +36,9 @@ else
 fi
 echo ""
 
-# Check ROS2 nodes
-echo "[3/6] Checking ROS2 nodes..."
-NODES=$(ros2 node list 2>/dev/null || echo "")
+# Check AGIROS nodes
+echo "[3/6] Checking AGIROS nodes..."
+NODES=$(agiros node list 2>/dev/null || echo "")
 if echo "$NODES" | grep -q "go2_gz_bridge"; then
     echo "[OK] GO2 bridge node running"
 else
@@ -47,8 +47,8 @@ fi
 echo ""
 
 # Check topics
-echo "[4/6] Checking ROS2 topics..."
-TOPICS=$(ros2 topic list 2>/dev/null || echo "")
+echo "[4/6] Checking AGIROS topics..."
+TOPICS=$(agiros topic list 2>/dev/null || echo "")
 REQUIRED_TOPICS=("/cmd_vel" "/go2_state/odom" "/go2_state/battery" "/scan")
 
 for topic in "${REQUIRED_TOPICS[@]}"; do
@@ -62,14 +62,14 @@ echo ""
 
 # Test publishing
 echo "[5/6] Testing velocity command..."
-ros2 topic pub /cmd_vel geometry_msgs/msg/Twist \
+agiros topic pub /cmd_vel geometry_msgs/msg/Twist \
   "{linear: {x: 0.1}, angular: {z: 0.0}}" --once
 echo "[OK] Velocity command published"
 echo ""
 
 # Test service call
 echo "[6/6] Testing stand command..."
-ros2 topic pub /go2_command/stand std_msgs/msg/Empty --once
+agiros topic pub /go2_command/stand std_msgs/msg/Empty --once
 echo "[OK] Stand command published"
 echo ""
 

@@ -3,19 +3,19 @@ import type { OpenClawPluginApi } from "../plugin-api.js";
 import { getTransport } from "../service.js";
 
 /**
- * Register the ros2_action_goal tool with the AI agent.
+ * Register the agiros_action_goal tool with the AI agent.
  * Sends action goals with progress feedback streaming.
  */
 export function registerActionTool(api: OpenClawPluginApi): void {
   api.registerTool({
-    name: "ros2_action_goal",
-    label: "ROS2 Action Goal",
+    name: "agiros_action_goal",
+    label: "AGIROS  Action Goal",
     description:
-      "Send a goal to a ROS2 action server and stream feedback. " +
+      "Send a goal to a AGIROS action server and stream feedback. " +
       "Use this for long-running operations like navigation or arm movements.",
     parameters: Type.Object({
-      action: Type.String({ description: "The ROS2 action server name (e.g., '/navigate_to_pose')" }),
-      actionType: Type.String({ description: "The ROS2 action type (e.g., 'nav2_msgs/action/NavigateToPose')" }),
+      action: Type.String({ description: "The AGIROS action server name (e.g., '/navigate_to_pose')" }),
+      actionType: Type.String({ description: "The AGIROS action type (e.g., 'nav2_msgs/action/NavigateToPose')" }),
       goal: Type.Record(Type.String(), Type.Unknown(), {
         description: "The action goal parameters",
       }),

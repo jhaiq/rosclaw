@@ -4,7 +4,7 @@ version: "3.8"
 #   docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 
 services:
-  ros2:
+  agiros:
     # Use host network for easier DDS discovery during development
     # network_mode: host
     environment:
@@ -16,4 +16,4 @@ services:
       - ../extensions:/app/extensions
     environment:
       - NODE_ENV=development
-      - ROSCLAW_ROSBRIDGE_URL=ws://ros2:9090
+      - ROSCLAW_ROSBRIDGE_URL=ws://agiros:9090

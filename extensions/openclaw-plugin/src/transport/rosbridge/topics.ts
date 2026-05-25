@@ -2,7 +2,7 @@ import type { RosbridgeClient } from "./client.js";
 import type { MessageHandler } from "./types.js";
 
 /**
- * Helper for publishing messages to a ROS2 topic.
+ * Helper for publishing messages to a AGIROS topic.
  *
  * Rosbridge requires an "advertise" message before any "publish" on a topic.
  * This class tracks whether the topic has been advertised and sends the
@@ -36,7 +36,7 @@ export class TopicPublisher {
 }
 
 /**
- * Helper for subscribing to messages from a ROS2 topic.
+ * Helper for subscribing to messages from a AGIROS topic.
  */
 export class TopicSubscriber {
   private unsubscribeFromClient: (() => void) | null = null;

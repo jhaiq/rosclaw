@@ -8,7 +8,7 @@ set -euo pipefail
 # - Generates docker/openclaw/.env with OPENCLAW_GATEWAY_TOKEN (if missing)
 # - Generates docker/openclaw/openclaw.json from template
 # - Optionally runs OpenClaw onboarding wizard in a one-off container
-# - Starts ros2 + openclaw-gateway with RosClaw plugin enabled
+# - Starts agiros + openclaw-gateway with RosClaw plugin enabled
 #
 # Usage:
 #   ./scripts/openclaw_docker_setup.sh
@@ -65,12 +65,12 @@ if [[ "${OPENCLAW_SKIP_ONBOARD:-0}" != "1" ]]; then
     run --rm openclaw-cli "openclaw onboard"
 fi
 
-echo "[info] starting ros2 + openclaw-gateway..."
+echo "[info] starting agiros + openclaw-gateway..."
 docker compose \
   --env-file "$OPENCLAW_ENV_FILE" \
   -f docker-compose.yml \
   -f docker-compose.openclaw.yml \
-  up -d ros2 openclaw-gateway
+  up -d agiros openclaw-gateway
 
 echo ""
 echo "[ok] OpenClaw Control UI: http://127.0.0.1:${OPENCLAW_PORT:-18789}/"

@@ -14,9 +14,9 @@
 OpenClaw Gateway (AI Agent + 工具 + 记忆)
         |
         v  RosClaw 插件
-rosbridge (WebSocket, 默认 ws://localhost:9090 或 ws://ros2:9090)
+rosbridge (WebSocket, 默认 ws://localhost:9090 或 ws://agiros:9090)
         |
-        v  ROS2 DDS
+        v  AGIROS DDS
 机器人：Nav2、MoveIt2、相机、传感器等
 ```
 
@@ -121,15 +121,15 @@ git clone https://github.com/PlaiPin/rosclaw.git /opt/rosclaw
 version: "3.8"
 
 services:
-  # ROS2 + rosbridge_server + Gazebo 仿真
-  ros2:
-    image: rosclaw/ros2:latest
+  # AGIROS + rosbridge_server + Gazebo 仿真
+  agiros:
+    image: rosclaw/agiros:latest
     ports:
       - "9090:9090"
       - "11311:11311"
     environment:
       - ROS_DOMAIN_ID=0
-      - GAZEBO_MODEL_PATH=/opt/ros/jazzy/share/turtlebot3_gazebo/models
+      - GAZEBO_MODEL_PATH=/opt/agiros/pixiu/share/turtlebot3_gazebo/models
       - TURTLEBOT3_MODEL=burger
     networks:
       - rosclaw
@@ -154,7 +154,7 @@ services:
       - ./openclaw.json:/home/node/.openclaw/openclaw.json:ro
     command: ["openclaw", "gateway", "run", "--allow-unconfigured", "--port", "18789"]
     depends_on:
-      - ros2
+      - agiros
     networks:
       - rosclaw
     restart: unless-stopped
@@ -283,7 +283,7 @@ services:
         "config": {
           "transport": { "mode": "rosbridge" },
           "rosbridge": {
-            "url": "ws://ros2:9090",
+            "url": "ws://agiros:9090",
             "reconnect": true,
             "reconnectInterval": 3000
           },
@@ -337,7 +337,7 @@ OPENCLAW_SKIP_ONBOARD=1 ./scripts/openclaw_docker_setup.sh
 
 - 生成 `docker/openclaw/.env`（包含 `OPENCLAW_GATEWAY_TOKEN`）
 - 运行 OpenClaw onboarding 向导（可选）
-- 启动 `ros2 + openclaw-gateway` 容器
+- 启动 `agiros + openclaw-gateway` 容器
 - 输出 Control UI 地址和 token
 
 ### 访问
@@ -367,7 +367,7 @@ Token: 见 docker/openclaw/.env
 | 模式 | 描述 | 适用场景 |
 |------|------|----------|
 | `rosbridge` | WebSocket 连接 rosbridge_server | 默认推荐，容器/本地通用 |
-| `local` | 直接 DDS 通信 | 本机 ROS2 + OpenClaw 同机 |
+| `local` | 直接 DDS 通信 | 本机 AGIROS + OpenClaw 同机 |
 | `webrtc` | WebRTC 数据通道 | 远程/真机机器人（开发中） |
 
 ### 多机器人话题命名空间
@@ -410,14 +410,14 @@ ROS2 支持通过命名空间（namespace）隔离多机器人话题。不同机
   },
   "contracts": {
     "tools": [
-      "ros2_publish",
-      "ros2_subscribe_once",
-      "ros2_service_call",
-      "ros2_action_goal",
-      "ros2_param_get",
-      "ros2_param_set",
-      "ros2_list_topics",
-      "ros2_camera_snapshot"
+      "agiros_publish",
+      "agiros_subscribe_once",
+      "agiros_service_call",
+      "agiros_action_goal",
+      "agiros_param_get",
+      "agiros_param_set",
+      "agiros_list_topics",
+      "agiros_camera_snapshot"
     ]
   }
 }
@@ -477,17 +477,17 @@ docker logs 1Panel-openclaw-SRjc | grep "http server listening"
 ### 3. 无法连接 rosbridge
 
 ```
-WebSocket connection failed: ws://ros2:9090
+WebSocket connection failed: ws://agiros:9090
 ```
 
 **原因**：
-- `ros2` 服务未启动
+- `agiros` 服务未启动
 - 网络配置错误（两个容器不在同一网络）
 
 **解决**：
 ```sh
 docker compose ps          # 检查容器状态
-docker compose logs ros2   # 查看 ros2 日志
+docker compose logs agiros   # 查看 agiros 日志
 docker network ls          # 确认网络存在
 ```
 

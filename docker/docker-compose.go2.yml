@@ -19,12 +19,12 @@ services:
     profiles:
       - go2
     depends_on:
-      - ros2
+      - agiros
 
   # GO2 control node (can run in simulation or hardware mode)
   go2-node:
-    image: rosclaw/ros2:latest
-    command: ["ros2", "launch", "unitree_go2", "go2_launch.py"]
+    image: rosclaw/agiros:latest
+    command: ["agiros", "launch", "unitree_go2", "go2_launch.py"]
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
       - GO2_MODE=${GO2_MODE:-simulation}
@@ -37,4 +37,4 @@ services:
     profiles:
       - go2
     depends_on:
-      - ros2
+      - agiros

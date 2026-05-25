@@ -31,10 +31,10 @@ type: reference
 
 ```bash
 # 必需
-- ROS2 Humble 或更新版本
+- AGIROS Humble 或更新版本
 - Docker + Docker Compose
 - Node.js + pnpm (OpenClaw 插件开发)
-- 机器人/仿真的 ROS2 接口文档
+- 机器人/仿真的 AGIROS 接口文档
 
 # 可选 (仿真需要)
 - NVIDIA GPU + 驱动 (GPU 加速仿真)
@@ -72,7 +72,7 @@ type: reference
 
 ```
 1. 确定机器人类型和通信模式 (30 分钟)
-2. ROS2 节点/话题分析 (30 分钟)
+2. AGIROS 节点/话题分析 (30 分钟)
 3. 话题映射设计 (15 分钟)
 4. Docker 环境配置 (30 分钟)
 5. OpenClaw 插件配置 (15 分钟)
@@ -90,7 +90,7 @@ type: reference
 
 参考 GO2 Gazebo 完整实现:
 - `docker/docker-compose.go2-gz.yml` - Docker Compose 配置
-- `ros2_ws/src/unitree_go2/unitree_go2/go2_gz_bridge.py` - 桥接节点
+- `agiros_ws/src/unitree_go2/unitree_go2/go2_gz_bridge.py` - 桥接节点
 - `extensions/openclaw-plugin/src/tools/go2-commands.ts` - 机器人命令
 
 ---
@@ -107,10 +107,10 @@ services:
   rosbridge:     # WebSocket 服务
 ```
 
-### 2. ROS2 桥接节点
+### 2. AGIROS 桥接节点
 
 ```python
-# ros2_ws/src/robot_bringup/robot_bringup/bridge_node.py
+# agiros_ws/src/robot_bringup/robot_bringup/bridge_node.py
 # - 订阅机器人原生话题
 # - 发布到 RosClaw 标准话题
 ```
@@ -130,7 +130,7 @@ services:
 ```typescript
 // extensions/openclaw-plugin/src/tools/robot-commands.ts
 // - 坐/站/停止等特定命令
-// - 自然语言映射到 ROS2 动作
+// - 自然语言映射到 AGIROS 动作
 ```
 
 ---
@@ -150,7 +150,7 @@ services:
 
 ### 话题命名约定
 
-- **输入话题** (插件→机器人): 使用 ROS2 标准名称 (`/cmd_vel`, `/goal_pose`)
+- **输入话题** (插件→机器人): 使用 AGIROS 标准名称 (`/cmd_vel`, `/goal_pose`)
 - **输出话题** (机器人→插件): 使用前缀 `/{robot}_state/` 或 `/scan`
 
 ---
@@ -171,7 +171,7 @@ services:
 # 基础验证
 □ Docker 服务全部 Running
 □ rosbridge WebSocket 可访问 (ws://localhost:9090)
-□ 桥接话题存在 (ros2 topic list)
+□ 桥接话题存在 (agiros topic list)
 □ 话题频率正常 (>10Hz)
 
 # 功能验证
@@ -219,10 +219,10 @@ cat extensions/openclaw-plugin/openclaw.plugin.json
 
 ```bash
 # 检查话题列表
-ros2 topic list
+agiros topic list
 
 # 检查话题频率
-ros2 topic hz /topic_name
+agiros topic hz /topic_name
 
 # 检查桥接节点日志
 docker compose -f docker-compose.robot.yml logs robot-bridge
@@ -241,11 +241,11 @@ docker compose -f docker/docker-compose.robot.yml ps
 
 # 查看话题
 docker compose -f docker/docker-compose.robot.yml exec rosbridge \
-  bash -c "source /opt/ros/humble/setup.sh && ros2 topic list"
+  bash -c "source /opt/agiros/loong/setup.sh && agiros topic list"
 
 # 测试话题
 docker compose -f docker/docker-compose.robot.yml exec rosbridge \
-  bash -c "source /opt/ros/humble/setup.sh && ros2 topic hz /scan"
+  bash -c "source /opt/agiros/loong/setup.sh && agiros topic hz /scan"
 
 # 停止服务
 docker compose -f docker/docker-compose.robot.yml --profile robot down

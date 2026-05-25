@@ -11,7 +11,7 @@
 #   http://127.0.0.1:${OPENCLAW_PORT}/
 #
 # Notes:
-# - The ros2 service comes from docker-compose.yml and provides rosbridge at ws://ros2:${ROSBRIDGE_PORT}
+# - The agiros service comes from docker-compose.yml and provides rosbridge at ws://agiros:${ROSBRIDGE_PORT}
 # - This file mounts the local RosClaw plugin into the OpenClaw container and enables it in openclaw.json
 
 services:
@@ -36,7 +36,7 @@ services:
       - ./openclaw/openclaw.json:/home/node/.openclaw/openclaw.json:ro
     command: ["openclaw", "gateway", "run", "--allow-unconfigured", "--port", "${OPENCLAW_PORT:-18789}"]
     depends_on:
-      - ros2
+      - agiros
     networks:
       - ${DOCKER_NETWORK_NAME:-1panel-network}
 

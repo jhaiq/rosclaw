@@ -1,3 +1,4 @@
+
 # RosClaw
 
 ## What This Is
@@ -16,9 +17,9 @@ User (messaging app) → OpenClaw Gateway → RosClaw Plugin → rosbridge_serve
 |---|---|---|
 | `@rosclaw/openclaw-plugin` | `extensions/openclaw-plugin/` | OpenClaw extension: tools, hooks, services, commands |
 | `@rosclaw/openclaw-canvas` | `extensions/openclaw-canvas/` | Real-time dashboard (Phase 3 — not yet implemented) |
-| `rosclaw_discovery` | `ros2_ws/src/rosclaw_discovery/` | ROS2 node for capability auto-discovery |
-| `rosclaw_msgs` | `ros2_ws/src/rosclaw_msgs/` | Custom ROS2 message/service definitions |
-| `rosclaw_agent` | `ros2_ws/src/rosclaw_agent/` | ROS2 agent node for WebRTC ↔ DDS bridge (Mode C robot-side) |
+| `rosclaw_discovery` | `agiros_ws/src/rosclaw_discovery/` | ROS2 node for capability auto-discovery |
+| `rosclaw_msgs` | `agiros_ws/src/rosclaw_msgs/` | Custom ROS2 message/service definitions |
+| `rosclaw_agent` | `agiros_ws/src/rosclaw_agent/` | ROS2 agent node for WebRTC ↔ DDS bridge (Mode C robot-side) |
 
 ### Transport Layer
 
@@ -33,14 +34,14 @@ The transport abstraction lives inside the plugin at `extensions/openclaw-plugin
 ## Monorepo Structure
 
 - **`extensions/`** — OpenClaw plugin extensions (pnpm workspaces)
-- **`ros2_ws/`** — ROS2 colcon workspace
+- **`agiros_ws/`** — ROS2 colcon workspace
 - **`docker/`** — Docker Compose and Dockerfiles
 - **`examples/`** — Demo projects
 - **`docs/`** — Architecture and design docs
 
 ## Key Commands
 
-```bash
+```sh
 pnpm install          # Install all dependencies
 pnpm typecheck        # Type-check all packages
 ```
@@ -92,7 +93,7 @@ pnpm typecheck        # Type-check all packages
 
 **在 OpenClaw 中使用:**
 
-```bash
+```sh
 /robot-adapt help
 /robot-adapt start -n "MyRobot" -t simulation
 /robot-adapt generate -n "MyRobot" -m rosbridge
@@ -100,7 +101,7 @@ pnpm typecheck        # Type-check all packages
 
 #### 核心步骤
 
-1. **分析话题** - 使用 `ros2 topic list/info/hz/echo` 分析机器人接口
+1. **分析话题** - 使用 `agiros topic list/info/hz/echo` 分析机器人接口
 2. **设计映射** - 映射到 RosClaw 标准话题 (`/cmd_vel`, `/scan`, `/joint_states` 等)
 3. **编写桥接** - 创建 ROS2 桥接节点 (Python)
 4. **Docker 封装** - 创建 Dockerfile 和 docker-compose.yml
@@ -110,7 +111,7 @@ pnpm typecheck        # Type-check all packages
 #### 参考实现
 
 - GO2 Gazebo: `docker/docker-compose.go2-gz.yml`
-- 桥接节点：`ros2_ws/src/unitree_go2/unitree_go2/go2_gz_bridge.py`
+- 桥接节点：`agiros_ws/src/unitree_go2/unitree_go2/go2_gz_bridge.py`
 - 机器人命令：`extensions/openclaw-plugin/src/tools/go2-commands.ts`
 - OpenClaw 命令：`extensions/openclaw-plugin/src/commands/robot-adapter.ts`
 
@@ -142,9 +143,9 @@ pnpm typecheck        # Type-check all packages
 | `walk` | `command: "walk"` | TROT | 0.0m |
 
 **Usage**:
-```bash
-# Via ROS2 CLI
-ros2 service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'sit'}"
+```sh
+# Via AGIROS S S CLI
+agiros service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'sit'}"
 
 # Via OpenClaw natural language
 "让机器人坐下"
@@ -174,7 +175,7 @@ ros2 service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehavi
 - `CLAUDE.md` - Added GO2 Scene Modes section
 
 **Usage**:
-```bash
+```sh
 # Mapping mode (Cartographer SLAM)
 GO2_SCENE=cartographer docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 
@@ -215,7 +216,7 @@ The `rmuc_2025` model exists at `/opt/go2_gz_sim/src/gazebo_sim/models/rmuc_2025
 - `docker/.env` - Added `GO2_SIM_LAUNCH=launch.py`
 
 **Usage**:
-```bash
+```sh
 # Start with custom world file
 GO2_WORLD=rmuc_2025_world.sdf docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 
@@ -237,8 +238,8 @@ GO2_GUI=true docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 - `docker/build-go2-gz-sim-source.sh` - Source build script
 - `docker/build-go2-bridge.sh` - Bridge node build script
 - `docker/scripts/go2-gz-entrypoint.sh` - Container entrypoint with headless support
-- `ros2_ws/src/unitree_go2/unitree_go2/go2_gz_bridge.py` - Topic bridging node
-- `ros2_ws/src/unitree_go2/launch/go2_gz_bridge_launch.py` - Launch configuration
+- `agiros_ws/src/unitree_go2/unitree_go2/go2_gz_bridge.py` - Topic bridging node
+- `agiros_ws/src/unitree_go2/launch/go2_gz_bridge_launch.py` - Launch configuration
 - `examples/go2-gz-sim/` - Integration tests and verification scripts
 
 **Key features**:
@@ -253,7 +254,7 @@ GO2_GUI=true docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 services:
   go2-gz-sim:     # Gazebo simulation (headless)
   go2-bridge-node: # Topic bridging to RosClaw standard
-  ros2:           # rosbridge_server (OpenClaw connects here)
+  agiros:           # rosbridge_server (OpenClaw connects here)
 ```
 
 **Bug fixes**:
@@ -290,7 +291,7 @@ The `rmuc_2025` model exists at `/opt/go2_gz_sim/src/gazebo_sim/models/rmuc_2025
 - `docker/.env` - Added `GO2_SIM_LAUNCH=launch.py`
 
 **Usage**:
-```bash
+```sh
 # Start with custom world file
 GO2_WORLD=rmuc_2025_world.sdf docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 
@@ -316,7 +317,7 @@ GO2_GUI=true docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 - Claude Code skill: `@rosclaw-robot-adapter` for AI-assisted adaptation
 
 **Installation**:
-```bash
+```sh
 # Skill installed at: ~/.agents/skills/rosclaw-robot-adapter/
 # Symlink: ~/.claude/skills/rosclaw-robot-adapter -> ~/.agents/skills/rosclaw-robot-adapter
 ```
@@ -334,7 +335,7 @@ GO2_GUI=true docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 ### Docker & Build Improvements
 
 **New scripts**:
-- `ros2_ws/.docker_build.sh` - Docker build helper
+- `agiros_ws/.docker_build.sh` - Docker build helper
 - `docker/Makefile` - Added GO2 Gazebo targets (`make go2-gz-up`, `make go2-gz-logs`, etc.)
 - `Makefile` - Root-level convenience targets
 
@@ -350,25 +351,27 @@ GO2_GUI=true docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 Gazebo 支持两种运行模式，通过 `GO2_GUI` 环境变量控制：
 
 **无头模式（默认）** - 适合服务器部署：
-```bash
+```sh
 GO2_GUI=false  # 或不设置
 ign gazebo -r -s -v 4 "$GO2_WORLD"
 ```
+
 - `-r`: 作为服务器运行
 - `-s`: 禁用 GUI 渲染（纯服务器模式）
 - 无需 X11 显示服务器
 
 **GUI 模式** - 适合本地开发和调试：
-```bash
+```sh
 GO2_GUI=true
 ign gazebo -r -v 4 "$GO2_WORLD"
 ```
+
 - 无 `-s` 参数，启动完整 GUI
 - 需要 X11 显示服务器支持
 - 容器内会打开 Gazebo 可视化窗口
 
 **使用示例**：
-```bash
+```sh
 # 无头模式（生产环境）
 docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 
@@ -387,7 +390,7 @@ RosClaw GO2 Gazebo 使用 `launch.py` 作为默认启动文件（而非 `launch_
 | 推荐使用 | 是（默认） | 否 |
 
 **使用方式**：
-```bash
+```sh
 # 通过环境变量控制
 GO2_WORLD=rmuc_2025_world.sdf GO2_SENSORS=true \
   docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
@@ -412,7 +415,7 @@ World files reference models using `model://rmuc_2025` syntax. Gazebo searches a
 
 When sourcing multiple ROS2 workspaces, set `COLCON_CURRENT_PREFIX` before each source:
 
-```bash
+```sh
 export COLCON_CURRENT_PREFIX=/opt/go2_gz_sim/install
 source /opt/go2_gz_sim/install/local_setup.sh
 export COLCON_CURRENT_PREFIX=/opt/rosclaw/install
@@ -430,7 +433,7 @@ The GO2 Gazebo simulation supports different scene modes via the `GO2_SCENE` env
 | `navigation2` | Simulation + Nav2 Navigation | `go2_navigation2.launch.py` |
 
 **Usage**:
-```bash
+```sh
 # Simulation only
 GO2_SCENE=none docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 
@@ -450,3 +453,5 @@ The plugin supports three transport modes via `openclaw.plugin.json`:
 | `rosbridge` | `"transport.mode": "rosbridge"` | Docker deployment (default) |
 | `local` | `"transport.mode": "local"` | Same-machine development |
 | `webrtc` | `"transport.mode": "webrtc"` | Remote robots with signaling server |
+
+

@@ -2,7 +2,7 @@
   "id": "rosclaw",
   "name": "RosClaw",
   "version": "0.0.1",
-  "description": "Control ROS2 robots through natural language via messaging apps",
+  "description": "Control AGIROS robots through natural language via messaging apps",
   "activation": {
     "onStartup": true
   },
@@ -13,14 +13,14 @@
       "go2_walk",
       "go2_stop",
       "go2_move",
-      "ros2_publish",
-      "ros2_subscribe_once",
-      "ros2_service_call",
-      "ros2_action_goal",
-      "ros2_param_get",
-      "ros2_param_set",
-      "ros2_list_topics",
-      "ros2_camera_snapshot"
+      "agiros_publish",
+      "agiros_subscribe_once",
+      "agiros_service_call",
+      "agiros_action_goal",
+      "agiros_param_get",
+      "agiros_param_set",
+      "agiros_list_topics",
+      "agiros_camera_snapshot"
     ]
   },
   "configSchema": {

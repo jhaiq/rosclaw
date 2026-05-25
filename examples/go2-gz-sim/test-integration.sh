@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # GO2 Gazebo Integration Test
-# Tests the full stack from ROS2 topics to OpenClaw tools
+# Tests the full stack from AGIROS topics to OpenClaw tools
 
 set -e
 
@@ -29,13 +29,13 @@ test_result() {
 source /opt/ros/$ROS_DISTRO/setup.sh
 
 # Source workspace if exists
-if [[ -f "$ROSCLAW_ROOT/ros2_ws/install/setup.sh" ]]; then
-    source "$ROSCLAW_ROOT/ros2_ws/install/setup.sh"
+if [[ -f "$ROSCLAW_ROOT/agiros_ws/install/setup.sh" ]]; then
+    source "$ROSCLAW_ROOT/agiros_ws/install/setup.sh"
 fi
 
 # Test 1: Bridge node publishes expected topics
 echo "[Test 1] Bridge node publishes expected topics..."
-TOPICS=$(ros2 topic list 2>/dev/null || echo "")
+TOPICS=$(agiros topic list 2>/dev/null || echo "")
 
 echo "$TOPICS" | grep -q "/go2_state/odom"
 test_result $? "Odom topic available"
@@ -55,11 +55,11 @@ echo ""
 
 # Test 2: Velocity commands are forwarded
 echo "[Test 2] Velocity commands are forwarded to Gazebo..."
-ros2 topic pub /cmd_vel geometry_msgs/msg/Twist \
+agiros topic pub /cmd_vel geometry_msgs/msg/Twist \
   "{linear: {x: 0.5}, angular: {z: 0.0}}" --once
 
 # Check if /go2_gz_sim/cmd_vel topic exists
-GO2_CMD_TOPICS=$(ros2 topic list 2>/dev/null || echo "")
+GO2_CMD_TOPICS=$(agiros topic list 2>/dev/null || echo "")
 echo "$GO2_CMD_TOPICS" | grep -q "/go2_gz_sim/cmd_vel"
 if [[ $? -eq 0 ]]; then
     test_result 0 "Velocity command topic available"
@@ -68,7 +68,7 @@ else
 fi
 
 # Test publishing to go2_gz_sim/cmd_vel
-ros2 topic pub /go2_gz_sim/cmd_vel geometry_msgs/msg/Twist \
+agiros topic pub /go2_gz_sim/cmd_vel geometry_msgs/msg/Twist \
   "{linear: {x: 0.3}, angular: {z: 0.1}}" --once 2>/dev/null
 test_result $? "Can publish to go2_gz_sim/cmd_vel"
 echo ""

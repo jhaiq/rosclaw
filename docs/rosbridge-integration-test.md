@@ -10,7 +10,7 @@
 
 | 组件 | 版本/配置 |
 |------|----------|
-| ROS2 | Jazzy Jalisco |
+| AGIROS | Jazzy Jalisco |
 | rosbridge_suite | 2.4.2 |
 | unitree_go2 | 0.0.1 |
 | Docker | 最新 GPU 支持 |
@@ -19,20 +19,20 @@
 ## 测试架构
 
 ```
-User (messaging app) → OpenClaw Gateway → RosClaw Plugin → rosbridge_server (ws://localhost:9090) → ROS2 nodes
+User (messaging app) → OpenClaw Gateway → RosClaw Plugin → rosbridge_server (ws://localhost:9090) → AGIROS nodes
                                                                                       ↓
                                                                               unitree_go2_node
 ```
 
 ## 测试项目
 
-### 1. ROS2 节点启动测试
+### 1. AGIROS 节点启动测试
 
 **测试命令：**
 ```bash
-docker exec rosclaw-ros2-gpu bash -c \
-  "source /opt/ros/jazzy/setup.sh && source /ros2_ws/install/setup.sh && \
-   python3 /ros2_ws/src/unitree_go2/unitree_go2/go2_node.py"
+docker exec rosclaw-agiros-gpu bash -c \
+  "source /opt/agiros/pixiu/setup.sh && source /agiros_ws/install/setup.sh && \
+   python3 /agiros_ws/src/unitree_go2/unitree_go2/go2_node.py"
 ```
 
 **预期结果：** 节点成功启动并发布日志 `Unitree GO2 node initialized`
@@ -43,7 +43,7 @@ docker exec rosclaw-ros2-gpu bash -c \
 
 **测试命令：**
 ```bash
-ros2 topic pub /go2_command/stand std_msgs/msg/Empty --once
+agiros topic pub /go2_command/stand std_msgs/msg/Empty --once
 ```
 
 **预期结果：** 消息成功发布
@@ -58,8 +58,8 @@ publishing #1: std_msgs.msg.Empty()
 
 **测试命令：**
 ```bash
-ros2 topic echo /go2_state/battery --timeout 3
-ros2 topic echo /go2_state/imu --timeout 2
+agiros topic echo /go2_state/battery --timeout 3
+agiros topic echo /go2_state/imu --timeout 2
 ```
 
 **预期结果：** 接收到电池状态和 IMU 数据
@@ -108,7 +108,7 @@ linear_acceleration:
 
 **测试命令：**
 ```bash
-ros2 service call /rosapi/topics rosapi_msgs/srv/Topics '{}'
+agiros service call /rosapi/topics rosapi_msgs/srv/Topics '{}'
 ```
 
 **预期结果：** 返回所有可用话题列表
@@ -166,14 +166,14 @@ imu_msg = Imu(
 )
 ```
 
-### 问题 2: ROS2 可执行文件未找到
+### 问题 2: AGIROS 可执行文件未找到
 
 **错误信息：**
 ```
 No executable found
 ```
 
-**原因：** `ros2 run` 无法找到符号链接指向的可执行文件
+**原因：** `agiros run` 无法找到符号链接指向的可执行文件
 
 **解决方案：** 直接使用 `python3` 运行节点脚本
 
@@ -183,7 +183,7 @@ No executable found
 
 Rosbridge 集成测试成功，Unitree GO2 节点可以通过 rosbridge WebSocket 与外部系统（如 OpenClaw）进行通信。
 
-### 可用的 ROS2 接口
+### 可用的 AGIROS 接口
 
 **订阅话题（输入）：**
 - `/cmd_vel` (geometry_msgs/msg/Twist) - 速度控制
@@ -199,7 +199,7 @@ Rosbridge 集成测试成功，Unitree GO2 节点可以通过 rosbridge WebSocke
 ### 下一步
 
 1. 测试 OpenClaw 与 GO2 节点的完整集成
-2. 实现自然语言命令到 ROS2 话题的映射
+2. 实现自然语言命令到 AGIROS 话题的映射
 3. 添加 Gazebo 仿真支持
 
 ## 附录：测试脚本
@@ -214,34 +214,34 @@ echo "=== Rosbridge 集成测试 ==="
 
 # 1. 启动 GO2 节点
 echo "[1/5] 启动 GO2 节点..."
-docker exec -d rosclaw-ros2-gpu bash -c \
-  "source /opt/ros/jazzy/setup.sh && source /ros2_ws/install/setup.sh && \
-   python3 /ros2_ws/src/unitree_go2/unitree_go2/go2_node.py"
+docker exec -d rosclaw-agiros-gpu bash -c \
+  "source /opt/agiros/pixiu/setup.sh && source /agiros_ws/install/setup.sh && \
+   python3 /agiros_ws/src/unitree_go2/unitree_go2/go2_node.py"
 sleep 2
 
 # 2. 验证节点运行
 echo "[2/5] 验证节点运行..."
-docker exec rosclaw-ros2-gpu bash -c \
-  "source /opt/ros/jazzy/setup.sh && source /ros2_ws/install/setup.sh && \
-   ros2 node list"
+docker exec rosclaw-agiros-gpu bash -c \
+  "source /opt/agiros/pixiu/setup.sh && source /agiros_ws/install/setup.sh && \
+   agiros node list"
 
 # 3. 验证话题
 echo "[3/5] 验证话题..."
-docker exec rosclaw-ros2-gpu bash -c \
-  "source /opt/ros/jazzy/setup.sh && source /ros2_ws/install/setup.sh && \
-   ros2 topic list"
+docker exec rosclaw-agiros-gpu bash -c \
+  "source /opt/agiros/pixiu/setup.sh && source /agiros_ws/install/setup.sh && \
+   agiros topic list"
 
 # 4. 测试发布命令
 echo "[4/5] 测试发布命令..."
-docker exec rosclaw-ros2-gpu bash -c \
-  "source /opt/ros/jazzy/setup.sh && source /ros2_ws/install/setup.sh && \
-   ros2 topic pub /go2_command/stand std_msgs/msg/Empty --once"
+docker exec rosclaw-agiros-gpu bash -c \
+  "source /opt/agiros/pixiu/setup.sh && source /agiros_ws/install/setup.sh && \
+   agiros topic pub /go2_command/stand std_msgs/msg/Empty --once"
 
 # 5. 测试 Rosbridge API
 echo "[5/5] 测试 Rosbridge API..."
-docker exec rosclaw-ros2-gpu bash -c \
-  "source /opt/ros/jazzy/setup.sh && source /ros2_ws/install/setup.sh && \
-   ros2 service call /rosapi/topics rosapi_msgs/srv/Topics '{}'"
+docker exec rosclaw-agiros-gpu bash -c \
+  "source /opt/agiros/pixiu/setup.sh && source /agiros_ws/install/setup.sh && \
+   agiros service call /rosapi/topics rosapi_msgs/srv/Topics '{}'"
 
 echo "=== 测试完成 ==="
 ```

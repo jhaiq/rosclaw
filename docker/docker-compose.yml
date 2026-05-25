@@ -1,19 +1,19 @@
-# RosClaw ROS2 + rosbridge_server + Gazebo simulation
+# RosClaw AGIROS + rosbridge_server + Gazebo simulation
 # Configuration is loaded from .env file
 
 services:
-  # ROS2 + rosbridge_server + Gazebo simulation (default CPU-only)
-  ros2:
+  # AGIROS + rosbridge_server + Gazebo simulation (default CPU-only)
+  agiros:
     build:
       context: ..
-      dockerfile: docker/Dockerfile.ros2
-    image: rosclaw/ros2:latest
+      dockerfile: docker/Dockerfile.agiros
+    image: rosclaw/agiros:latest
     ports:
       - "${ROSBRIDGE_PORT:-9090}:${ROSBRIDGE_PORT:-9090}"   # rosbridge WebSocket
       - "${ROS_MASTER_PORT:-11311}:${ROS_MASTER_PORT:-11311}" # ROS master (if needed)
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
-      - GAZEBO_MODEL_PATH=/opt/ros/jazzy/share/turtlebot3_gazebo/models
+      - GAZEBO_MODEL_PATH=/opt/agiros/pixiu/share/turtlebot3_gazebo/models
       - TURTLEBOT3_MODEL=${TURTLEBOT3_MODEL:-burger}
       - DISPLAY=${DISPLAY:-:0}
       - QT_X11_NO_MITSHM=1
@@ -23,18 +23,18 @@ services:
       - rosclaw-network
 
   # GPU-enabled variant - use with: docker compose --profile gpu up -d
-  ros2-gpu:
+  agiros-gpu:
     build:
       context: ..
-      dockerfile: docker/Dockerfile.ros2
-    image: rosclaw/ros2:latest
-    container_name: rosclaw-ros2-gpu
+      dockerfile: docker/Dockerfile.agiros
+    image: rosclaw/agiros:latest
+    container_name: rosclaw-agiros-gpu
     ports:
       - "${ROSBRIDGE_PORT:-9090}:${ROSBRIDGE_PORT:-9090}"   # rosbridge WebSocket
       - "${ROS_MASTER_PORT:-11311}:${ROS_MASTER_PORT:-11311}" # ROS master (if needed)
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
-      - GAZEBO_MODEL_PATH=/opt/ros/jazzy/share/turtlebot3_gazebo/models
+      - GAZEBO_MODEL_PATH=/opt/agiros/pixiu/share/turtlebot3_gazebo/models
       - TURTLEBOT3_MODEL=${TURTLEBOT3_MODEL:-burger}
       - DISPLAY=${DISPLAY:-:0}
       - QT_X11_NO_MITSHM=1
@@ -45,7 +45,7 @@ services:
     networks:
       rosclaw-network:
         aliases:
-          - ros2
+          - agiros
     profiles:
       - gpu
     deploy:

@@ -121,7 +121,7 @@ make go2-gz-clean
 ┌─────────────────────────────────────────────────────┐
 │              rosbridge_server                       │
 │              (WebSocket Bridge)                     │
-│  - ws://ros2:9090                                   │
+│  - ws://agiros:9090                                   │
 └─────────────────┬───────────────────────────────────┘
                   │
                   ▼
@@ -176,7 +176,7 @@ OpenClaw Gateway (AI 智能体)
 RosClaw 插件
     │
     ▼
-rosbridge_server (WebSocket: ws://ros2:9090)
+rosbridge_server (WebSocket: ws://agiros:9090)
     │
     ▼
 unitree_go2_node (ROS2 Python 节点)
@@ -202,9 +202,9 @@ unitree_go2_node (ROS2 Python 节点)
 | `GO2_MAX_ANGULAR_VELOCITY` | `2.0` | 最大角速度 (rad/s) |
 | `GO2_ENABLED` | `false` | 是否在 docker compose 中启用 GO2 profile |
 
-### ROS2 参数
+### AGIROS 参数
 
-在 `ros2_ws/src/unitree_go2/config/go2_params.yaml` 中配置：
+在 `agiros_ws/src/unitree_go2/config/go2_params.yaml` 中配置：
 
 ```yaml
 /unitree_go2_node:
@@ -254,13 +254,13 @@ ROS2-Gazebo-GO2 仿真支持官方行为命令接口，通过服务调用实现�
 **使用示例**:
 ```bash
 # 坐下
-ros2 service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'sit'}"
+agiros service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'sit'}"
 
 # 站起
-ros2 service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'up'}"
+agiros service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'up'}"
 
 # 开始行走
-ros2 service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'walk'}"
+agiros service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'walk'}"
 ```
 
 **在 OpenClaw 中使用**:
@@ -281,29 +281,29 @@ ros2 service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehavi
 | "平衡状态如何？" | 读取 `/go2_state/imu` |
 | "你的位置在哪？" | 读取 `/go2_state/odom` |
 
-## ROS2 话题列表
+## AGIROS 话题列表
 
 ### 订阅 (Subscribed)
 
 ```bash
 # 查看订阅的话题
-ros2 topic list | grep cmd_vel
-ros2 topic list | grep go2_command
+agiros topic list | grep cmd_vel
+agiros topic list | grep go2_command
 
 # 发布测试命令
-ros2 topic pub /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.5}, angular: {z: 0.0}}"
-ros2 topic pub /go2_command/stand std_msgs/msg/Empty
+agiros topic pub /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.5}, angular: {z: 0.0}}"
+agiros topic pub /go2_command/stand std_msgs/msg/Empty
 ```
 
 ### 发布 (Published)
 
 ```bash
 # 查看发布的话题
-ros2 topic list | grep go2_state
+agiros topic list | grep go2_state
 
 # 监听状态
-ros2 topic echo /go2_state/battery
-ros2 topic echo /go2_state/imu
+agiros topic echo /go2_state/battery
+agiros topic echo /go2_state/imu
 ```
 
 ## 部署
@@ -323,16 +323,16 @@ docker compose --profile go2 up -d go2-node
 docker compose --profile go2 ps
 ```
 
-### 本地构建 ROS2 包
+### 本地构建 AGIROS 包
 
 ```bash
-cd ros2_ws
-source /opt/ros/jazzy/setup.sh
+cd agiros_ws
+source /opt/agiros/pixiu/setup.sh
 colcon build --packages-select unitree_go2
 source install/setup.bash
 
 # 测试启动
-ros2 launch unitree_go2 go2_launch.py
+agiros launch unitree_go2 go2_launch.py
 ```
 
 ## 硬件集成
@@ -377,16 +377,16 @@ sudo make install
 ### 问题 1: GO2 节点无法启动
 
 ```bash
-# 检查 ROS2 包是否构建
-ros2 pkg list | grep unitree_go2
+# 检查 AGIROS 包是否构建
+agiros pkg list | grep unitree_go2
 
 # 重新构建
-cd ros2_ws
+cd agiros_ws
 colcon build --packages-select unitree_go2
 source install/setup.bash
 
 # 查看日志
-ros2 launch unitree_go2 go2_launch.py --show-log
+agiros launch unitree_go2 go2_launch.py --show-log
 ```
 
 ### 问题 2: 无法连接到 GO2 硬件
@@ -406,13 +406,13 @@ echo $GO2_ROBOT_IP
 
 ```bash
 # 列出所有节点
-ros2 node list
+agiros node list
 
 # 检查话题
-ros2 topic list
+agiros topic list
 
 # 查看话题信息
-ros2 topic info /go2_state/battery --verbose
+agiros topic info /go2_state/battery --verbose
 ```
 
 ## 进阶功能
@@ -421,20 +421,20 @@ ros2 topic info /go2_state/battery --verbose
 
 ```bash
 # 启动 SLAM
-ros2 launch slam_toolbox online_async_launch.py
+agiros launch slam_toolbox online_async_launch.py
 
 # 保存地图
-ros2 run nav2_map_server map_saver_cli -f my_map
+agiros run nav2_map_server map_saver_cli -f my_map
 ```
 
 ### 自主导航
 
 ```bash
 # 启动 Nav2
-ros2 launch nav2_bringup navigation_launch.py
+agiros launch nav2_bringup navigation_launch.py
 
 # 发送导航目标
-ros2 action send_goal /navigate_to_pose nav2_msgs/action/NavigateToPose \
+agiros action send_goal /navigate_to_pose nav2_msgs/action/NavigateToPose \
   "{pose: {header: {frame_id: 'map'}, pose: {position: {x: 1.0, y: 2.0}}}}"
 ```
 
@@ -444,10 +444,10 @@ ros2 action send_goal /navigate_to_pose nav2_msgs/action/NavigateToPose \
 
 ```bash
 # 启动摄像头驱动
-ros2 launch unitree_go2 camera_launch.py
+agiros launch unitree_go2 camera_launch.py
 
 # 查看图像
-ros2 run image_view image_view --topic /go2/camera/image
+agiros run image_view image_view --topic /go2/camera/image
 ```
 
 ## 相关资源

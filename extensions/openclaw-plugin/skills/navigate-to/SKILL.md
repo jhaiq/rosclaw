@@ -15,15 +15,15 @@ Navigation uses the Nav2 stack via the `navigate_to_pose` action server. The rob
 ## Steps
 
 1. **Determine the goal position**: Ask the user for coordinates if not provided, or map a named location to coordinates.
-2. **Check the robot's current position**: Use `ros2_subscribe_once` on `/amcl_pose` to get the current pose.
-3. **Send the navigation goal**: Use `ros2_action_goal` (Phase 2) or `ros2_publish` to the appropriate Nav2 topic.
+2. **Check the robot's current position**: Use `agiros_subscribe_once` on `/amcl_pose` to get the current pose.
+3. **Send the navigation goal**: Use `agiros_action_goal` (Phase 2) or `agiros_publish` to the appropriate Nav2 topic.
 4. **Monitor progress**: Periodically check `/navigate_to_pose/_action/status` for completion.
 5. **Report result**: Tell the user when the robot has arrived or if navigation failed.
 
 ## Example: Navigate to coordinates
 
 ```
-Tool: ros2_publish
+Tool: agiros_publish
 Topic: /goal_pose
 Type: geometry_msgs/msg/PoseStamped
 Message:

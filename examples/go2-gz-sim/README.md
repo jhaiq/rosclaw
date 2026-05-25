@@ -7,7 +7,7 @@
 
 - Docker 和 Docker Compose
 - NVIDIA GPU 和 Container Toolkit (可选，用于 GPU 加速)
-- ROS2 humble (本地测试)
+- AGIROS loong (本地测试)
 
 ## 快速开始
 
@@ -37,7 +37,7 @@ docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 - "坐下"
 - "电池电量多少？"
 
-## 可用的 ROS2 话题
+## 可用的 AGIROS 话题
 
 | 话题 | 类型 | 说明 |
 |------|------|------|
@@ -108,13 +108,13 @@ docker run --rm --gpus all nvidia/cuda:12.0-base-ubuntu22.04 nvidia-smi
 
 ```sh
 # 列出所有节点
-ros2 node list
+agiros node list
 
 # 列出所有话题
-ros2 topic list
+agiros topic list
 
 # 检查桥接节点
-ros2 run rqt_node rqt_node
+agiros run rqt_node rqt_node
 ```
 
 ### Docker 网络问题

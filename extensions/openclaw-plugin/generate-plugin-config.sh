@@ -34,7 +34,7 @@ cat > "$OUTPUT_FILE" <<EOF
   "id": "rosclaw",
   "name": "RosClaw",
   "version": "0.0.1",
-  "description": "Control ROS2 robots through natural language via messaging apps",
+  "description": "Control AGIROS robots through natural language via messaging apps",
   "configSchema": {
     "type": "object",
     "additionalProperties": false,

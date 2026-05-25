@@ -2,7 +2,7 @@
 /**
  * Validation prototype for rclnodejs ESM integration.
  *
- * Run with ROS2 workspace sourced:
+ * Run with AGIROS workspace sourced:
  *   npx tsx scripts/test-rclnodejs.mts
  *
  * Tests:

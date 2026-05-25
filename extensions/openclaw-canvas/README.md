@@ -110,7 +110,7 @@ The AI agent controls the Canvas through a built-in `canvas` tool with these act
 
 ## Data Flow Architecture
 
-The main RosClaw plugin owns the rosbridge connection. This extension doesn't connect to ROS2 directly — it pushes A2UI through the agent, and the agent uses the main plugin's tools to fetch robot data.
+The main RosClaw plugin owns the rosbridge connection. This extension doesn't connect to AGIROS directly — it pushes A2UI through the agent, and the agent uses the main plugin's tools to fetch robot data.
 
 ```
 OpenClaw Native App
@@ -125,18 +125,18 @@ OpenClaw Native App
             │
             ├── AI Agent ← canvas tool (push A2UI)
             │       │
-            │       └── RosClaw plugin tools (ros2_subscribe, ros2_camera_snapshot, ...)
+            │       └── RosClaw plugin tools (agiros_subscribe, agiros_camera_snapshot, ...)
             │               │
-            │               └── rosbridge transport → ROS2 DDS → Robots
+            │               └── rosbridge transport → AGIROS DDS → Robots
             │
             └── Gateway methods (rosclaw.subscribe, rosclaw.getRobotState, ...)
                     │
-                    └── rosbridge transport → ROS2 DDS → Robots
+                    └── rosbridge transport → AGIROS DDS → Robots
 ```
 
 Two data paths are possible:
 
-1. **Agent-mediated** — the agent calls ros2 tools, formats results as A2UI, and pushes to canvas. Simple but adds latency (LLM round-trip).
+1. **Agent-mediated** — the agent calls agiros tools, formats results as A2UI, and pushes to canvas. Simple but adds latency (LLM round-trip).
 2. **Gateway methods** — the main plugin registers `api.registerGatewayMethod()` endpoints. The canvas extension (or its frontend JS) calls these directly for real-time data, bypassing the LLM. Required for high-frequency updates.
 
 Path 2 requires the main plugin to register gateway methods ([Issue #10](../docs/openclaw-plugin-review.md) — currently deferred).

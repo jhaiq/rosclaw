@@ -22,7 +22,7 @@ export async function createTransport(config: TransportConfig): Promise<RosTrans
         if (e?.code === "ERR_MODULE_NOT_FOUND" || e?.code === "MODULE_NOT_FOUND") {
           throw new Error(
             'Mode A (local) requires the "rclnodejs" package. ' +
-              "Install it with: pnpm add rclnodejs (with ROS2 workspace sourced)",
+              "Install it with: pnpm add rclnodejs (with AGIROS workspace sourced)",
           );
         }
         throw e;

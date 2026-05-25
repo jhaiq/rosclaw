@@ -17,7 +17,7 @@ function isValidMode(value: string): value is Mode {
 export function registerTransportCommand(api: OpenClawPluginApi, config: RosClawConfig): void {
   api.registerCommand({
     name: "transport",
-    description: "Show or switch the ROS2 transport mode (rosbridge, webrtc, local)",
+    description: "Show or switch the AGIROS transport mode (rosbridge, webrtc, local)",
 
     async handler(ctx) {
       const args = (ctx.args ?? "").trim();

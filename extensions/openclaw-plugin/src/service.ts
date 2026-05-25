@@ -65,14 +65,14 @@ export async function switchTransport(config: TransportConfig, logger: PluginLog
 }
 
 /**
- * Register the ROS2 transport connection as an OpenClaw managed service.
+ * Register the AGIROS transport connection as an OpenClaw managed service.
  * The service handles connection lifecycle (connect on start, disconnect on stop).
  */
 export function registerService(api: OpenClawPluginApi, config: RosClawConfig): void {
   const mode = config.transport.mode;
 
   api.registerService({
-    id: "ros2-transport",
+    id: "agiros-transport",
 
     async start(_ctx) {
       let transportCfg: TransportConfig;
@@ -89,7 +89,7 @@ export function registerService(api: OpenClawPluginApi, config: RosClawConfig): 
           break;
       }
 
-      api.logger.info(`Connecting to ROS2 via ${mode} transport...`);
+      api.logger.info(`Connecting to AGIROS via ${mode} transport...`);
 
       transport = await createTransport(transportCfg);
 

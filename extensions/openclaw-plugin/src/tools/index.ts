@@ -15,7 +15,7 @@ import {
 } from "./go2-commands.js";
 
 /**
- * Register all ROS2 tools with the OpenClaw AI agent.
+ * Register all AGIROS tools with the OpenClaw AI agent.
  */
 export function registerTools(api: OpenClawPluginApi): void {
   registerPublishTool(api);

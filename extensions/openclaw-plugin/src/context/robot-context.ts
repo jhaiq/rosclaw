@@ -123,7 +123,7 @@ function buildDynamicContext(
   actions: ActionInfo[],
 ): string {
   let context = `## Robot: ${name}\n\n`;
-  context += `You are connected to a ROS2 robot named "${name}". You can control it using the ros2_* tools.\n\n`;
+  context += `You are connected to a AGIROS robot named "${name}". You can control it using the agiros_* tools.\n\n`;
 
   if (topics.length > 0) {
     context += "### Available Topics\n";
@@ -155,9 +155,9 @@ function buildDynamicContext(
 - All velocity commands are validated before execution
 
 ### Tips
-- Use \`ros2_list_topics\` to discover all available topics
-- Use \`ros2_subscribe_once\` to read the current value of any topic
-- Use \`ros2_camera_snapshot\` to see what the robot sees
+- Use \`agiros_list_topics\` to discover all available topics
+- Use \`agiros_subscribe_once\` to read the current value of any topic
+- Use \`agiros_camera_snapshot\` to see what the robot sees
 - Use \`go2_stand\`, \`go2_sit\`, \`go2_walk\`, \`go2_move\`, \`go2_stop\` for GO2-specific commands
 - In multi-robot/simulation environments, velocity commands use namespace prefix (e.g., \`/robot1/cmd_vel\` instead of \`/cmd_vel\`)
 - Check the Available Topics list above to find the correct topic names for your environment
@@ -172,7 +172,7 @@ function buildFallbackContext(name: string, namespace: string): string {
   return `
 ## Robot: ${name}
 
-You are connected to a ROS2 robot named "${name}". You can control it using the ros2_* tools.
+You are connected to a AGIROS robot named "${name}". You can control it using the agiros_* tools.
 
 ### Available Topics
 - \`${prefix}cmd_vel\` (geometry_msgs/msg/Twist) — Velocity commands
@@ -187,9 +187,9 @@ You are connected to a ROS2 robot named "${name}". You can control it using the 
 - All velocity commands are validated before execution
 
 ### Tips
-- Use \`ros2_list_topics\` to discover all available topics
-- Use \`ros2_subscribe_once\` to read the current value of any topic
-- Use \`ros2_camera_snapshot\` to see what the robot sees
+- Use \`agiros_list_topics\` to discover all available topics
+- Use \`agiros_subscribe_once\` to read the current value of any topic
+- Use \`agiros_camera_snapshot\` to see what the robot sees
 - The user can say /estop at any time to immediately stop the robot
 `.trim();
 }

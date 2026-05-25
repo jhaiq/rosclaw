@@ -5,7 +5,7 @@
 #   This script performs the initial setup required for RosClaw development.
 #   It supports both Ubuntu (native ROS2) and macOS (RoboStack with mamba).
 #   The script installs dependencies, creates the appropriate environment,
-#   and builds all ROS2 packages. Run this script once before using the
+#   and builds all AGIROS packages. Run this script once before using the
 #   activate_workspace.sh script for daily development.
 #
 # USAGE:
@@ -13,7 +13,7 @@
 #
 # OPTIONS:
 #   -e, --env-name NAME     Name of the environment to create (default: ros_env)
-#   -d, --ros-distro DISTRO ROS2 distribution (default: humble)
+#   -d, --ros-distro DISTRO AGIROS distribution (default: loong)
 #   -h, --help              Show this help message
 #
 # EXAMPLES:
@@ -23,11 +23,11 @@
 #   # Custom environment name
 #   ./scripts/setup_workspace.sh --env-name my_ros_env
 #
-#   # Different ROS2 distro
-#   ./scripts/setup_workspace.sh --ros-distro humble
+#   # Different AGIROS distro
+#   ./scripts/setup_workspace.sh --ros-distro loong
 #
 # PLATFORMS SUPPORTED:
-#   - Ubuntu/Debian: Native ROS2 installation with apt + venv
+#   - Ubuntu/Debian: Native AGIROS installation with apt + venv
 #   - macOS: RoboStack with mamba/conda environment
 #
 # WHAT IT DOES:
@@ -36,20 +36,20 @@
 #   3. Creates appropriate environment (venv with --system-site-packages vs conda)
 #   4. Installs ROS2, rosbridge_library, and all required development tools
 #   5. Installs agent-specific pip dependencies (aiortc, websockets)
-#   6. Builds all ROS2 packages in ros2_ws
+#   6. Builds all AGIROS packages in agiros_ws
 #   7. Validates the complete setup
 
 set -e  # Exit on any error
 
 # Default values
 DEFAULT_ENV_NAME="ros_env"
-DEFAULT_ROS_DISTRO="humble"
+DEFAULT_ROS_DISTRO="loong"
 ENV_NAME=""
 ROS_DISTRO=""
 
 # Find the repository root
 REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-ROS2_WS_PATH="$REPO_ROOT/ros2_ws"
+ROS2_WS_PATH="$REPO_ROOT/agiros_ws"
 
 # Colors for output
 RED='\033[0;31m'
@@ -85,7 +85,7 @@ USAGE:
 
 OPTIONS:
     -e, --env-name NAME     Name of the environment to create (default: $DEFAULT_ENV_NAME)
-    -d, --ros-distro DISTRO ROS2 distribution (default: $DEFAULT_ROS_DISTRO)
+    -d, --ros-distro DISTRO AGIROS distribution (default: $DEFAULT_ROS_DISTRO)
     -h, --help              Show this help message
 
 EXAMPLES:
@@ -95,16 +95,16 @@ EXAMPLES:
     # Custom environment name
     $0 --env-name my_ros_env
 
-    # Different ROS2 distribution
-    $0 --ros-distro humble
+    # Different AGIROS distribution
+    $0 --ros-distro loong
 
 SUPPORTED PLATFORMS:
-    - Ubuntu/Debian: Native ROS2 with apt + Python venv
+    - Ubuntu/Debian: Native AGIROS with apt + Python venv
     - macOS: RoboStack with mamba/conda environment
 
-SUPPORTED ROS2 DISTRIBUTIONS:
+SUPPORTED AGIROS DISTRIBUTIONS:
     - jazzy (default)
-    - humble
+    - loong
     - kilted
 EOF
 }
@@ -187,9 +187,9 @@ check_mamba() {
     fi
 }
 
-# Validate ROS2 distribution support
+# Validate AGIROS distribution support
 validate_ros_distro() {
-    local supported_distros=("humble" "jazzy" "kilted")
+    local supported_distros=("loong" "jazzy" "kilted")
     local distro_supported=false
 
     for supported in "${supported_distros[@]}"; do
@@ -241,11 +241,11 @@ setup_ubuntu() {
         lsb-release \
         software-properties-common
 
-    # Step 2: Install ROS2 and required packages
-    log_info "[2/5] Setting up ROS2 $ROS_DISTRO..."
+    # Step 2: Install AGIROS and required packages
+    log_info "[2/5] Setting up AGIROS $ROS_DISTRO..."
 
-    if ! command -v ros2 &> /dev/null; then
-        log_info "Installing ROS2 $ROS_DISTRO..."
+    if ! command -v agiros &> /dev/null; then
+        log_info "Installing AGIROS $ROS_DISTRO..."
 
         sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
         echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
@@ -255,13 +255,13 @@ setup_ubuntu() {
         log_success "ROS2 base already installed"
     fi
 
-    log_info "Ensuring all required ROS2 packages are installed..."
+    log_info "Ensuring all required AGIROS packages are installed..."
     sudo apt install -y \
         ros-$ROS_DISTRO-ros-base \
         ros-$ROS_DISTRO-rosbridge-library \
         python3-colcon-common-extensions
 
-    log_success "All required ROS2 packages installed"
+    log_success "All required AGIROS packages installed"
 
     # Step 3: Create Python virtual environment with system site-packages
     # This is critical: rclpy and rosbridge_library are system-installed via apt.
@@ -284,8 +284,8 @@ setup_ubuntu() {
     pip install aiortc websockets
     log_success "Python packages installed (aiortc, websockets)"
 
-    # Step 5: Build ROS2 packages
-    log_info "[5/5] Building ROS2 packages..."
+    # Step 5: Build AGIROS packages
+    log_info "[5/5] Building AGIROS packages..."
     cd "$ROS2_WS_PATH"
     source /opt/ros/$ROS_DISTRO/setup.bash
     colcon build --symlink-install
@@ -327,8 +327,8 @@ setup_macos() {
     conda config --env --remove channels defaults 2>/dev/null || true
     conda config --env --add channels robostack-$ROS_DISTRO
 
-    # Step 3: Install ROS2 and development tools
-    log_info "[3/5] Installing ROS2 $ROS_DISTRO and development tools..."
+    # Step 3: Install AGIROS and development tools
+    log_info "[3/5] Installing AGIROS $ROS_DISTRO and development tools..."
     mamba install -y \
         ros-$ROS_DISTRO-ros-base \
         ros-$ROS_DISTRO-rosbridge-library \
@@ -352,8 +352,8 @@ setup_macos() {
     mamba deactivate
     mamba activate "$ENV_NAME"
 
-    # Step 5: Build ROS2 packages
-    log_info "[5/5] Building ROS2 packages..."
+    # Step 5: Build AGIROS packages
+    log_info "[5/5] Building AGIROS packages..."
     cd "$ROS2_WS_PATH"
     colcon build --symlink-install
     log_success "ROS2 packages built successfully"
@@ -382,8 +382,8 @@ validate_setup() {
         return 1
     fi
 
-    # Test ROS2 functionality
-    if command -v ros2 &> /dev/null; then
+    # Test AGIROS functionality
+    if command -v agiros &> /dev/null; then
         log_success "ROS2 command available"
     else
         log_error "ROS2 command not available"
@@ -393,7 +393,7 @@ validate_setup() {
     # Test if our packages are available
     local all_found=true
     for pkg in rosclaw_msgs rosclaw_discovery rosclaw_agent; do
-        if ros2 pkg list 2>/dev/null | grep -q "$pkg"; then
+        if agiros pkg list 2>/dev/null | grep -q "$pkg"; then
             log_success "Package found: $pkg"
         else
             log_warning "Package not found: $pkg"
@@ -472,10 +472,10 @@ main() {
     echo "     source $REPO_ROOT/scripts/activate_workspace.sh"
     echo ""
     echo "  2. Test discovery node:"
-    echo "     ros2 run rosclaw_discovery discovery_node"
+    echo "     agiros run rosclaw_discovery discovery_node"
     echo ""
     echo "  3. Test agent node (requires signaling server):"
-    echo "     ROSCLAW_SIGNALING_URL=ws://localhost:8000 ros2 run rosclaw_agent agent_node"
+    echo "     ROSCLAW_SIGNALING_URL=ws://localhost:8000 agiros run rosclaw_agent agent_node"
     echo ""
 }
 

@@ -130,7 +130,7 @@ function formatHelp(): string {
 ───────────────────────────────────────────────────────────
 
 适配流程 6 步骤:
-  1. 分析话题      ros2 topic list/info/hz/echo
+  1. 分析话题      agiros topic list/info/hz/echo
   2. 设计映射      映射到 RosClaw 标准话题
   3. 编写桥接      Python 桥接节点实现
   4. Docker 封装    Dockerfile + docker-compose
@@ -162,17 +162,17 @@ async function startAdaptationFlow(
 请在终端执行以下命令分析机器人话题：
 
   # 启动机器人/仿真
-  ros2 launch ${robotName.toLowerCase()}_bringup ${robotName.toLowerCase()}_launch.py
+  agiros launch ${robotName.toLowerCase()}_bringup ${robotName.toLowerCase()}_launch.py
 
   # 列出所有话题
-  ros2 topic list
+  agiros topic list
 
   # 查看话题类型和频率
-  ros2 topic info /topic_name --verbose
-  ros2 topic hz /topic_name
+  agiros topic info /topic_name --verbose
+  agiros topic hz /topic_name
 
   # 查看消息内容
-  ros2 topic echo /topic_name --once
+  agiros topic echo /topic_name --once
 
 请记录以下信息：
   □ 发布的话题（机器人→外部）
@@ -254,7 +254,7 @@ async function generateConfigFiles(
 ${dockerComposeContent}
 
 ───────────────────────────────────────────────────────────
-📁 ros2_ws/src/${robotName.toLowerCase()}_bringup/${robotName.toLowerCase()}_bringup/bridge_node.py
+📁 agiros_ws/src/${robotName.toLowerCase()}_bringup/${robotName.toLowerCase()}_bringup/bridge_node.py
 ───────────────────────────────────────────────────────────
 
 ${bridgeNodeContent}
@@ -300,12 +300,12 @@ function generateDockerCompose(
     image: rosclaw/${robotId}:latest
     container_name: rosclaw-${robotId}-bridge
     command: >
-      bash -c "source /opt/ros/humble/setup.sh &&
+      bash -c "source /opt/agiros/loong/setup.sh &&
                source /opt/${robotId}/install/local_setup.sh &&
-               ros2 launch ${robotId}_bringup bridge_launch.py"
+               agiros launch ${robotId}_bringup bridge_launch.py"
     volumes:
       - ${robotPath}:/opt/${robotId}:ro
-      - /path/to/rosclaw/ros2_ws/install:/opt/rosclaw/install:ro
+      - /path/to/rosclaw/agiros_ws/install:/opt/rosclaw/install:ro
     networks:
       - rosclaw-network
     profiles:
@@ -320,11 +320,11 @@ function generateDockerCompose(
     ports:
       - "9090:9090"
     command: >
-      bash -c "source /opt/ros/humble/setup.sh &&
+      bash -c "source /opt/agiros/loong/setup.sh &&
                source /opt/rosclaw/install/setup.sh &&
-               ros2 launch rosbridge_server rosbridge_websocket_launch.xml"
+               agiros launch rosbridge_server rosbridge_websocket_launch.xml"
     volumes:
-      - /path/to/rosclaw/ros2_ws/install:/opt/rosclaw/install:ro
+      - /path/to/rosclaw/agiros_ws/install:/opt/rosclaw/install:ro
     networks:
       - rosclaw-network
     profiles:
@@ -439,11 +439,11 @@ async function validateConfiguration(
 
 □ 3. 验证话题存在
    docker compose -f docker/docker-compose.${robotName.toLowerCase()}.yml exec rosbridge \\
-     bash -c "ros2 topic list | grep ${robotName.toLowerCase()}"
+     bash -c "agiros topic list | grep ${robotName.toLowerCase()}"
 
 □ 4. 验证话题频率
-   ros2 topic hz /${robotName.toLowerCase()}_state/odom
-   ros2 topic hz /scan
+   agiros topic hz /${robotName.toLowerCase()}_state/odom
+   agiros topic hz /scan
 
 □ 5. OpenClaw 连接测试
    在 OpenClaw 中输入："请${robotName}向前移动 1 米"

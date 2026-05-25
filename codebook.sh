@@ -60,38 +60,38 @@ docker compose restart openclaw
 docker compose logs openclaw    
 ```
 ##### 失败日志：
-2026-03-20T05:50:05.677+00:00 [plugins] plugin service failed (ros2-transport): Error: WebSocket error connecting to ws://ros2:9090
+2026-03-20T05:50:05.677+00:00 [plugins] plugin service failed (agiros-transport): Error: WebSocket error connecting to ws://agiros:9090
 2026-03-20T05:50:07.232+00:00 [ws] Proxy headers detected from untrusted address. Connection will not be treated as local. Configure gateway.trustedProxies to restore local client detection behind your proxy.
 2026-03-20T05:50:07.253+00:00 [ws] webchat connected conn=5be36229-7ea4-435c-ad74-fdb21b477e5c remote=127.0.0.1 client=openclaw-control-ui webchat v2026.3.13
-2026-03-20T05:50:08.678+00:00 [gateway] ROS2 transport status: connecting
-2026-03-20T05:50:08.681+00:00 [gateway] ROS2 transport status: disconnected
-2026-03-20T05:50:08.682+00:00 [gateway] ROS2 transport status: disconnected
+2026-03-20T05:50:08.678+00:00 [gateway] AGIROS transport status: connecting
+2026-03-20T05:50:08.681+00:00 [gateway] AGIROS transport status: disconnected
+2026-03-20T05:50:08.682+00:00 [gateway] AGIROS transport status: disconnected
 
 ##### 成功日志：
-2026-03-20T05:53:20.741+00:00 [gateway] ROS2 transport status: connected
+2026-03-20T05:53:20.741+00:00 [gateway] AGIROS transport status: connected
 
-### 启动ros2环境
+### 启动agiros环境
 ```bash
-source /opt/ros/humble/setup.bash
+source /opt/agiros/loong/setup.bash
 source ~/rosclaw/install/setup.bash
 ``` 
 
 ###启动 rosbridge_server
 ```bash
-ros2 launch rosbridge_server rosbridge_server.launch.py
+agiros launch rosbridge_server rosbridge_server.launch.py
 ```
 
 ### 启动turtlebot3_gazebo
 ```bash
-source /opt/ros/jazzy/setup.bash
-ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+source /opt/agiros/pixiu/setup.bash
+agiros launch turtlebot3_gazebo turtlebot3_world.launch.py
 ````
 
 #### 启动日志
-root@f8fcd141dd84:/ros2_ws# ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
-bash: ros2: command not found
-root@f8fcd141dd84:/ros2_ws# source /opt/ros/jazzy/setup.bash 
-root@f8fcd141dd84:/ros2_ws# ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+root@f8fcd141dd84:/agiros_ws# agiros launch turtlebot3_gazebo turtlebot3_world.launch.py
+bash: agiros: command not found
+root@f8fcd141dd84:/agiros_ws# source /opt/agiros/pixiu/setup.bash 
+root@f8fcd141dd84:/agiros_ws# agiros launch turtlebot3_gazebo turtlebot3_world.launch.py
 
 turtlebot3_gazebo界面
 ![turtlebot3_gazebo](turtlebot3_gazebo.png)
@@ -126,5 +126,5 @@ turtlebot3_gazebo界面
 
 ### 启动 turtlebot3 世界
 ```bash
-ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+agiros launch turtlebot3_gazebo turtlebot3_world.launch.py
 ```
