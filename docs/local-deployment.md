@@ -1,6 +1,6 @@
 # 本地部署说明
 
-本文说明如何在本地部署并运行 RosClaw 项目（ROS2 + OpenClaw 插件 + rosbridge）。
+本文说明如何在本地部署并运行 RosClaw 项目（AGIROS + OpenClaw 插件 + rosbridge）。
 
 ## 前置条件
 
@@ -8,9 +8,9 @@
 - **pnpm 9+**（`corepack enable && corepack prepare pnpm@9.15.4 --activate`）
 - **Docker 与 Docker Compose**（用于运行 AGIROS + rosbridge 仿真）
 
-## 方式一：推荐 — 本机插件 + Docker 跑 ROS2
+## 方式一：推荐 — 本机插件 + Docker 跑 AGIROS
 
-适合日常开发：ROS2 和 Gazebo 在 Docker 里跑，OpenClaw 和 RosClaw 插件在本机跑，通过 `ws://localhost:9090` 连接。
+适合日常开发：AGIROS 和 Gazebo 在 Docker 里跑，OpenClaw 和 RosClaw 插件在本机跑，通过 `ws://localhost:9090` 连接。
 
 ### 1. 安装依赖并构建
 
@@ -37,7 +37,7 @@ docker compose up -d
 
 这会：
 
-- 构建并启动 **agiros** 服务：ROS2 Jazzy + rosbridge WebSocket（端口 **9090**）+ TurtleBot3 Gazebo 仿真
+- 构建并启动 **agiros** 服务：AGIROS Loong + rosbridge WebSocket（端口 **9090**）+ TurtleBot3 Gazebo 仿真
 - 端口映射：`9090`（rosbridge）、`11311`（ROS）
 
 首次构建镜像可能需几分钟。
@@ -62,12 +62,12 @@ docker compose up -d
 
 ## 方式二：仅本机（无 Docker）
 
-若本机已安装 **ROS2 Jazzy** 和 **rosbridge_suite**，可以不用 Docker，直接在本机启动 rosbridge，插件同样连 `ws://localhost:9090`。
+若本机已安装 **AGIROS Loong** 和 **rosbridge_suite**，可以不用 Docker，直接在本机启动 rosbridge，插件同样连 `ws://localhost:9090`。
 
 ### 1. 安装 AGIROS 与 rosbridge（Ubuntu 示例）
 
 ```bash
-# 安装 AGIROS Jazzy 后
+# 安装 AGIROS Loong 后
 sudo apt install ros-jazzy-rosbridge-suite
 ```
 
@@ -95,7 +95,7 @@ pnpm build
 
 | 文件 | 用途 |
 |------|------|
-| `docker-compose.yml` | 默认：agiros 服务 + rosclaw 插件镜像（插件镜像为可选） |
+| `docker-compose.yml` | 默认：agiros 服务 + agirosclaw 插件镜像（插件镜像为可选） |
 | `docker-compose.local.yml` | 本机模式（Mode A）：同一机器上 LocalTransport，无网络 |
 | `docker-compose.dev.yml` | 开发用 |
 | `docker-compose.robot.yml` | 真机/机器人场景 |
@@ -108,7 +108,7 @@ cd docker
 docker compose up agiros
 ```
 
-仅启动 `agiros` 服务，不构建/启动 `rosclaw` 容器。
+仅启动 `agiros` 服务，不构建/启动 `agirosclaw` 容器。
 
 ---
 
@@ -116,7 +116,7 @@ docker compose up agiros
 
 - **端口 9090 被占用**：修改 `docker-compose.yml` 中 `agiros` 的端口映射，例如 `"9091:9090"`，并在插件配置中改为 `ws://localhost:9091`。
 - **插件连不上**：确认 Docker 中 rosbridge 已启动（`docker compose logs agiros`），且本机防火墙未拦截 9090。
-- **ROS2 镜像构建失败**：确保从仓库根目录作为构建上下文（当前 `docker-compose.yml` 已使用 `context: ..`、`dockerfile: docker/Dockerfile.agiros`）。
+- **AGIROS 镜像构建失败**：确保从仓库根目录作为构建上下文（当前 `docker-compose.yml` 已使用 `context: ..`、`dockerfile: docker/Dockerfile.agiros`）。
 
 ---
 
@@ -139,7 +139,7 @@ rosbridge (WebSocket, 默认 ws://localhost:9090)
 
 ---
 
-## 方式三：全容器化 — Docker 跑 OpenClaw + ROS2（已集成 RosClaw）
+## 方式三：全容器化 — Docker 跑 OpenClaw + AGIROS（已集成 RosClaw）
 
 适合你已经确认 OpenClaw 容器化没问题，希望直接把 RosClaw 插件挂载进 OpenClaw 容器，并自动启用配置。
 
@@ -175,6 +175,6 @@ docker compose --env-file openclaw/.env -f docker-compose.yml -f docker-compose.
 ### 配置在哪里？
 
 - OpenClaw 配置模板：`docker/openclaw/openclaw.json`
-  - 使用 `plugins.load.paths` 加载：`/home/node/rosclaw/extensions/openclaw-plugin`（容器内挂载的本仓库路径）
-  - 启用 `plugins.entries.rosclaw`，并将 rosbridge 指向：`ws://agiros:9090`
+  - 使用 `plugins.load.paths` 加载：`/home/node/agirosclaw/extensions/openclaw-plugin`（容器内挂载的本仓库路径）
+  - 启用 `plugins.entries.agirosclaw`，并将 rosbridge 指向：`ws://agiros:9090`
 

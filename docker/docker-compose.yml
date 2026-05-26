@@ -7,7 +7,7 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile.agiros
-    image: rosclaw/agiros:latest
+    image: agirosclaw/agiros:latest
     ports:
       - "${ROSBRIDGE_PORT:-9090}:${ROSBRIDGE_PORT:-9090}"   # rosbridge WebSocket
       - "${ROS_MASTER_PORT:-11311}:${ROS_MASTER_PORT:-11311}" # ROS master (if needed)
@@ -20,15 +20,15 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     networks:
-      - rosclaw-network
+      - agirosclaw-network
 
   # GPU-enabled variant - use with: docker compose --profile gpu up -d
   agiros-gpu:
     build:
       context: ..
       dockerfile: docker/Dockerfile.agiros
-    image: rosclaw/agiros:latest
-    container_name: rosclaw-agiros-gpu
+    image: agirosclaw/agiros:latest
+    container_name: agirosclaw-agiros-gpu
     ports:
       - "${ROSBRIDGE_PORT:-9090}:${ROSBRIDGE_PORT:-9090}"   # rosbridge WebSocket
       - "${ROS_MASTER_PORT:-11311}:${ROS_MASTER_PORT:-11311}" # ROS master (if needed)
@@ -43,7 +43,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     networks:
-      rosclaw-network:
+      agirosclaw-network:
         aliases:
           - agiros
     profiles:
@@ -57,6 +57,6 @@ services:
               capabilities: [gpu, graphics, compute, utility]
 
 networks:
-  rosclaw-network:
+  agirosclaw-network:
     external: true
     name: ${DOCKER_NETWORK_NAME:-1panel-network}

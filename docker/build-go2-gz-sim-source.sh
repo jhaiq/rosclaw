@@ -5,7 +5,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-GO2_GZ_SIM_PATH="${GO2_GZ_SIM_PATH:-/home/jhq/work/code/go2_ws/go2_sim_ws/ROS2-Gazebo-GO2}"
+GO2_GZ_SIM_PATH="${GO2_GZ_SIM_PATH:-/home/jhq/work/code/go2_ws/go2_sim_ws/AGIROS-Gazebo-GO2}"
 
 echo "========================================"
 echo "  Building go2_gz_sim in Docker"
@@ -31,7 +31,7 @@ apt-get update && apt-get install -y \
     agiros-loong-gazebo-ros-pkgs \
     && rm -rf /var/lib/apt/lists/*
 
-echo "Sourcing AGIROS Humble..."
+echo "Sourcing AGIROS Loong..."
 source /opt/agiros/loong/setup.sh
 
 echo "Building go2_gz_sim..."
@@ -45,7 +45,7 @@ EOF
 chmod +x "$GO2_GZ_SIM_PATH/.docker_build.sh"
 
 # Run build in Docker container
-docker run --rm -v "$GO2_GZ_SIM_PATH:/opt/go2_gz_sim" ros:loong-ros-base \
+docker run --rm -v "$GO2_GZ_SIM_PATH:/opt/go2_gz_sim" agiros:loong-ros-base \
     bash /opt/go2_gz_sim/.docker_build.sh
 
 # Clean up

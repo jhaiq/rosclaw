@@ -5,11 +5,11 @@ version: "3.8"
 
 services:
   # RosClaw plugin (cloud-side, WebRTC transport)
-  rosclaw:
+  agirosclaw:
     build:
       context: ..
-      dockerfile: docker/Dockerfile.rosclaw
-    image: rosclaw/plugin:latest
+      dockerfile: docker/Dockerfile.agirosclaw
+    image: agirosclaw/plugin:latest
     environment:
       - ROSCLAW_TRANSPORT_MODE=webrtc
       - ROSCLAW_WEBRTC_SIGNALING_URL=wss://signaling-server:8443/ws
@@ -19,20 +19,20 @@ services:
     depends_on:
       - signaling-server
     networks:
-      - rosclaw
+      - agirosclaw
 
   # WebRTC signaling server (existing webrtc-py FastAPI server)
   signaling-server:
     build:
       context: ../../webrtc-server/webrtc-py
       dockerfile: Dockerfile
-    image: rosclaw/signaling:latest
+    image: agirosclaw/signaling:latest
     ports:
       - "8443:8443"
     environment:
       - ROBOT_TOKEN=${ROBOT_TOKEN}
     networks:
-      - rosclaw
+      - agirosclaw
 
   # TURN relay server (optional — for networks where P2P fails)
   coturn:
@@ -41,11 +41,11 @@ services:
       - "3478:3478/udp"
       - "3478:3478/tcp"
     environment:
-      - TURN_USERNAME=${TURN_USERNAME:-rosclaw}
-      - TURN_PASSWORD=${TURN_PASSWORD:-rosclaw}
+      - TURN_USERNAME=${TURN_USERNAME:-agirosclaw}
+      - TURN_PASSWORD=${TURN_PASSWORD:-agirosclaw}
     networks:
-      - rosclaw
+      - agirosclaw
 
 networks:
-  rosclaw:
+  agirosclaw:
     driver: bridge

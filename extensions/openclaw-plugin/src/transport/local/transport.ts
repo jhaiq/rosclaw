@@ -25,7 +25,7 @@ export interface LocalTransportOptions {
 }
 
 /** Internal AGIROS topics/services to filter from introspection results. */
-const INTERNAL_TOPIC_PREFIXES = ["/rosout", "/parameter_events", "/rosclaw/"];
+const INTERNAL_TOPIC_PREFIXES = ["/rosout", "/parameter_events", "/agirosclaw/"];
 const INTERNAL_SERVICE_SUFFIXES = [
   "/describe_parameters",
   "/get_parameter_types",

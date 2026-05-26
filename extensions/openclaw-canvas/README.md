@@ -1,4 +1,4 @@
-# @rosclaw/openclaw-canvas
+# @agirosclaw/openclaw-canvas
 
 Real-time robot dashboard rendered inside OpenClaw's native apps via the Canvas/A2UI system.
 
@@ -129,7 +129,7 @@ OpenClaw Native App
             │               │
             │               └── rosbridge transport → AGIROS DDS → Robots
             │
-            └── Gateway methods (rosclaw.subscribe, rosclaw.getRobotState, ...)
+            └── Gateway methods (agirosclaw.subscribe, agirosclaw.getRobotState, ...)
                     │
                     └── rosbridge transport → AGIROS DDS → Robots
 ```
@@ -164,7 +164,7 @@ export function register(api) {
 
 Before implementing this extension:
 
-1. **Main plugin gateway methods** — `@rosclaw/openclaw-plugin` needs to register `api.registerGatewayMethod()` endpoints for real-time data access (Issue #10, currently deferred)
+1. **Main plugin gateway methods** — `@agirosclaw/openclaw-plugin` needs to register `api.registerGatewayMethod()` endpoints for real-time data access (Issue #10, currently deferred)
 2. **A2UI v0.8 familiarity** — the dashboard is built entirely as A2UI JSONL, not custom HTML/JS
 3. **Native app testing** — Canvas only renders in the OpenClaw macOS, iOS, or Android app
 

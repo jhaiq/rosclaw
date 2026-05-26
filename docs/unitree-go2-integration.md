@@ -109,7 +109,7 @@ make go2-gz-clean
                   ▼
 ┌─────────────────────────────────────────────────────┐
 │              go2_gz_bridge                          │
-│              (ROS2 Python Node)                     │
+│              (AGIROS Python Node)                     │
 │  - 话题映射：go2_gz_sim → RosClaw 标准话题           │
 │  - /go2_gz_sim/odom → /go2_state/odom              │
 │  - /go2_gz_sim/scan → /scan                        │
@@ -179,7 +179,7 @@ RosClaw 插件
 rosbridge_server (WebSocket: ws://agiros:9090)
     │
     ▼
-unitree_go2_node (ROS2 Python 节点)
+unitree_go2_node (AGIROS Python 节点)
     │
     ├──► /cmd_vel ──────────► 速度控制
     ├──► /go2_command/stand ─► 站立
@@ -239,7 +239,7 @@ unitree_go2_node (ROS2 Python 节点)
 
 ### GO2 行为命令详解
 
-ROS2-Gazebo-GO2 仿真支持官方行为命令接口，通过服务调用实现：
+AGIROS-Gazebo-GO2 仿真支持官方行为命令接口，通过服务调用实现：
 
 **服务名称**: `/robot1/robot_behavior_command`
 **服务类型**: `quadropted_msgs/srv/RobotBehaviorCommand`
@@ -454,7 +454,7 @@ agiros run image_view image_view --topic /go2/camera/image
 
 - [Unitree GO2 官方文档](https://www.unitree.com/go2/)
 - [Unitree SDK 2 GitHub](https://github.com/unitreerobotics/unitree_sdk2)
-- [ROS2 Nav2 文档](https://navigation.ros.org/)
+- [AGIROS Nav2 文档](https://navigation.ros.org/)
 - [RosClaw 示例](../examples/go2-control/)
 
 ## 更新日志

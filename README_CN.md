@@ -41,8 +41,8 @@ rosclaw/
 │   ├── openclaw-plugin/          # @rosclaw/openclaw-plugin — 核心 OpenClaw 扩展
 │   └── openclaw-canvas/          # @rosclaw/openclaw-canvas — 实时仪表盘 (Phase 3)
 ├── agiros_ws/src/
-│   ├── rosclaw_discovery/        # AGIROS 能力自动发现节点
-│   └── rosclaw_msgs/             # 自定义 AGIROS 消息/服务定义
+│   ├── agirosclaw_discovery/        # AGIROS 能力自动发现节点
+│   └── agirosclaw_msgs/             # 自定义 AGIROS 消息/服务定义
 ├── docker/                       # Docker Compose 配置
 └── examples/                     # 演示项目
 ```
@@ -87,8 +87,8 @@ docker compose up
 | [`@rosclaw/rosbridge-client`](packages/rosbridge-client/) | 独立的 rosbridge WebSocket 协议 TypeScript 客户端 |
 | [`@rosclaw/openclaw-plugin`](extensions/openclaw-plugin/) | OpenClaw 扩展：用于 AGIROS 控制的工具、钩子、技能、命令 |
 | [`@rosclaw/openclaw-canvas`](extensions/openclaw-canvas/) | 实时机器人仪表盘 (Phase 3) |
-| [`rosclaw_discovery`](agiros_ws/src/rosclaw_discovery/) | AGIROS Python 节点，用于能力自动发现 |
-| [`rosclaw_msgs`](agiros_ws/src/rosclaw_msgs/) | 自定义 AGIROS 消息/服务定义 |
+| [`agirosclaw_discovery`](agiros_ws/src/agirosclaw_discovery/) | AGIROS Python 节点，用于能力自动发现 |
+| [`agirosclaw_msgs`](agiros_ws/src/agirosclaw_msgs/) | 自定义 AGIROS 消息/服务定义 |
 
 ## 智能体工具
 
@@ -122,7 +122,8 @@ Apache-2.0
 
 ```sh
 ### rosclaw安装依赖及构建
-```bash
+```
+
 pnpm install          # 安装依赖
 pnpm build            # 构建所有包
 ```
@@ -130,41 +131,46 @@ pnpm build            # 构建所有包
 ### 集成 rosclaw插件到openClaw
 #### 挂载rosclaw插件到openClaw
 ##### 本地部署openclaw： 1. 在openClaw的`src/plugins`目录下创建一个软链接，指向rosclaw插件的目录
-```bash
-ln -s /path/to/rosclaw/packages/rosclaw_plugin src/plugins/
-# 例如，如果rosclaw插件位于~/rosclaw/packages/rosclaw_plugin
-ln -s ~/rosclaw/packages/rosclaw_plugin src/plugins/
+```sh
+ln -s /path/to/agirosclaw/packages/agirosclaw_plugin src/plugins/
+# 例如，如果rosclaw插件位于~/agirosclaw/packages/agirosclaw_plugin
+ln -s ~/agirosclaw/packages/agirosclaw_plugin src/plugins/
 ```
+
 ##### docker部署openclaw： 1. 在docker-compose.yml中添加一个新的服务，挂载rosclaw插件的目录到openClaw容器内
 ```yaml
 services:
   openclaw:
     # ... 其他配置 ...      
     volumes:
-      - ./path/to/rosclaw/packages/rosclaw_plugin:/app/src/plugins/rosclaw_plugin
-      # 例如，如果rosclaw插件位于~/rosclaw/packages/rosclaw_plugin
-      - ~/rosclaw/packages/rosclaw_plugin:/app/src/plugins/rosclaw_plugin
-    ```
+      - ./path/to/agirosclaw/packages/agirosclaw_plugin:/app/src/plugins/agirosclaw_plugin
+      # 例如，如果rosclaw插件位于~/agirosclaw/packages/agirosclaw_plugin
+      - ~/agirosclaw/packages/agirosclaw_plugin:/app/src/plugins/agirosclaw_plugin
+```
+
 ####加载rosclaw插件
 在openClaw的配置文件中，添加rosclaw插件的加载配置。例如，在
 `config/plugins.yaml`中添加：
 ```yaml
 plugins:
-    - name: rosclaw_plugin
-      type: rosclaw_plugin
-      path: /app/src/plugins/rosclaw_plugin
+    - name: agirosclaw_plugin
+      type: agirosclaw_plugin
+      path: /app/src/plugins/agirosclaw_plugin
       args: []
-``` 
+```
+
 ####
 重新启动openClaw，使插件生效
-```bash
+```sh
 docker compose restart openclaw
-``` 
+```
+
 #### 验证rosclaw插件是否加载成功
 查看openClaw的日志，确认rosclaw插件已成功加载
-```bash
+```sh
 docker compose logs openclaw    
 ```
+
 ##### 失败日志：
 2026-03-20T05:50:05.677+00:00 [plugins] plugin service failed (agiros-transport): Error: WebSocket error connecting to ws://agiros:9090
 2026-03-20T05:50:07.232+00:00 [ws] Proxy headers detected from untrusted address. Connection will not be treated as local. Configure gateway.trustedProxies to restore local client detection behind your proxy.
@@ -177,21 +183,21 @@ docker compose logs openclaw
 2026-03-20T05:53:20.741+00:00 [gateway] AGIROS transport status: connected
 
 ### 启动agiros环境
-```bash
+```sh
 source /opt/agiros/loong/setup.bash
-source ~/rosclaw/install/setup.bash
-``` 
+source ~/agirosclaw/install/setup.bash
+```
 
 ###启动 rosbridge_server
-```bash
+```sh
 agiros launch rosbridge_server rosbridge_server.launch.py
 ```
 
 ### 启动turtlebot3_gazebo
-```bash
+```sh
 source /opt/agiros/pixiu/setup.bash
 agiros launch turtlebot3_gazebo turtlebot3_world.launch.py
-````
+```
 
 #### 启动日志
 root@f8fcd141dd84:/agiros_ws# agiros launch turtlebot3_gazebo turtlebot3_world.launch.py
@@ -284,7 +290,7 @@ Tool 14:23
 
 
 ### 启动 turtlebot3 世界
-```bash
+```sh
 agiros launch turtlebot3_gazebo turtlebot3_world.launch.py
 ```
 

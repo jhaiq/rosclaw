@@ -17,9 +17,9 @@ User (messaging app) → OpenClaw Gateway → RosClaw Plugin → rosbridge_serve
 |---|---|---|
 | `@rosclaw/openclaw-plugin` | `extensions/openclaw-plugin/` | OpenClaw extension: tools, hooks, services, commands |
 | `@rosclaw/openclaw-canvas` | `extensions/openclaw-canvas/` | Real-time dashboard (Phase 3 — not yet implemented) |
-| `rosclaw_discovery` | `agiros_ws/src/rosclaw_discovery/` | ROS2 node for capability auto-discovery |
-| `rosclaw_msgs` | `agiros_ws/src/rosclaw_msgs/` | Custom ROS2 message/service definitions |
-| `rosclaw_agent` | `agiros_ws/src/rosclaw_agent/` | ROS2 agent node for WebRTC ↔ DDS bridge (Mode C robot-side) |
+| `agirosclaw_discovery` | `agiros_ws/src/agirosclaw_discovery/` | ROS2 node for capability auto-discovery |
+| `agirosclaw_msgs` | `agiros_ws/src/agirosclaw_msgs/` | Custom ROS2 message/service definitions |
+| `agirosclaw_agent` | `agiros_ws/src/agirosclaw_agent/` | ROS2 agent node for WebRTC ↔ DDS bridge (Mode C robot-side) |
 
 ### Transport Layer
 
@@ -62,7 +62,7 @@ pnpm typecheck        # Type-check all packages
 - TypeScript (ESM, strict)
 - pnpm workspaces
 - Zod (config validation)
-- ROS2 Jazzy Jalisco
+- ROS2 Loong Jalisco
 - rosbridge_suite (WebSocket bridge to ROS2)
 - OpenClaw plugin API
 - Docker / Docker Compose
@@ -318,8 +318,8 @@ GO2_GUI=true docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 
 **Installation**:
 ```sh
-# Skill installed at: ~/.agents/skills/rosclaw-robot-adapter/
-# Symlink: ~/.claude/skills/rosclaw-robot-adapter -> ~/.agents/skills/rosclaw-robot-adapter
+# Skill installed at: ~/.agents/skills/agirosclaw-robot-adapter/
+# Symlink: ~/.claude/skills/agirosclaw-robot-adapter -> ~/.agents/skills/agirosclaw-robot-adapter
 ```
 
 ### OpenClaw Plugin Enhancements
@@ -418,8 +418,8 @@ When sourcing multiple ROS2 workspaces, set `COLCON_CURRENT_PREFIX` before each 
 ```sh
 export COLCON_CURRENT_PREFIX=/opt/go2_gz_sim/install
 source /opt/go2_gz_sim/install/local_setup.sh
-export COLCON_CURRENT_PREFIX=/opt/rosclaw/install
-source /opt/rosclaw/install/local_setup.sh
+export COLCON_CURRENT_PREFIX=/opt/agirosclaw/install
+source /opt/agirosclaw/install/local_setup.sh
 ```
 
 ### GO2 Scene Modes
@@ -453,5 +453,6 @@ The plugin supports three transport modes via `openclaw.plugin.json`:
 | `rosbridge` | `"transport.mode": "rosbridge"` | Docker deployment (default) |
 | `local` | `"transport.mode": "local"` | Same-machine development |
 | `webrtc` | `"transport.mode": "webrtc"` | Remote robots with signaling server |
+
 
 

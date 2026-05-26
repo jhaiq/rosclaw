@@ -31,7 +31,7 @@ ROBOT_NAME=$(echo "$ROBOT_NAME" | tr -d '"')
 
 cat > "$OUTPUT_FILE" <<EOF
 {
-  "id": "rosclaw",
+  "id": "agirosclaw",
   "name": "RosClaw",
   "version": "0.0.1",
   "description": "Control AGIROS robots through natural language via messaging apps",

@@ -12,7 +12,7 @@ import { registerRobotAdapterCommand } from "./commands/robot-adapter.js";
  * RosClaw — OpenClaw plugin for AGIROS robot control via natural language.
  */
 export default {
-  id: "rosclaw",
+  id: "agirosclaw",
   name: "RosClaw",
 
   register(api: OpenClawPluginApi): void {

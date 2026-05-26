@@ -85,13 +85,13 @@ bash verify-gpu.sh
 ### 2. 检查容器内 GPU 状态
 
 ```sh
-docker exec -it rosclaw-agiros-gpu nvidia-smi
+docker exec -it agirosclaw-agiros-gpu nvidia-smi
 ```
 
 ### 3. 检查 Gazebo 渲染器
 
 ```sh
-docker exec -it rosclaw-agiros-gpu glxinfo | grep "OpenGL renderer"
+docker exec -it agirosclaw-agiros-gpu glxinfo | grep "OpenGL renderer"
 ```
 
 应该显示 NVIDIA GPU 而不是 llvmpipe。
@@ -121,7 +121,7 @@ docker compose logs agiros-gpu
 
 ```sh
 # 检查 DISPLAY 环境变量
-docker exec rosclaw-agiros-gpu echo $DISPLAY
+docker exec agirosclaw-agiros-gpu echo $DISPLAY
 
 # 确保 X11 权限开放
 xhost +local:docker
@@ -131,7 +131,7 @@ xhost +local:docker
 
 ```sh
 # 检查容器内 NVIDIA 状态
-docker exec rosclaw-agiros-gpu nvidia-smi
+docker exec agirosclaw-agiros-gpu nvidia-smi
 
 # 如果没有输出，检查 .env 中的 NVIDIA_VISIBLE_DEVICES 设置
 ```

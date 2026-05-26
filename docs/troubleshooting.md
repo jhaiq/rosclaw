@@ -37,7 +37,7 @@ networks:
 
 # 正确的配置
 networks:
-  rosclaw-network:
+  agirosclaw-network:
     external: true
     name: ${DOCKER_NETWORK_NAME:-1panel-network}
 ```
@@ -47,7 +47,7 @@ networks:
 services:
   agiros:
     networks:
-      - rosclaw-network
+      - agirosclaw-network
 ```
 
 **验证:**
@@ -73,7 +73,7 @@ OpenClaw 容器和 AGIROS 容器不在同一个 Docker 网络中。
 1. 确保两个容器使用相同的外部网络：
 ```yaml
 networks:
-  rosclaw-network:
+  agirosclaw-network:
     external: true
     name: 1panel-network
 ```
@@ -132,7 +132,7 @@ docker compose logs agiros
 docker ps -a | grep agiros
 
 # 进入容器调试
-docker run --rm -it rosclaw/agiros:latest /bin/bash
+docker run --rm -it agirosclaw/agiros:latest /bin/bash
 ```
 
 ---
@@ -173,7 +173,7 @@ docker run --rm --gpus all nvidia/cuda:12.0-base nvidia-smi
 
 **错误信息:**
 ```bash
-docker exec rosclaw-agiros-gpu nvidia-smi
+docker exec agirosclaw-agiros-gpu nvidia-smi
 # 命令失败或无输出
 ```
 
@@ -206,7 +206,7 @@ services:
 
 **错误信息:**
 ```
-Plugin 'rosclaw' not found in configuration
+Plugin 'agirosclaw' not found in configuration
 ```
 
 **原因:**
@@ -232,10 +232,10 @@ cat extensions/openclaw-plugin/openclaw.plugin.json
 **症状:**
 ```
 http server listening (2 plugins: browser, memory-core)
-# 预期：3 plugins: browser, memory-core, rosclaw
+# 预期：3 plugins: browser, memory-core, agirosclaw
 ```
 
-CLI 显示插件已启用（`openclaw plugins list`），但 `http server listening` 日志中不包含 rosclaw。
+CLI 显示插件已启用（`openclaw plugins list`），但 `http server listening` 日志中不包含 agirosclaw。
 
 **原因:**
 `openclaw.plugin.json` 缺少 `activation.onStartup` 字段。OpenClaw 的 `shouldConsiderForGatewayStartup` 函数检查插件 manifest 中的 `activation.onStartup`，非内置插件（`origin === "config"`）如果未设置此字段，会被排除在 `startup.pluginIds` 之外。
@@ -255,7 +255,7 @@ CLI 显示插件已启用（`openclaw plugins list`），但 `http server listen
 ```bash
 # 重启容器后检查
 docker logs 1Panel-openclaw-SRjc | grep "http server listening"
-# 应显示 3 plugins: browser, memory-core, rosclaw
+# 应显示 3 plugins: browser, memory-core, agirosclaw
 ```
 
 ---
@@ -264,7 +264,7 @@ docker logs 1Panel-openclaw-SRjc | grep "http server listening"
 
 **错误信息:**
 ```
-Failed to load plugin rosclaw: Cannot find module '@rosclaw/openclaw-plugin'
+Failed to load plugin agirosclaw: Cannot find module '@agirosclaw/openclaw-plugin'
 ```
 
 **原因:**
@@ -292,7 +292,7 @@ ls -la extensions/openclaw-plugin/dist/
 **错误信息:**
 ```
 WebSocket connection to 'ws://localhost:9090' failed
-Error in 'rosclaw' service: Connection closed
+Error in 'agirosclaw' service: Connection closed
 ```
 
 **原因:**
@@ -322,7 +322,7 @@ sudo ufw allow 9090/tcp
 
 **错误信息:**
 ```
-ROS2 transport disconnected
+AGIROS transport disconnected
 ```
 
 **原因:**
@@ -389,7 +389,7 @@ Gazebo 仿真帧率低，卡顿明显。
 make gpu-start
 
 # 验证 GPU 使用
-docker exec rosclaw-agiros-gpu glxinfo | grep "OpenGL renderer"
+docker exec agirosclaw-agiros-gpu glxinfo | grep "OpenGL renderer"
 
 # 设置正确的模型路径
 GAZEBO_MODEL_PATH=/opt/agiros/pixiu/share/turtlebot3_gazebo/models

@@ -110,7 +110,7 @@ gpu-start: ## Start agiros with GPU acceleration (requires NVIDIA Container Tool
 	@$(COMPOSE) --profile gpu up -d agiros-gpu
 	@echo ""
 	@echo "[ok] GPU-accelerated agiros started!"
-	@echo "[info] Verify with: docker exec rosclaw-agiros-gpu nvidia-smi"
+	@echo "[info] Verify with: docker exec agirosclaw-agiros-gpu nvidia-smi"
 
 gpu-stop: ## Stop GPU-accelerated agiros container
 	@echo "[info] Stopping GPU-accelerated agiros..."

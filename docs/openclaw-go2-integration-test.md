@@ -30,9 +30,9 @@
 |------|----------|-----------|
 | OpenClaw Gateway | latest | 1Panel-openclaw-SRjc |
 | RosClaw Plugin | 0.0.1 | 内置于 OpenClaw |
-| rosbridge_suite | 2.4.2 | rosclaw-agiros-gpu |
-| AGIROS | Jazzy Jalisco | rosclaw-agiros-gpu |
-| unitree_go2 | 0.0.1 | rosclaw-agiros-gpu |
+| rosbridge_suite | 2.4.2 | agirosclaw-agiros-gpu |
+| AGIROS | Loong Jalisco | agirosclaw-agiros-gpu |
+| unitree_go2 | 0.0.1 | agirosclaw-agiros-gpu |
 | 网络 | 1panel-network (172.24.0.0/16) | Docker 外部网络 |
 
 ## 测试项目
@@ -41,7 +41,7 @@
 
 **测试命令：**
 ```bash
-docker exec rosclaw-agiros-gpu bash -c \
+docker exec agirosclaw-agiros-gpu bash -c \
   "source /opt/agiros/pixiu/setup.sh && source /agiros_ws/install/setup.sh && \
    python3 /agiros_ws/src/unitree_go2/unitree_go2/go2_node.py"
 ```
@@ -150,7 +150,7 @@ RosClaw 插件为 OpenClaw 提供以下 AGIROS 工具：
 {
   "plugins": {
     "entries": {
-      "rosclaw": {
+      "agirosclaw": {
         "config": {
           "transport": { "mode": "rosbridge" },
           "rosbridge": {
@@ -198,12 +198,12 @@ OpenClaw + GO2 集成测试成功，完整的控制链路已验证：
 
 ### 可用的控制接口
 
-**输入话题（OpenClaw → ROS2）：**
+**输入话题（OpenClaw → AGIROS）：**
 - `/cmd_vel` (Twist) - 速度控制
 - `/go2_command/stand` (Empty) - 站立命令
 - `/go2_command/sit` (Empty) - 坐下命令
 
-**输出话题（ROS2 → OpenClaw）：**
+**输出话题（AGIROS → OpenClaw）：**
 - `/go2_state/battery` (BatteryState) - 电池状态
 - `/go2_state/imu` (Imu) - IMU 数据
 - `/go2_state/foot_force` (WrenchStamped) - 足部力反馈

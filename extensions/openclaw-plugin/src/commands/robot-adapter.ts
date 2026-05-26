@@ -282,8 +282,8 @@ function generateDockerCompose(
   return `services:
   # ${robotName} 仿真/驱动
   ${robotId}-sim:
-    image: rosclaw/${robotId}:latest
-    container_name: rosclaw-${robotId}-sim
+    image: agirosclaw/${robotId}:latest
+    container_name: agirosclaw-${robotId}-sim
     environment:
       - ROS_DOMAIN_ID=\${ROS_DOMAIN_ID:-0}
       - DISPLAY=\${DISPLAY:-:0}
@@ -291,23 +291,23 @@ function generateDockerCompose(
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ${robotPath}:/opt/${robotId}:ro
     networks:
-      - rosclaw-network
+      - agirosclaw-network
     profiles:
       - ${robotId}
 
   # 桥接节点
   ${robotId}-bridge:
-    image: rosclaw/${robotId}:latest
-    container_name: rosclaw-${robotId}-bridge
+    image: agirosclaw/${robotId}:latest
+    container_name: agirosclaw-${robotId}-bridge
     command: >
       bash -c "source /opt/agiros/loong/setup.sh &&
                source /opt/${robotId}/install/local_setup.sh &&
                agiros launch ${robotId}_bringup bridge_launch.py"
     volumes:
       - ${robotPath}:/opt/${robotId}:ro
-      - /path/to/rosclaw/agiros_ws/install:/opt/rosclaw/install:ro
+      - /path/to/agirosclaw/agiros_ws/install:/opt/agirosclaw/install:ro
     networks:
-      - rosclaw-network
+      - agirosclaw-network
     profiles:
       - ${robotId}
     depends_on:
@@ -315,23 +315,23 @@ function generateDockerCompose(
 
   # ROSBridge 服务
   rosbridge:
-    image: rosclaw/${robotId}:latest
-    container_name: rosclaw-rosbridge
+    image: agirosclaw/${robotId}:latest
+    container_name: agirosclaw-rosbridge
     ports:
       - "9090:9090"
     command: >
       bash -c "source /opt/agiros/loong/setup.sh &&
-               source /opt/rosclaw/install/setup.sh &&
+               source /opt/agirosclaw/install/setup.sh &&
                agiros launch rosbridge_server rosbridge_websocket_launch.xml"
     volumes:
-      - /path/to/rosclaw/agiros_ws/install:/opt/rosclaw/install:ro
+      - /path/to/agirosclaw/agiros_ws/install:/opt/agirosclaw/install:ro
     networks:
-      - rosclaw-network
+      - agirosclaw-network
     profiles:
       - ${robotId}
 
 networks:
-  rosclaw-network:
+  agirosclaw-network:
     external: true
     name: \${DOCKER_NETWORK_NAME:-1panel-network}`;
 }

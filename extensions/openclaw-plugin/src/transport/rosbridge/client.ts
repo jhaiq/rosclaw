@@ -144,7 +144,7 @@ export class RosbridgeClient {
   }
 
   /** Generate a unique message ID. */
-  nextId(prefix = "rosclaw"): string {
+  nextId(prefix = "agirosclaw"): string {
     return `${prefix}_${++this.idCounter}`;
   }
 

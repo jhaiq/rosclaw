@@ -1,7 +1,7 @@
 # Unitree GO2 Simulation Image
 # This is a stub for future Gazebo/Isaac Sim integration
 
-FROM ros:loong-ros-base AS base
+FROM agiros:loong-ros-base AS base
 
 # Install Unitree GO2 dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Copy the Unitree GO2 package
 COPY agiros_ws/src/unitree_go2 /agiros_ws/src/unitree_go2
-COPY agiros_ws/src/rosclaw_msgs /agiros_ws/src/rosclaw_msgs
+COPY agiros_ws/src/agirosclaw_msgs /agiros_ws/src/agirosclaw_msgs
 
 # Build AGIROS packages
 WORKDIR /agiros_ws

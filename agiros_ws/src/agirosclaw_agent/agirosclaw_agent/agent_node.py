@@ -2,7 +2,7 @@
 RosClaw Agent Node — robot-side bridge for Mode C (Cloud/Remote) deployments.
 
 This AGIROS node runs on the robot and connects outbound to the signaling server,
-establishing a WebRTC data channel with the cloud-side RosClaw plugin. All ROS2
+establishing a WebRTC data channel with the cloud-side RosClaw plugin. All AGIROS
 commands and responses flow over this encrypted peer-to-peer channel.
 
 Connection flow:
@@ -20,16 +20,16 @@ Message flow:
   - Execute against the local AGIROS DDS bus via rclpy
   - Send responses back over the data channel
 
-Configuration (ROS2 parameters with env var fallback):
+Configuration (AGIROS parameters with env var fallback):
   signaling_url  / ROSCLAW_SIGNALING_URL  — WebSocket URL of the signaling server
   robot_token    / ROSCLAW_ROBOT_TOKEN    — Authentication token for the signaling server
   robot_key      / ROSCLAW_ROBOT_KEY      — Secret key validated by this node
   robot_id       / ROSCLAW_ROBOT_ID       — This robot's ID on the signaling server
 
   Pass via AGIROS parameters:
-    agiros run rosclaw_agent agent_node --ros-args -p signaling_url:=wss://example.com
+    agiros run agirosclaw_agent agent_node --ros-args -p signaling_url:=wss://example.com
   Or via environment variables:
-    ROSCLAW_SIGNALING_URL=wss://example.com agiros run rosclaw_agent agent_node
+    ROSCLAW_SIGNALING_URL=wss://example.com agiros run agirosclaw_agent agent_node
 """
 
 from __future__ import annotations
@@ -61,14 +61,14 @@ from rosbridge_library.internal.ros_loader import (
     get_action_class,
 )
 
-logger = logging.getLogger("rosclaw_agent")
+logger = logging.getLogger("agirosclaw_agent")
 
 
 class RosClawAgentNode(Node):
-    """ROS2 node that bridges WebRTC data channels to local DDS."""
+    """AGIROS node that bridges WebRTC data channels to local DDS."""
 
     def __init__(self) -> None:
-        super().__init__("rosclaw_agent")
+        super().__init__("agirosclaw_agent")
 
         # Parameters: --ros-args -p key:=value > env var > hardcoded default
         self.declare_parameter("signaling_url", os.environ.get("ROSCLAW_SIGNALING_URL", "ws://localhost:8000"))
@@ -275,7 +275,7 @@ class RosClawAgentNode(Node):
     # --- AGIROS Bridge ---
 
     async def _handle_data_channel_message(self, raw: str) -> None:
-        """Parse rosbridge JSON and execute against local ROS2."""
+        """Parse rosbridge JSON and execute against local AGIROS."""
         try:
             msg = json.loads(raw)
         except json.JSONDecodeError:

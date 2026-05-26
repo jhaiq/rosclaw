@@ -32,8 +32,8 @@
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/PlaiPin/rosclaw.git
-cd rosclaw
+git clone https://github.com/PlaiPin/agirosclaw.git
+cd agirosclaw
 
 # 2. 安装依赖
 pnpm install
@@ -53,14 +53,14 @@ pnpm typecheck
 ### 目录结构
 
 ```
-rosclaw/
+agirosclaw/
 ├── extensions/
 │   ├── openclaw-plugin/    # 核心 OpenClaw 扩展
 │   └── openclaw-canvas/    # 实时仪表盘 (Phase 3)
 ├── agiros_ws/src/
-│   ├── rosclaw_discovery/  # AGIROS 发现节点
-│   ├── rosclaw_msgs/       # AGIROS 消息定义
-│   └── rosclaw_agent/      # AGIROS 代理节点
+│   ├── agirosclaw_discovery/  # AGIROS 发现节点
+│   ├── agirosclaw_msgs/       # AGIROS 消息定义
+│   └── agirosclaw_agent/      # AGIROS 代理节点
 ├── docker/
 │   ├── docker-compose.yml
 │   ├── .env.example
@@ -164,8 +164,8 @@ docker logs 1Panel-openclaw-SRjc | grep "connected"
 
 | 类型 | 约定 | 示例 |
 |------|------|------|
-| AGIROS 包 | `rosclaw_*` 前缀 | `rosclaw_discovery` |
-| npm 包 | `@rosclaw/` 作用域 | `@rosclaw/openclaw-plugin` |
+| AGIROS 包 | `rosclaw_*` 前缀 | `agirosclaw_discovery` |
+| npm 包 | `@agirosclaw/` 作用域 | `@agirosclaw/openclaw-plugin` |
 | TypeScript 类 | PascalCase | `RosbridgeClient` |
 | 函数/变量 | camelCase | `sendMessage` |
 | 常量 | UPPER_SNAKE_CASE | `DEFAULT_PORT` |
@@ -269,7 +269,7 @@ docker compose ps     # 容器状态
 
 ## 联系方式
 
-- 项目仓库：https://github.com/PlaiPin/rosclaw
+- 项目仓库：https://github.com/PlaiPin/agirosclaw
 - 作者：PlaiPin
 - 许可证：Apache-2.0
 

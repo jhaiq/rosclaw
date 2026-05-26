@@ -1,3 +1,4 @@
+
 # RosClaw 机器人适配快速参考卡
 
 ## 一句话流程
@@ -10,7 +11,7 @@
 
 ### 阶段 1: 分析 (30 分钟)
 
-```bash
+```sh
 # 启动机器人/仿真后执行
 agiros topic list                    # 列出所有话题
 agiros topic info /topic --verbose   # 查看话题类型
@@ -60,7 +61,7 @@ class RobotBridge(Node):
         self.odom_sub = self.create_subscription(
             Odometry, '/robot/odom', self.odom_callback, 10)
         self.odom_pub = self.create_publisher(
-            Odometry, '/rosclaw/odom', 10)
+            Odometry, '/agirosclaw/odom', 10)
 
         # 订阅：RosClaw 标准话题 → 转发到机器人
         self.cmd_vel_sub = self.create_subscription(
@@ -90,7 +91,7 @@ if __name__ == '__main__': main()
 ```yaml
 services:
   robot:
-    image: ros:loong-ros-base
+    image: agiros:loong-ros-base
     command: >
       bash -c "source /opt/agiros/loong/setup.sh &&
                agiros launch robot_bringup robot_launch.py"
@@ -99,7 +100,7 @@ services:
       - ROS_DOMAIN_ID=0
 
   rosbridge:
-    image: ros:loong-ros-base
+    image: agiros:loong-ros-base
     ports:
       - "9090:9090"
     command: >
@@ -129,15 +130,15 @@ services:
 
 ### 阶段 6: 验证 (30 分钟)
 
-```bash
+```sh
 # 1. 检查话题是否存在
-agiros topic list | grep rosclaw
+agiros topic list | grep agirosclaw
 
 # 2. 检查话题频率
-agiros topic hz /rosclaw/odom
+agiros topic hz /agirosclaw/odom
 
 # 3. 检查数据类型
-agiros topic info /rosclaw/odom --verbose
+agiros topic info /agirosclaw/odom --verbose
 
 # 4. OpenClaw 测试命令
 "请机器人向前移动 1 米"
@@ -199,7 +200,7 @@ robot-integration/
 
 ## GO2 Gazebo 参考值
 
-```bash
+```sh
 # 话题频率参考
 /go2_state/odom    → 29.5 Hz
 /scan              → 10 Hz
@@ -208,9 +209,9 @@ robot-integration/
 /go2_state/battery → 1 Hz
 
 # Docker 服务
-rosclaw-go2-gz-sim   (Gazebo 仿真)
-rosclaw-go2-bridge   (话题桥接)
-rosclaw-rosbridge    (WebSocket 服务)
+agirosclaw-go2-gz-sim   (Gazebo 仿真)
+agirosclaw-go2-bridge   (话题桥接)
+agirosclaw-rosbridge    (WebSocket 服务)
 ```
 
 ---
@@ -222,3 +223,4 @@ rosclaw-rosbridge    (WebSocket 服务)
 3. **Docker 隔离** - 避免污染主机环境
 4. **配置驱动** - 通过 plugin.json 管理差异
 5. **验证优先** - 每步完成后立即验证
+

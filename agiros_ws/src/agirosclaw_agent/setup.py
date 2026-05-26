@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = "rosclaw_agent"
+package_name = "agirosclaw_agent"
 
 setup(
     name=package_name,
@@ -14,12 +14,12 @@ setup(
     zip_safe=True,
     maintainer="PlaiPin",
     maintainer_email="team@plaipin.com",
-    description="ROS2 agent node for cloud/remote WebRTC bridge (Mode C)",
+    description="AGIROS agent node for cloud/remote WebRTC bridge (Mode C)",
     license="Apache-2.0",
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
-            "agent_node = rosclaw_agent.agent_node:main",
+            "agent_node = agirosclaw_agent.agent_node:main",
         ],
     },
 )

@@ -7,7 +7,7 @@
 
 **Architecture:** 通过话题桥接节点将 go2_gz_sim 的 AGIROS 话题映射到 RosClaw 标准接口，OpenClaw 插件通过 rosbridge 协议与仿真环境通信。
 
-**Tech Stack:** AGIROS Jazzy, Gazebo Sim, TypeScript (OpenClaw Plugin), Python (ROS2 Nodes), Docker Compose
+**Tech Stack:** AGIROS Loong, Gazebo Sim, TypeScript (OpenClaw Plugin), Python (ROS2 Nodes), Docker Compose
 
 ---
 
@@ -47,7 +47,7 @@
 - [ ] **Step 1: 创建 Dockerfile.go2-gz-sim**
 
 ```dockerfile
-# AGIROS S S S Jazzy + Gazebo Sim for Unitree GO2
+# AGIROS S S S Loong + Gazebo Sim for Unitree GO2
 FROM ros:jazzy-ros-base AS base
 
 LABEL maintainer="RosClaw Team"
@@ -102,8 +102,8 @@ exec "$@"
 
 ```sh
 cd /home/jhq/work/code/claw_ws/rosclaw/docker
-docker build -f Dockerfile.go2-gz-sim -t rosclaw/go2-gz-sim:latest ..
-docker run --rm rosclaw/go2-gz-sim:latest echo "Image build successful"
+docker build -f Dockerfile.go2-gz-sim -t agirosclaw/go2-gz-sim:latest ..
+docker run --rm agirosclaw/go2-gz-sim:latest echo "Image build successful"
 ```
 
 Expected: Docker build completes without errors, container prints "Image build successful"
@@ -131,11 +131,11 @@ git commit -m "feat: add Gazebo simulation Dockerfile for GO2"
 services:
   # GO2 Gazebo Simulation
   go2-gz-sim:
-    image: rosclaw/go2-gz-sim:latest
+    image: agirosclaw/go2-gz-sim:latest
     build:
       context: ..
       dockerfile: docker/Dockerfile.go2-gz-sim
-    container_name: rosclaw-go2-gz-sim
+    container_name: agirosclaw-go2-gz-sim
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
       - GZ_SIM_RESOURCE_PATH=/opt/go2_gz_sim/models
@@ -147,7 +147,7 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ${GO2_GZ_SIM_PATH:-/opt/go2_gz_sim}:/opt/go2_gz_sim:ro
     networks:
-      - rosclaw-network
+      - agirosclaw-network
     profiles:
       - go2-gz
     depends_on:
@@ -162,20 +162,20 @@ services:
 
   # GO2 Bridge Node - maps go2_gz_sim topics to RosClaw standard topics
   go2-bridge-node:
-    image: rosclaw/agiros:latest
-    container_name: rosclaw-go2-bridge
+    image: agirosclaw/agiros:latest
+    container_name: agirosclaw-go2-bridge
     command: ["agiros", "launch", "unitree_go2", "go2_gz_bridge_launch.py"]
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
     networks:
-      - rosclaw-network
+      - agirosclaw-network
     profiles:
       - go2-gz
     depends_on:
       - go2-gz-sim
 
 networks:
-  rosclaw-network:
+  agirosclaw-network:
     external: true
     name: ${DOCKER_NETWORK_NAME:-1panel-network}
 ```
@@ -801,7 +801,7 @@ go2-gz-status:
 - [ ] **Step 3: 验证 Make 命令**
 
 ```sh
-cd /home/jhq/work/code/claw_ws/rosclaw
+cd /home/jhq/work/code/claw_ws/agirosclaw
 make go2-gz-status
 ```
 
@@ -841,8 +841,8 @@ echo "  GO2 Gazebo Simulation Verification"
 echo "========================================"
 echo ""
 
-# Source ROS2
-echo "[1/6] Sourcing ROS2..."
+# Source AGIROS
+echo "[1/6] Sourcing AGIROS..."
 source /opt/agiros/pixiu/setup.sh
 
 # Source workspace if exists
@@ -926,7 +926,7 @@ echo ""
 
 - Docker 和 Docker Compose
 - NVIDIA GPU 和 Container Toolkit (可选，用于 GPU 加速)
-- AGIROS S S S Jazzy (本地测试)
+- AGIROS S S S Loong (本地测试)
 
 ## 快速开始
 
@@ -1197,4 +1197,5 @@ git commit -m "test: add integration test for GO2 Gazebo simulation"
 2. **自主导航**: 集成 Nav2 导航栈
 3. **视觉识别**: 添加摄像头图像处理
 4. **多机器人支持**: 同时控制多个仿真机器人
+
 

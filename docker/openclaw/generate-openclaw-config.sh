@@ -61,12 +61,12 @@ cat > "$OUTPUT_FILE" <<EOF
 
   "plugins": {
     "enabled": true,
-    "allow": ["rosclaw"],
+    "allow": ["agirosclaw"],
     "load": {
-      "paths": ["/home/node/rosclaw/extensions/openclaw-plugin"]
+      "paths": ["/home/node/agirosclaw/extensions/openclaw-plugin"]
     },
     "entries": {
-      "rosclaw": {
+      "agirosclaw": {
         "enabled": true,
         "config": {
           "transport": { "mode": "${ROSCLAW_TRANSPORT_MODE}" },

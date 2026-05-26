@@ -1,5 +1,5 @@
 {
-  "name": "@rosclaw/rosclaw",
+  "name": "@agirosclaw/agirosclaw",
   "version": "0.0.1",
   "type": "module",
   "description": "OpenClaw extension for AGIROS robot control via natural language",
@@ -28,7 +28,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/PlaiPin/rosclaw.git",
+    "url": "https://github.com/PlaiPin/agirosclaw.git",
     "directory": "extensions/openclaw-plugin"
   },
   "author": "PlaiPin",

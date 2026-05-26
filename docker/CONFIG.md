@@ -1,8 +1,9 @@
+
 # Docker Configuration Guide
 
 ## 快速开始
 
-```bash
+```sh
 cd docker
 
 # 1. 创建配置文件
@@ -43,7 +44,7 @@ make logs
 
 所有可配置的参数都集中在 `docker/.env` 文件中，修改此文件即可，无需修改其他地方。
 
-```bash
+```sh
 # 从模板创建配置文件
 cd docker
 cp .env.example .env
@@ -105,7 +106,7 @@ cp .env.example .env
 | `navigation2` | 启动仿真 + Nav2 导航 | `go2_navigation2.launch.py` |
 
 **使用示例**：
-```bash
+```sh
 # 仅仿真
 GO2_SCENE=none docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 
@@ -127,7 +128,7 @@ ROS2-Gazebo-GO2 仿真支持官方行为命令接口，通过服务调用实现�
 | `walk` | `command: "walk"` | TROT | 0.0m |
 
 **服务调用示例**：
-```bash
+```sh
 # 坐下
 agiros service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBehaviorCommand "{command: 'sit'}"
 
@@ -152,7 +153,7 @@ agiros service call /robot1/robot_behavior_command quadropted_msgs/srv/RobotBeha
 
 使用自定义世界文件（如 `rmuc_2025_world.sdf`）时，必须确保 `GZ_SIM_RESOURCE_PATH` 包含模型和世界文件的所有目录：
 
-```bash
+```sh
 GZ_SIM_RESOURCE_PATH=/opt/go2_gz_sim/models:/opt/go2_gz_sim/src/gazebo_sim/models:/opt/go2_gz_sim/src/gazebo_sim/world
 ```
 
@@ -167,7 +168,7 @@ GZ_SIM_RESOURCE_PATH=/opt/go2_gz_sim/models:/opt/go2_gz_sim/src/gazebo_sim/model
 - `GO2_GUI=true`：GUI 模式，需要 X11 显示服务器支持，适合本地开发调试
 
 使用示例：
-```bash
+```sh
 # 无头模式
 docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 
@@ -179,7 +180,7 @@ GO2_GUI=true docker compose -f docker-compose.go2-gz.yml --profile go2-gz up -d
 
 ### 快速启动
 
-```bash
+```sh
 cd docker
 cp .env.example .env
 # 按需编辑 .env 文件
@@ -188,7 +189,7 @@ cp .env.example .env
 
 ### 手动启动
 
-```bash
+```sh
 cd docker
 
 # 1. 生成配置文件
@@ -200,13 +201,13 @@ docker compose --env-file .env -f docker-compose.yml -f docker-compose.openclaw.
 
 ### 查看日志
 
-```bash
+```sh
 docker compose -f docker-compose.yml -f docker-compose.openclaw.yml logs -f
 ```
 
 ### 停止服务
 
-```bash
+```sh
 docker compose --env-file .env -f docker-compose.yml -f docker-compose.openclaw.yml down
 ```
 
@@ -225,7 +226,7 @@ docker/.env  →  generate-openclaw-config.sh  →  openclaw/openclaw.json
 
 修改 `.env` 后，重新运行 `openclaw_docker_setup.sh` 或手动执行以下步骤：
 
-```bash
+```sh
 # 1. 重新生成 openclaw.json
 bash docker/openclaw/generate-openclaw-config.sh
 
@@ -245,7 +246,7 @@ DOCKER_NETWORK_EXTERNAL=true
 ### 场景 2：使用独立 Docker 网络
 
 ```env
-DOCKER_NETWORK_NAME=rosclaw-network
+DOCKER_NETWORK_NAME=agirosclaw-network
 DOCKER_NETWORK_EXTERNAL=false
 ```
 
@@ -256,7 +257,7 @@ ROSBRIDGE_PORT=9091       # 修改 rosbridge 端口
 OPENCLAW_PORT=18790       # 修改 OpenClaw 端口
 ```
 
-### 场景 4：连接外部 ROS2
+### 场景 4：连接外部 AGIROS
 
 ```env
 ROSCLAW_TRANSPORT_MODE=rosbridge
@@ -273,7 +274,7 @@ ROSCLAW_ROSBRIDGE_URL=ws://localhost:9090
 
 ### 检查配置是否生效
 
-```bash
+```sh
 # 查看 openclaw.json
 cat docker/openclaw/openclaw.json
 
@@ -297,6 +298,6 @@ OPENCLAW_PORT=18790
 
 确保两个容器在同一网络：
 
-```bash
+```sh
 docker network inspect 1panel-network
 ```

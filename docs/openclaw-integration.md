@@ -39,7 +39,7 @@ rosbridge (WebSocket, 默认 ws://localhost:9090 或 ws://agiros:9090)
 ### 步骤 1：构建 RosClaw 插件
 
 ```sh
-cd /path/to/rosclaw
+cd /path/to/agirosclaw
 pnpm install
 pnpm build
 ```
@@ -48,10 +48,10 @@ pnpm build
 
 ```sh
 # 从本地路径安装（--link / -l 表示本地路径）
-openclaw plugins install -l /opt/rosclaw/extensions/openclaw-plugin
+openclaw plugins install -l /opt/agirosclaw/extensions/openclaw-plugin
 
 # 或从 npm 安装（如果已发布）
-openclaw plugins install @rosclaw/rosclaw
+openclaw plugins install @agirosclaw/agirosclaw
 ```
 
 ### 步骤 3：配置 `openclaw.json`
@@ -62,9 +62,9 @@ openclaw plugins install @rosclaw/rosclaw
 {
   "plugins": {
     "enabled": true,
-    "allow": ["rosclaw"],
+    "allow": ["agirosclaw"],
     "entries": {
-      "rosclaw": {
+      "agirosclaw": {
         "enabled": true,
         "config": {
           "transport": { "mode": "rosbridge" },
@@ -96,21 +96,21 @@ openclaw gateway restart
 ### 前置条件
 
 - 1Panel 已安装并运行
-- RosClaw 仓库已克隆到服务器（例如 `/opt/rosclaw`）
+- RosClaw 仓库已克隆到服务器（例如 `/opt/agirosclaw`）
 
 ### 场景 A：RosClaw 代码在 1Panel 服务器上（推荐）
 
-如果 RosClaw 代码已经在 1Panel 服务器上（例如 `/home/1panel/workspace/rosclaw`），直接挂载即可。
+如果 RosClaw 代码已经在 1Panel 服务器上（例如 `/home/1panel/workspace/agirosclaw`），直接挂载即可。
 
 #### 步骤 1：准备目录结构
 
 ```sh
 # 在 1Panel 服务器上
-mkdir -p /opt/rosclaw-stack
-cd /opt/rosclaw-stack
+mkdir -p /opt/agirosclaw-stack
+cd /opt/agirosclaw-stack
 
 # 克隆或复制 RosClaw 仓库（如果尚未存在）
-git clone https://github.com/PlaiPin/rosclaw.git /opt/rosclaw
+git clone https://github.com/PlaiPin/agirosclaw.git /opt/agirosclaw
 ```
 
 #### 步骤 2：创建 docker-compose.yml
@@ -123,7 +123,7 @@ version: "3.8"
 services:
   # AGIROS + rosbridge_server + Gazebo 仿真
   agiros:
-    image: rosclaw/agiros:latest
+    image: agirosclaw/agiros:latest
     ports:
       - "9090:9090"
       - "11311:11311"
@@ -132,7 +132,7 @@ services:
       - GAZEBO_MODEL_PATH=/opt/agiros/pixiu/share/turtlebot3_gazebo/models
       - TURTLEBOT3_MODEL=burger
     networks:
-      - rosclaw
+      - agirosclaw
     restart: unless-stopped
 
   # OpenClaw Gateway with RosClaw plugin
@@ -149,18 +149,18 @@ services:
       # 持久化 OpenClaw 状态
       - openclaw_state:/home/node/.openclaw
       # 挂载 RosClaw 插件代码（服务器路径 -> 容器内路径）
-      - /opt/rosclaw:/home/node/rosclaw:ro
+      - /opt/agirosclaw:/home/node/agirosclaw:ro
       # 挂载配置文件
       - ./openclaw.json:/home/node/.openclaw/openclaw.json:ro
     command: ["openclaw", "gateway", "run", "--allow-unconfigured", "--port", "18789"]
     depends_on:
       - agiros
     networks:
-      - rosclaw
+      - agirosclaw
     restart: unless-stopped
 
 networks:
-  rosclaw:
+  agirosclaw:
     driver: bridge
 
 volumes:
@@ -179,24 +179,24 @@ volumes:
 
 ```sh
 # 在本地电脑执行
-cd /path/to/rosclaw
+cd /path/to/agirosclaw
 
 # 方式 A: 使用 scp 打包上传
-tar czf rosclaw.tar.gz extensions/ package.json pnpm-workspace.yaml tsconfig.base.json
-scp rosclaw.tar.gz user@1panel-server:/opt/rosclaw/
-ssh user@1panel-server "cd /opt/rosclaw && tar xzf rosclaw.tar.gz"
+tar czf agirosclaw.tar.gz extensions/ package.json pnpm-workspace.yaml tsconfig.base.json
+scp agirosclaw.tar.gz user@1panel-server:/opt/agirosclaw/
+ssh user@1panel-server "cd /opt/agirosclaw && tar xzf agirosclaw.tar.gz"
 
 # 方式 B: 使用 rsync 同步
-rsync -avz --exclude 'node_modules' --exclude 'dist' ./ user@1panel-server:/opt/rosclaw/
+rsync -avz --exclude 'node_modules' --exclude 'dist' ./ user@1panel-server:/opt/agirosclaw/
 ```
 
-然后在 1Panel 中按 **场景 A** 配置挂载路径 `/opt/rosclaw`。
+然后在 1Panel 中按 **场景 A** 配置挂载路径 `/opt/agirosclaw`。
 
 #### 方案 2：使用 1Panel 的文件管理功能
 
 1. 登录 1Panel 控制台
 2. 进入 **文件** 模块
-3. 创建一个目录（如 `/opt/rosclaw`）
+3. 创建一个目录（如 `/opt/agirosclaw`）
 4. 通过 Web 界面上传 RosClaw 的 `extensions/` 目录和相关配置文件
 5. 在编排配置中挂载该目录
 
@@ -208,7 +208,7 @@ rsync -avz --exclude 'node_modules' --exclude 'dist' ./ user@1panel-server:/opt/
 #!/bin/bash
 set -euo pipefail
 
-ROSCLAW_DIR="/opt/rosclaw"
+ROSCLAW_DIR="/opt/agirosclaw"
 
 if [ -d "$ROSCLAW_DIR" ]; then
   echo "更新现有仓库..."
@@ -216,7 +216,7 @@ if [ -d "$ROSCLAW_DIR" ]; then
   git pull origin main
 else
   echo "克隆新仓库..."
-  git clone https://github.com/PlaiPin/rosclaw.git "$ROSCLAW_DIR"
+  git clone https://github.com/PlaiPin/agirosclaw.git "$ROSCLAW_DIR"
 fi
 
 # 如果插件需要构建
@@ -225,7 +225,7 @@ pnpm install --frozen-lockfile
 pnpm build
 ```
 
-然后在 docker-compose.yml 中挂载 `/opt/rosclaw`。
+然后在 docker-compose.yml 中挂载 `/opt/agirosclaw`。
 
 #### 方案 4：使用开发模式 - 本地构建 + 远程镜像
 
@@ -233,15 +233,15 @@ pnpm build
 
 ```sh
 # 在本地构建插件镜像
-cd /path/to/rosclaw
+cd /path/to/agirosclaw
 pnpm install
 pnpm build
 
 # 构建包含插件的自定义 OpenClaw 镜像
-docker build -f docker/Dockerfile.rosclaw -t your-registry/rosclaw-plugin:latest .
+docker build -f docker/Dockerfile.agirosclaw -t your-registry/agirosclaw-plugin:latest .
 
 # 推送到远程仓库（或使用 docker save/load）
-docker push your-registry/rosclaw-plugin:latest
+docker push your-registry/agirosclaw-plugin:latest
 ```
 
 然后在 docker-compose.yml 中使用自定义镜像：
@@ -251,14 +251,14 @@ services:
   openclaw-gateway:
     image: ghcr.io/openclaw/openclaw:latest
     # 或者使用包含插件的自定义镜像
-    # image: your-registry/rosclaw-openclaw:latest
+    # image: your-registry/agirosclaw-openclaw:latest
     volumes:
       - ./openclaw.json:/home/node/.openclaw/openclaw.json:ro
 ```
 
 ### 步骤 3：创建 openclaw.json 配置文件
 
-在 `/opt/rosclaw-stack/openclaw.json` 创建：
+在 `/opt/agirosclaw-stack/openclaw.json` 创建：
 
 ```json
 {
@@ -273,12 +273,12 @@ services:
   },
   "plugins": {
     "enabled": true,
-    "allow": ["rosclaw"],
+    "allow": ["agirosclaw"],
     "load": {
-      "paths": ["/home/node/rosclaw/extensions/openclaw-plugin"]
+      "paths": ["/home/node/agirosclaw/extensions/openclaw-plugin"]
     },
     "entries": {
-      "rosclaw": {
+      "agirosclaw": {
         "enabled": true,
         "config": {
           "transport": { "mode": "rosbridge" },
@@ -324,7 +324,7 @@ services:
 ### 步骤
 
 ```sh
-cd /path/to/rosclaw
+cd /path/to/agirosclaw
 
 # 一键启动（交互式 onboard）
 ./scripts/openclaw_docker_setup.sh
@@ -358,9 +358,9 @@ Token: 见 docker/openclaw/.env
 | `plugins.enabled` | 是否启用插件系统 |
 | `plugins.allow` | 允许加载的插件白名单 |
 | `plugins.load.paths` | 插件源码路径（容器内路径） |
-| `plugins.entries.rosclaw.enabled` | 是否启用 RosClaw 插件 |
-| `plugins.entries.rosclaw.config.transport.mode` | 传输模式：`rosbridge` / `local` / `webrtc` |
-| `plugins.entries.rosclaw.config.rosbridge.url` | rosbridge WebSocket 地址 |
+| `plugins.entries.agirosclaw.enabled` | 是否启用 RosClaw 插件 |
+| `plugins.entries.agirosclaw.config.transport.mode` | 传输模式：`rosbridge` / `local` / `webrtc` |
+| `plugins.entries.agirosclaw.config.rosbridge.url` | rosbridge WebSocket 地址 |
 
 ### 传输模式
 
@@ -372,7 +372,7 @@ Token: 见 docker/openclaw/.env
 
 ### 多机器人话题命名空间
 
-ROS2 支持通过命名空间（namespace）隔离多机器人话题。不同机器人或仿真场景的话题前缀不同：
+AGIROS 支持通过命名空间（namespace）隔离多机器人话题。不同机器人或仿真场景的话题前缀不同：
 
 | 场景 | cmd_vel | odom |
 |------|---------|------|
@@ -386,7 +386,7 @@ ROS2 支持通过命名空间（namespace）隔离多机器人话题。不同机
 {
   "plugins": {
     "entries": {
-      "rosclaw": {
+      "agirosclaw": {
         "config": {
           "robot": { "namespace": "/robot1" }
         }
@@ -404,7 +404,7 @@ ROS2 支持通过命名空间（namespace）隔离多机器人话题。不同机
 
 ```json
 {
-  "id": "rosclaw",
+  "id": "agirosclaw",
   "activation": {
     "onStartup": true
   },
@@ -438,7 +438,7 @@ ROS2 支持通过命名空间（namespace）隔离多机器人话题。不同机
 ### 1. 插件加载失败
 
 ```
-Error: Cannot find module '/home/node/rosclaw/extensions/openclaw-plugin'
+Error: Cannot find module '/home/node/agirosclaw/extensions/openclaw-plugin'
 ```
 
 **原因**：卷挂载路径不正确或目录不存在。
@@ -447,11 +447,11 @@ Error: Cannot find module '/home/node/rosclaw/extensions/openclaw-plugin'
 
 ---
 
-### 2. 插件已注册但不加载（`http server listening (2 plugins)` 缺少 rosclaw）
+### 2. 插件已注册但不加载（`http server listening (2 plugins)` 缺少 agirosclaw）
 
 ```
 http server listening (2 plugins: browser, memory-core)
-# 预期：3 plugins: browser, memory-core, rosclaw
+# 预期：3 plugins: browser, memory-core, agirosclaw
 ```
 
 **原因**：`openclaw.plugin.json` 缺少 `activation.onStartup: true`，导致 `shouldConsiderForGatewayStartup` 过滤掉了非内置插件。
@@ -469,7 +469,7 @@ http server listening (2 plugins: browser, memory-core)
 重启容器后验证：
 ```sh
 docker logs 1Panel-openclaw-SRjc | grep "http server listening"
-# 应显示 3 plugins: browser, memory-core, rosclaw
+# 应显示 3 plugins: browser, memory-core, agirosclaw
 ```
 
 ---

@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
-  "description": "ROS2 + OpenClaw — Natural language control of robots through messaging apps",
+  "description": "AGIROS + OpenClaw — Natural language control of robots through messaging apps",
   "scripts": {
     "build": "pnpm -r build",
     "clean": "pnpm -r exec rm -rf dist tsconfig.tsbuildinfo",

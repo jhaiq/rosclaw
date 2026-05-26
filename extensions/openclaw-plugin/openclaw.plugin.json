@@ -1,5 +1,5 @@
 {
-  "id": "rosclaw",
+  "id": "agirosclaw",
   "name": "RosClaw",
   "version": "0.0.1",
   "description": "Control AGIROS robots through natural language via messaging apps",

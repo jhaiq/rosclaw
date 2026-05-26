@@ -1,4 +1,4 @@
-# AGIROS Jazzy + rosbridge_server + Gazebo image
+# AGIROS Loong + rosbridge_server + Gazebo image
 
 FROM ros:jazzy-ros-base AS base
 
@@ -15,9 +15,9 @@ ENV TURTLEBOT3_MODEL=burger
 ENV ROS_DOMAIN_ID=0
 
 # Copy the RosClaw discovery node
-COPY agiros_ws/src/rosclaw_discovery /agiros_ws/src/rosclaw_discovery
-COPY agiros_ws/src/rosclaw_msgs /agiros_ws/src/rosclaw_msgs
-COPY agiros_ws/src/rosclaw_agent /agiros_ws/src/rosclaw_agent
+COPY agiros_ws/src/agirosclaw_discovery /agiros_ws/src/agirosclaw_discovery
+COPY agiros_ws/src/agirosclaw_msgs /agiros_ws/src/agirosclaw_msgs
+COPY agiros_ws/src/agirosclaw_agent /agiros_ws/src/agirosclaw_agent
 COPY agiros_ws/src/unitree_go2 /agiros_ws/src/unitree_go2
 
 # Build AGIROS packages

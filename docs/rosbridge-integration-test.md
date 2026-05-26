@@ -10,7 +10,7 @@
 
 | 组件 | 版本/配置 |
 |------|----------|
-| AGIROS | Jazzy Jalisco |
+| AGIROS | Loong Jalisco |
 | rosbridge_suite | 2.4.2 |
 | unitree_go2 | 0.0.1 |
 | Docker | 最新 GPU 支持 |
@@ -30,7 +30,7 @@ User (messaging app) → OpenClaw Gateway → RosClaw Plugin → rosbridge_serve
 
 **测试命令：**
 ```bash
-docker exec rosclaw-agiros-gpu bash -c \
+docker exec agirosclaw-agiros-gpu bash -c \
   "source /opt/agiros/pixiu/setup.sh && source /agiros_ws/install/setup.sh && \
    python3 /agiros_ws/src/unitree_go2/unitree_go2/go2_node.py"
 ```
@@ -214,32 +214,32 @@ echo "=== Rosbridge 集成测试 ==="
 
 # 1. 启动 GO2 节点
 echo "[1/5] 启动 GO2 节点..."
-docker exec -d rosclaw-agiros-gpu bash -c \
+docker exec -d agirosclaw-agiros-gpu bash -c \
   "source /opt/agiros/pixiu/setup.sh && source /agiros_ws/install/setup.sh && \
    python3 /agiros_ws/src/unitree_go2/unitree_go2/go2_node.py"
 sleep 2
 
 # 2. 验证节点运行
 echo "[2/5] 验证节点运行..."
-docker exec rosclaw-agiros-gpu bash -c \
+docker exec agirosclaw-agiros-gpu bash -c \
   "source /opt/agiros/pixiu/setup.sh && source /agiros_ws/install/setup.sh && \
    agiros node list"
 
 # 3. 验证话题
 echo "[3/5] 验证话题..."
-docker exec rosclaw-agiros-gpu bash -c \
+docker exec agirosclaw-agiros-gpu bash -c \
   "source /opt/agiros/pixiu/setup.sh && source /agiros_ws/install/setup.sh && \
    agiros topic list"
 
 # 4. 测试发布命令
 echo "[4/5] 测试发布命令..."
-docker exec rosclaw-agiros-gpu bash -c \
+docker exec agirosclaw-agiros-gpu bash -c \
   "source /opt/agiros/pixiu/setup.sh && source /agiros_ws/install/setup.sh && \
    agiros topic pub /go2_command/stand std_msgs/msg/Empty --once"
 
 # 5. 测试 Rosbridge API
 echo "[5/5] 测试 Rosbridge API..."
-docker exec rosclaw-agiros-gpu bash -c \
+docker exec agirosclaw-agiros-gpu bash -c \
   "source /opt/agiros/pixiu/setup.sh && source /agiros_ws/install/setup.sh && \
    agiros service call /rosapi/topics rosapi_msgs/srv/Topics '{}'"
 

@@ -6,10 +6,10 @@ describing available topics, services, and actions. This manifest is consumed
 by the OpenClaw plugin to inform the AI agent about what the robot can do.
 
 Published topic:
-  /rosclaw/capabilities  (rosclaw_msgs/msg/CapabilityManifest)
+  /agirosclaw/capabilities  (agirosclaw_msgs/msg/CapabilityManifest)
 
 Service:
-  /rosclaw/get_capabilities  (rosclaw_msgs/srv/GetCapabilities)
+  /agirosclaw/get_capabilities  (agirosclaw_msgs/srv/GetCapabilities)
 
 Parameters:
   robot_name       — Name of the robot (default: "Robot")
@@ -23,15 +23,15 @@ import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, DurabilityPolicy
 
-from rosclaw_msgs.msg import CapabilityManifest
-from rosclaw_msgs.srv import GetCapabilities
+from agirosclaw_msgs.msg import CapabilityManifest
+from agirosclaw_msgs.srv import GetCapabilities
 
 
 # Internal AGIROS topics/services that clutter the manifest
 _INTERNAL_PREFIXES = (
     "/rosout",
     "/parameter_events",
-    "/rosclaw/",
+    "/agirosclaw/",
 )
 
 
@@ -39,7 +39,7 @@ class DiscoveryNode(Node):
     """Periodically discovers AGIROS capabilities and publishes a manifest."""
 
     def __init__(self) -> None:
-        super().__init__("rosclaw_discovery")
+        super().__init__("agirosclaw_discovery")
 
         # Parameters
         self.declare_parameter("robot_name", "Robot")
@@ -53,12 +53,12 @@ class DiscoveryNode(Node):
         # Publisher — transient local so late subscribers get the last manifest
         qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)
         self.manifest_pub = self.create_publisher(
-            CapabilityManifest, "/rosclaw/capabilities", qos
+            CapabilityManifest, "/agirosclaw/capabilities", qos
         )
 
         # Service — on-demand query
         self.get_caps_srv = self.create_service(
-            GetCapabilities, "/rosclaw/get_capabilities", self._handle_get_capabilities
+            GetCapabilities, "/agirosclaw/get_capabilities", self._handle_get_capabilities
         )
 
         # Timer — periodic discovery

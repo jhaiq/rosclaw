@@ -1,7 +1,7 @@
 /**
  * Type declarations matching the real OpenClaw plugin SDK.
  *
- * Only the subset used by the rosclaw plugin is declared here.
+ * Only the subset used by the agirosclaw plugin is declared here.
  * These types mirror openclaw/plugin-sdk so that the plugin compiles
  * without importing the SDK at build time (it is provided at runtime).
  */

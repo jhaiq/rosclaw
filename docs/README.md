@@ -22,7 +22,7 @@
 
 | 属性 | 值 |
 |------|-----|
-| 名称 | `rosclaw` |
+| 名称 | `agirosclaw` |
 | 版本 | 0.0.1 |
 | 类型 | ESM (Node.js 20+) |
 | 包管理器 | pnpm 9.15.4 |
@@ -110,7 +110,7 @@
 | 变量 | 必填 | 默认值 | 描述 | 示例 |
 |------|------|--------|------|------|
 | `GO2_GZ_SIM_ENABLED` | 否 | `false` | 启用 GO2 Gazebo 仿真 | `true`, `false` |
-| `GO2_GZ_SIM_PATH` | 否 | `/opt/go2_gz_sim` | GO2 仿真源码路径 | `/home/user/ROS2-Gazebo-GO2` |
+| `GO2_GZ_SIM_PATH` | 否 | `/opt/go2_gz_sim` | GO2 仿真源码路径 | `/home/user/AGIROS-Gazebo-GO2` |
 | `GO2_WORLD` | 否 | `empty.world` | Gazebo 世界文件 | `empty.world`, `rmuc_2025_world.sdf` |
 | `GO2_SENSORS` | 否 | `false` | 启用传感器（激光雷达、相机） | `true`, `false` |
 | `DISPLAY` | 否 | `:0` | X11 显示变量（GUI 模式） | `:0` |
@@ -162,9 +162,9 @@
 
 ```yaml
 服务名：agiros
-镜像：rosclaw/agiros:latest
+镜像：agirosclaw/agiros:latest
 端口：9090 (rosbridge), 11311 (ROS master)
-网络：rosclaw-network (外部)
+网络：agirosclaw-network (外部)
 ```
 
 ### agiros-gpu (GPU 模式)
@@ -173,8 +173,8 @@ GPU 加速的 AGIROS 容器，需要 NVIDIA Container Toolkit。
 
 ```yaml
 服务名：agiros-gpu
-镜像：rosclaw/agiros:latest
-容器名：rosclaw-agiros-gpu
+镜像：agirosclaw/agiros:latest
+容器名：agirosclaw-agiros-gpu
 网络别名：agiros
 启动命令：docker compose --profile gpu up -d agiros-gpu
 ```
@@ -221,7 +221,7 @@ docker compose -f docker-compose.go2-gz.yml --profile go2-gz down
 
 **环境要求：**
 
-- 需要挂载 ROS2-Gazebo-GO2 源码路径
+- 需要挂载 AGIROS-Gazebo-GO2 源码路径
 - X11 显示服务器（GUI 模式可选）
 - NVIDIA GPU 和 Container Toolkit（可选，用于 GPU 加速）
 
@@ -233,8 +233,8 @@ docker compose -f docker-compose.go2-gz.yml --profile go2-gz down
 
 | 包 | 版本 | 描述 | 入口 |
 |------|------|------|------|
-| `@rosclaw/openclaw-plugin` | 0.0.1 | OpenClaw 扩展，用于 AGIROS 机器人控制 | `./src/index.ts` |
-| `@rosclaw/openclaw-canvas` | 0.0.1 | 实时机器人仪表盘（Phase 3） | `./dist/index.js` |
+| `@agirosclaw/openclaw-plugin` | 0.0.1 | OpenClaw 扩展，用于 AGIROS 机器人控制 | `./src/index.ts` |
+| `@agirosclaw/openclaw-canvas` | 0.0.1 | 实时机器人仪表盘（Phase 3） | `./dist/index.js` |
 
 ### 依赖项
 
@@ -257,9 +257,9 @@ docker compose -f docker-compose.go2-gz.yml --profile go2-gz down
 
 | 包 | 描述 |
 |------|------|
-| `rosclaw_discovery` | AGIROS 能力自动发现节点 |
-| `rosclaw_msgs` | 自定义 AGIROS 消息/服务定义 |
-| `rosclaw_agent` | AGIROS 代理节点（WebRTC ↔ DDS 桥接） |
+| `agirosclaw_discovery` | AGIROS 能力自动发现节点 |
+| `agirosclaw_msgs` | 自定义 AGIROS 消息/服务定义 |
+| `agirosclaw_agent` | AGIROS 代理节点（WebRTC ↔ DDS 桥接） |
 
 ---
 
@@ -306,7 +306,7 @@ make gpu-start
 
 ```bash
 make status
-docker logs 1Panel-openclaw-SRjc | grep "ROS2 transport connected"
+docker logs 1Panel-openclaw-SRjc | grep "AGIROS transport connected"
 ```
 
 ---

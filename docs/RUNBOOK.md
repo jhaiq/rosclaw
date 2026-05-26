@@ -38,7 +38,7 @@ rosbridge_server (WebSocket 端口 9090)
 
 | 容器 | 服务 | 端口 | 网络 | 描述 |
 |------|------|------|------|------|
-| `rosclaw-agiros-gpu` | agiros-gpu | 9090, 11311 | 1panel-network | AGIROS + rosbridge + Gazebo |
+| `agirosclaw-agiros-gpu` | agiros-gpu | 9090, 11311 | 1panel-network | AGIROS + rosbridge + Gazebo |
 | `1Panel-openclaw-*` | openclaw | 18789 | 1panel-network | OpenClaw Gateway |
 
 ---
@@ -91,7 +91,7 @@ make verify-gpu
 make gpu-start
 
 # 3. 验证 GPU 访问
-docker exec rosclaw-agiros-gpu nvidia-smi
+docker exec agirosclaw-agiros-gpu nvidia-smi
 ```
 
 ### 1Panel 集成部署
@@ -128,7 +128,7 @@ make connect-1panel
 ```bash
 #!/bin/bash
 # 检查 rosbridge
-if docker exec rosclaw-agiros-gpu curl -s http://localhost:9090/ 2>&1 | grep -q "WebSocket"; then
+if docker exec agirosclaw-agiros-gpu curl -s http://localhost:9090/ 2>&1 | grep -q "WebSocket"; then
     echo "[OK] rosbridge is running"
 else
     echo "[FAIL] rosbridge not responding"
@@ -136,8 +136,8 @@ else
 fi
 
 # 检查 OpenClaw 连接
-if docker logs 1Panel-openclaw-SRjc 2>&1 | grep -q "ROS2 transport connected"; then
-    echo "[OK] OpenClaw connected to ROS2"
+if docker logs 1Panel-openclaw-SRjc 2>&1 | grep -q "AGIROS transport connected"; then
+    echo "[OK] OpenClaw connected to AGIROS"
 else
     echo "[WARN] OpenClaw not connected"
 fi
@@ -150,7 +150,7 @@ fi
 make ps
 
 # 检查特定容器
-docker inspect rosclaw-agiros-gpu --format='{{.State.Status}}'
+docker inspect agirosclaw-agiros-gpu --format='{{.State.Status}}'
 docker inspect 1Panel-openclaw-SRjc --format='{{.State.Status}}'
 ```
 
@@ -162,8 +162,8 @@ docker inspect 1Panel-openclaw-SRjc --format='{{.State.Status}}'
 
 | 日志模式 | 含义 | 处理 |
 |----------|------|------|
-| `ROS2 transport connected` | 连接成功 | 正常 |
-| `ROS2 transport disconnected` | 连接断开 | 检查网络 |
+| `AGIROS transport connected` | 连接成功 | 正常 |
+| `AGIROS transport disconnected` | 连接断开 | 检查网络 |
 | `WebSocket error connecting` | 连接失败 | 检查 rosbridge |
 | `Rosbridge WebSocket server started` | rosbridge 启动 | 正常 |
 
@@ -183,13 +183,13 @@ docker inspect 1Panel-openclaw-SRjc --format='{{.State.Status}}'
 make logs
 
 # GPU 状态
-docker exec rosclaw-agiros-gpu nvidia-smi
+docker exec agirosclaw-agiros-gpu nvidia-smi
 
 # 网络连接
 docker network inspect 1panel-network
 
 # 资源使用
-docker stats rosclaw-agiros-gpu 1Panel-openclaw-SRjc
+docker stats agirosclaw-agiros-gpu 1Panel-openclaw-SRjc
 ```
 
 ---
@@ -209,7 +209,7 @@ docker compose ps agiros
 docker exec 1Panel-openclaw-SRjc getent hosts agiros
 
 # 检查 rosbridge 进程
-docker exec rosclaw-agiros-gpu ps aux | grep rosbridge
+docker exec agirosclaw-agiros-gpu ps aux | grep rosbridge
 ```
 
 **解决方案**:
@@ -218,8 +218,8 @@ docker exec rosclaw-agiros-gpu ps aux | grep rosbridge
 make restart
 
 # 或重新连接网络
-docker network disconnect 1panel-network rosclaw-agiros-gpu
-docker network connect 1panel-network rosclaw-agiros-gpu
+docker network disconnect 1panel-network agirosclaw-agiros-gpu
+docker network connect 1panel-network agirosclaw-agiros-gpu
 
 # 重启 OpenClaw
 docker restart 1Panel-openclaw-SRjc
@@ -251,7 +251,7 @@ make restart
 **诊断**:
 ```bash
 make verify-gpu
-docker logs rosclaw-agiros-gpu
+docker logs agirosclaw-agiros-gpu
 ```
 
 **解决方案**:
@@ -278,7 +278,7 @@ xhost +local:docker
 echo $DISPLAY
 
 # 检查 volume 挂载
-docker inspect rosclaw-agiros-gpu | grep -A5 "Mounts"
+docker inspect agirosclaw-agiros-gpu | grep -A5 "Mounts"
 ```
 
 ---
@@ -298,7 +298,7 @@ make start
 docker restart 1Panel-openclaw-SRjc
 
 # 4. 验证连接
-make logs | grep "ROS2 transport"
+make logs | grep "AGIROS transport"
 ```
 
 ### 从新版本回滚
@@ -308,10 +308,10 @@ make logs | grep "ROS2 transport"
 make stop
 
 # 2. 拉取旧版本镜像
-docker pull rosclaw/agiros:<previous-version>
+docker pull agirosclaw/agiros:<previous-version>
 
 # 3. 更新 docker-compose.yml 指定版本
-# image: rosclaw/agiros:<previous-version>
+# image: agirosclaw/agiros:<previous-version>
 
 # 4. 重启服务
 make start
@@ -335,7 +335,7 @@ make start
 
 ## 联系支持
 
-- 项目仓库：https://github.com/PlaiPin/rosclaw
+- 项目仓库：https://github.com/PlaiPin/agirosclaw
 - 问题排查：[troubleshooting.md](troubleshooting.md)
 - 架构文档：[architecture.md](architecture.md)
 

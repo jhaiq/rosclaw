@@ -5,11 +5,11 @@ version: "3.8"
 
 services:
   # AGIROS stack + OpenClaw + RosClaw plugin, all in one container
-  rosclaw:
+  agirosclaw:
     build:
       context: ..
-      dockerfile: docker/Dockerfile.rosclaw
-    image: rosclaw/plugin:latest
+      dockerfile: docker/Dockerfile.agirosclaw
+    image: agirosclaw/plugin:latest
     environment:
       - ROSCLAW_TRANSPORT_MODE=local
       - ROS_DOMAIN_ID=0

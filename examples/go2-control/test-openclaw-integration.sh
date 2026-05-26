@@ -5,7 +5,7 @@
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROS2_CONTAINER="rosclaw-agiros-gpu"
+ROS2_CONTAINER="agirosclaw-agiros-gpu"
 
 echo "========================================"
 echo "  OpenClaw + GO2 Integration Test"

@@ -309,7 +309,7 @@ export class WebRTCTransport implements RosTransport {
 
   // --- Private helpers ---
 
-  private nextId(prefix = "rosclaw"): string {
+  private nextId(prefix = "agirosclaw"): string {
     return `${prefix}_${++this.idCounter}`;
   }
 
@@ -454,7 +454,7 @@ export class WebRTCTransport implements RosTransport {
     });
 
     const rtcConfig: RtcConfig = { iceServers: iceServerStrs };
-    this.pc = new PeerConnection("rosclaw-frontend", rtcConfig);
+    this.pc = new PeerConnection("agirosclaw-frontend", rtcConfig);
 
     // Handle ICE candidates from our side → send to robot
     this.pc.onLocalCandidate((candidate, mid) => {

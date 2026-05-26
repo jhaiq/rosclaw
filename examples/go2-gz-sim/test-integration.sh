@@ -25,8 +25,8 @@ test_result() {
     fi
 }
 
-# Source ROS2
-source /opt/ros/$ROS_DISTRO/setup.sh
+# Source AGIROS
+source /opt/agiros/$ROS_DISTRO/setup.sh
 
 # Source workspace if exists
 if [[ -f "$ROSCLAW_ROOT/agiros_ws/install/setup.sh" ]]; then

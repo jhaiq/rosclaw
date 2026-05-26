@@ -4,7 +4,7 @@
 services:
   # Unitree GO2 simulation (stub - for future Gazebo/Isaac integration)
   go2-sim:
-    image: rosclaw/go2-sim:latest
+    image: agirosclaw/go2-sim:latest
     build:
       context: ..
       dockerfile: docker/Dockerfile.go2-sim
@@ -15,7 +15,7 @@ services:
     ports:
       - "8080:8080"  # Unitree API port (future use)
     networks:
-      - rosclaw-network
+      - agirosclaw-network
     profiles:
       - go2
     depends_on:
@@ -23,7 +23,7 @@ services:
 
   # GO2 control node (can run in simulation or hardware mode)
   go2-node:
-    image: rosclaw/agiros:latest
+    image: agirosclaw/agiros:latest
     command: ["agiros", "launch", "unitree_go2", "go2_launch.py"]
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
@@ -33,7 +33,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     networks:
-      - rosclaw-network
+      - agirosclaw-network
     profiles:
       - go2
     depends_on:

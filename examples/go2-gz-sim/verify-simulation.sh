@@ -12,9 +12,9 @@ echo "  GO2 Gazebo Simulation Verification"
 echo "========================================"
 echo ""
 
-# Source ROS2
-echo "[1/6] Sourcing ROS2..."
-source /opt/ros/$ROS_DISTRO/setup.sh
+# Source AGIROS
+echo "[1/6] Sourcing AGIROS..."
+source /opt/agiros/$ROS_DISTRO/setup.sh
 
 # Source workspace if exists
 if [[ -f "$ROSCLAW_ROOT/agiros_ws/install/setup.sh" ]]; then

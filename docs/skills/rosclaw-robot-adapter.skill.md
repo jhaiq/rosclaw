@@ -1,12 +1,12 @@
 ---
-name: rosclaw-robot-adapter
+name: agirosclaw-robot-adapter
 description: RosClaw 机器人适配器技能 - 快速适配新机器人或仿真环境到 RosClaw 平台
 type: reference
 ---
 
 # RosClaw Robot Adapter Skill
 
-**技能 ID:** `rosclaw:robot-adapter`
+**技能 ID:** `agirosclaw:robot-adapter`
 **版本:** 1.0.0
 **基于:** Unitree GO2 Gazebo 仿真适配经验
 
@@ -31,7 +31,7 @@ type: reference
 
 ```bash
 # 必需
-- AGIROS Humble 或更新版本
+- AGIROS Loong 或更新版本
 - Docker + Docker Compose
 - Node.js + pnpm (OpenClaw 插件开发)
 - 机器人/仿真的 AGIROS 接口文档

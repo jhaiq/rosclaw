@@ -17,11 +17,11 @@ cat > "$ROSCLAW_ROOT/agiros_ws/.docker_build.sh" << 'EOF'
 #!/bin/bash
 set -e
 
-echo "Sourcing AGIROS Humble..."
+echo "Sourcing AGIROS Loong..."
 source /opt/agiros/loong/setup.sh
 
 echo "Building unitree_go2 package..."
-cd /opt/rosclaw/agiros_ws
+cd /opt/agirosclaw/agiros_ws
 colcon build --packages-select unitree_go2 --symlink-install
 
 echo "Build complete!"
@@ -31,8 +31,8 @@ EOF
 chmod +x "$ROSCLAW_ROOT/agiros_ws/.docker_build.sh"
 
 # Run build in Docker container
-docker run --rm -v "$ROSCLAW_ROOT/agiros_ws:/opt/rosclaw/agiros_ws" rosclaw/go2-gz-sim:latest \
-    bash /opt/rosclaw/agiros_ws/.docker_build.sh
+docker run --rm -v "$ROSCLAW_ROOT/agiros_ws:/opt/agirosclaw/agiros_ws" agirosclaw/go2-gz-sim:latest \
+    bash /opt/agirosclaw/agiros_ws/.docker_build.sh
 
 # Clean up
 rm "$ROSCLAW_ROOT/agiros_ws/.docker_build.sh"

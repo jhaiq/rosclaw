@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = "rosclaw_discovery"
+package_name = "agirosclaw_discovery"
 
 setup(
     name=package_name,
@@ -14,12 +14,12 @@ setup(
     zip_safe=True,
     maintainer="PlaiPin",
     maintainer_email="team@plaipin.com",
-    description="ROS2 capability discovery node for RosClaw",
+    description="AGIROS capability discovery node for RosClaw",
     license="Apache-2.0",
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
-            "discovery_node = rosclaw_discovery.discovery_node:main",
+            "discovery_node = agirosclaw_discovery.discovery_node:main",
         ],
     },
 )

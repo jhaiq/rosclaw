@@ -1,5 +1,5 @@
 # AGIROS loong + Gazebo Harmonic Sim for Unitree GO2
-# 基于 ROS2-Gazebo-GO2 项目 Dockerfile 优化
+# 基于 AGIROS-Gazebo-GO2 项目 Dockerfile 优化
 FROM osrf/ros:loong-desktop-full
 
 LABEL maintainer="RosClaw Team"
@@ -69,9 +69,9 @@ RUN groupadd -g ${GROUP_ID} rosuser && \
 WORKDIR /opt/go2_gz_sim
 
 # 复制并构建 RosClaw AGIROS 包
-COPY agiros_ws/src /opt/rosclaw/src
+COPY agiros_ws/src /opt/agirosclaw/src
 RUN bash -c "source /opt/agiros/loong/setup.sh && \
-    colcon build --packages-skip unitree_go2 --install-base /opt/rosclaw/install && \
+    colcon build --packages-skip unitree_go2 --install-base /opt/agirosclaw/install && \
     rm -rf build log"
 
 # 设置 AGIROS 环境

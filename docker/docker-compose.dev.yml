@@ -10,7 +10,7 @@ services:
     environment:
       - ROS_DOMAIN_ID=0
 
-  rosclaw:
+  agirosclaw:
     volumes:
       - ../packages:/app/packages
       - ../extensions:/app/extensions

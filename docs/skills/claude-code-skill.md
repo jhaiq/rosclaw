@@ -1,5 +1,5 @@
 ---
-name: rosclaw-robot-adapter-skill
+name: agirosclaw-robot-adapter-skill
 description: Claude Code Skill 配置 - 在 Claude Code 中调用 RosClaw 机器人适配专家
 type: reference
 ---
@@ -8,9 +8,9 @@ type: reference
 
 ## 安装 Skill
 
-Skill 已安装在：`/home/jhq/.agents/skills/rosclaw-robot-adapter/`
+Skill 已安装在：`/home/jhq/.agents/skills/agirosclaw-robot-adapter/`
 
-符号链接已创建：`~/.claude/skills/rosclaw-robot-adapter -> ~/.agents/skills/rosclaw-robot-adapter`
+符号链接已创建：`~/.claude/skills/agirosclaw-robot-adapter -> ~/.agents/skills/agirosclaw-robot-adapter`
 
 ## 使用方法
 
@@ -19,13 +19,13 @@ Skill 已安装在：`/home/jhq/.agents/skills/rosclaw-robot-adapter/`
 在 Claude Code 对话中输入：
 
 ```
-使用 rosclaw-robot-adapter skill 帮我适配一个新的机器人
+使用 agirosclaw-robot-adapter skill 帮我适配一个新的机器人
 ```
 
 或
 
 ```
-@rosclaw-robot-adapter 如何配置 Gazebo 仿真？
+@agirosclaw-robot-adapter 如何配置 Gazebo 仿真？
 ```
 
 ### 方式 2: 通过项目文档参考
@@ -34,7 +34,7 @@ Skill 已安装在：`/home/jhq/.agents/skills/rosclaw-robot-adapter/`
 
 - `docs/skills/robot-adapter.md` - 完整适配流程
 - `docs/skills/robot-adapter-quickref.md` - 快速参考卡
-- `docs/skills/rosclaw-robot-adapter.skill.md` - Skill 定义
+- `docs/skills/agirosclaw-robot-adapter.skill.md` - Skill 定义
 
 ### 方式 3: 使用项目内 OpenClaw 命令
 
@@ -85,11 +85,11 @@ Skill: 好的，我来帮你适配 Webero 移动机器人。首先让我分析�
 
 ```bash
 # 检查符号链接
-ls -la ~/.claude/skills/rosclaw-robot-adapter
+ls -la ~/.claude/skills/agirosclaw-robot-adapter
 
 # 重新创建链接
-ln -sf /home/jhq/.agents/skills/rosclaw-robot-adapter ~/.claude/skills/rosclaw-robot-adapter
+ln -sf /home/jhq/.agents/skills/agirosclaw-robot-adapter ~/.claude/skills/agirosclaw-robot-adapter
 
 # 验证文件存在
-cat ~/.claude/skills/rosclaw-robot-adapter/SKILL.md
+cat ~/.claude/skills/agirosclaw-robot-adapter/SKILL.md
 ```

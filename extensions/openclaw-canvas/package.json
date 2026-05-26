@@ -1,5 +1,5 @@
 {
-  "name": "@rosclaw/openclaw-canvas",
+  "name": "@agirosclaw/openclaw-canvas",
   "version": "0.0.1",
   "type": "module",
   "description": "OpenClaw canvas extension for real-time robot dashboard (Phase 3)",
@@ -22,7 +22,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/PlaiPin/rosclaw.git",
+    "url": "https://github.com/PlaiPin/agirosclaw.git",
     "directory": "extensions/openclaw-canvas"
   },
   "author": "PlaiPin",

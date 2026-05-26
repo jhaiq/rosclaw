@@ -3,8 +3,8 @@ set -e
 
 export ROS_DISTRO=${ROS_DISTRO:-loong}
 
-# Source ROS2
-source /opt/ros/$ROS_DISTRO/setup.sh
+# Source AGIROS
+source /opt/agiros/$ROS_DISTRO/setup.sh
 
 # Source go2_gz_sim if available
 if [[ -f "/opt/go2_gz_sim/install/local_setup.sh" ]]; then
@@ -14,12 +14,12 @@ else
     echo "Warning: /opt/go2_gz_sim/install/local_setup.sh not found"
 fi
 
-# Source rosclaw install if available
-if [[ -f "/opt/rosclaw/install/local_setup.sh" ]]; then
-    source /opt/rosclaw/install/local_setup.sh
-    echo "Sourced rosclaw: /opt/rosclaw/install/local_setup.sh"
+# Source agirosclaw install if available
+if [[ -f "/opt/agirosclaw/install/local_setup.sh" ]]; then
+    source /opt/agirosclaw/install/local_setup.sh
+    echo "Sourced agirosclaw: /opt/agirosclaw/install/local_setup.sh"
 else
-    echo "Warning: /opt/rosclaw/install/local_setup.sh not found"
+    echo "Warning: /opt/agirosclaw/install/local_setup.sh not found"
 fi
 
 # Set environment

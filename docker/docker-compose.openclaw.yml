@@ -31,8 +31,8 @@ services:
       # Persist gateway state (sessions, credentials, etc.)
       - openclaw_state:/home/node/.openclaw
       # Mount RosClaw repo into the container (read-only is fine)
-      - ..:/home/node/rosclaw:ro
-      # Provide the gateway config enabling rosclaw plugin
+      - ..:/home/node/agirosclaw:ro
+      # Provide the gateway config enabling agirosclaw plugin
       - ./openclaw/openclaw.json:/home/node/.openclaw/openclaw.json:ro
     command: ["openclaw", "gateway", "run", "--allow-unconfigured", "--port", "${OPENCLAW_PORT:-18789}"]
     depends_on:
@@ -51,7 +51,7 @@ services:
       - OPENCLAW_LOG_LEVEL=${OPENCLAW_LOG_LEVEL:-info}
     volumes:
       - openclaw_state:/home/node/.openclaw
-      - ..:/home/node/rosclaw:ro
+      - ..:/home/node/agirosclaw:ro
       - ./openclaw/openclaw.json:/home/node/.openclaw/openclaw.json:ro
     networks:
       - ${DOCKER_NETWORK_NAME:-1panel-network}

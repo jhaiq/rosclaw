@@ -1,3 +1,4 @@
+
 ---
 name: robot-adapter
 description: RosClaw 适配新机器人或仿真环境的完整流程与方法论
@@ -87,7 +88,7 @@ rosbridge:
 
 #### 分析方法
 
-```bash
+```sh
 # 1. 列出所有活跃话题
 agiros topic list
 
@@ -138,8 +139,8 @@ subscribes:
   - /robot_native/topic2 (消息类型) - 描述
 
 publishes:
-  - /rosclaw/standard/topic1 (消息类型) - 描述
-  - /rosclaw/standard/topic2 (消息类型) - 描述
+  - /agirosclaw/standard/topic1 (消息类型) - 描述
+  - /agirosclaw/standard/topic2 (消息类型) - 描述
 """
 
 import rclpy
@@ -164,7 +165,7 @@ class {RobotName}Bridge(Node):
         )
         self.odom_pub = self.create_publisher(
             Odometry,
-            '/rosclaw/odom',  # RosClaw 标准话题
+            '/agirosclaw/odom',  # RosClaw 标准话题
             10
         )
 
@@ -213,7 +214,7 @@ if __name__ == '__main__':
 #### 4.1 创建 Dockerfile
 
 ```dockerfile
-FROM ros:loong-ros-base
+FROM agiros:loong-ros-base
 
 # 安装依赖
 RUN apt-get update && apt-get install -y \
@@ -239,14 +240,14 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 #### 4.2 创建入口脚本
 
-```bash
+```sh
 #!/bin/bash
 set -e
 
 export ROS_DISTRO=${ROS_DISTRO:-loong}
 
-# Source ROS2
-source /opt/ros/$ROS_DISTRO/setup.sh
+# Source AGIROS
+source /opt/agiros/$ROS_DISTRO/setup.sh
 
 # Source 机器人工作空间 (如果存在)
 if [[ -f "/opt/robot_workspace/install/local_setup.sh" ]]; then
@@ -267,8 +268,8 @@ exec "$@"
 services:
   # 机器人仿真/驱动服务
   robot-sim:
-    image: rosclaw/robot-sim:latest
-    container_name: rosclaw-robot-sim
+    image: agirosclaw/robot-sim:latest
+    container_name: agirosclaw-robot-sim
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
       - DISPLAY=${DISPLAY:-:0}
@@ -276,23 +277,23 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ${ROBOT_WORKSPACE_PATH:-/path/to/robot}:/opt/robot_workspace:ro
     networks:
-      - rosclaw-network
+      - agirosclaw-network
     profiles:
       - robot
 
   # 桥接节点服务
   robot-bridge:
-    image: rosclaw/robot-sim:latest
-    container_name: rosclaw-robot-bridge
+    image: agirosclaw/robot-sim:latest
+    container_name: agirosclaw-robot-bridge
     command: >
       bash -c "source /opt/agiros/loong/setup.sh &&
                source /opt/robot_workspace/install/local_setup.sh &&
                agiros launch robot_bridge bridge_launch.py"
     volumes:
       - ${ROBOT_WORKSPACE_PATH}:/opt/robot_workspace:ro
-      - /path/to/rosclaw/agiros_ws/install:/opt/rosclaw/install:ro
+      - /path/to/agirosclaw/agiros_ws/install:/opt/agirosclaw/install:ro
     networks:
-      - rosclaw-network
+      - agirosclaw-network
     profiles:
       - robot
     depends_on:
@@ -300,23 +301,23 @@ services:
 
   # ROSBridge 服务
   rosbridge:
-    image: rosclaw/robot-sim:latest
-    container_name: rosclaw-rosbridge
+    image: agirosclaw/robot-sim:latest
+    container_name: agirosclaw-rosbridge
     ports:
       - "${ROSBRIDGE_PORT:-9090}:${ROSBRIDGE_PORT:-9090}"
     command: >
       bash -c "source /opt/agiros/loong/setup.sh &&
-               source /opt/rosclaw/install/setup.sh &&
+               source /opt/agirosclaw/install/setup.sh &&
                agiros launch rosbridge_server rosbridge_websocket_launch.xml"
     volumes:
-      - /path/to/rosclaw/agiros_ws/install:/opt/rosclaw/install:ro
+      - /path/to/agirosclaw/agiros_ws/install:/opt/agirosclaw/install:ro
     networks:
-      - rosclaw-network
+      - agirosclaw-network
     profiles:
       - robot
 
 networks:
-  rosclaw-network:
+  agirosclaw-network:
     external: true
     name: ${DOCKER_NETWORK_NAME:-1panel-network}
 ```
@@ -356,7 +357,7 @@ networks:
 
 在 `extensions/openclaw-plugin/src/tools/` 创建 `{robot}-commands.ts`:
 
-```typescript
+```ts
 import { Type } from "@sinclair/typebox";
 import type { OpenClawPluginApi } from "../plugin-api.js";
 import { getTransport } from "../service.js";
@@ -395,7 +396,7 @@ export function registerRobotCommand(api: OpenClawPluginApi): void {
 
 #### 5.3 在 tools/index.ts 中注册
 
-```typescript
+```ts
 import { registerRobotCommand } from "./robot-commands.js";
 
 export function registerTools(api: OpenClawPluginApi): void {
@@ -413,7 +414,7 @@ export function registerTools(api: OpenClawPluginApi): void {
 
 #### 6.1 话题频率测试
 
-```bash
+```sh
 # 验证桥接节点发布的话题
 agiros topic hz /go2_state/odom
 agiros topic hz /scan
@@ -427,7 +428,7 @@ average rate: 29.500
 
 #### 6.2 话题数据验证
 
-```bash
+```sh
 # 查看话题数据类型
 agiros topic info /go2_state/odom --verbose
 
@@ -437,7 +438,7 @@ agiros topic echo /go2_state/odom --once
 
 #### 6.3 端到端测试
 
-```bash
+```sh
 # 1. 启动所有服务
 docker compose -f docker-compose.robot.yml --profile robot up -d
 
@@ -470,13 +471,13 @@ docker compose -f docker-compose.robot.yml logs -f robot-bridge
 
 **症状:**
 ```
-Package 'gazebo_sim' not found: "package 'gazebo_sim' not found, searching: ['/opt/ros/loong']"
+Package 'gazebo_sim' not found: "package 'gazebo_sim' not found, searching: ['/opt/agiros/loong']"
 ```
 
 **原因:** local_setup.sh 中硬编码了构建时的路径 `/home/ROS2/ROS2-Gazebo-GO2/install`
 
 **解决方案:**
-```bash
+```sh
 # 在 source 之前设置
 export COLCON_CURRENT_PREFIX=/opt/go2_gz_sim/install
 source /opt/go2_gz_sim/install/local_setup.sh
@@ -572,7 +573,7 @@ environment:
 
 ## 五、环境变量规范
 
-```bash
+```sh
 # 通用环境变量
 export ROS_DOMAIN_ID=0              # AGIROS 域 ID
 export ROSBRIDGE_PORT=9090          # rosbridge 端口
@@ -590,7 +591,7 @@ export DISPLAY=:0                   # X11 显示
 
 ## 六、快速启动命令
 
-```bash
+```sh
 # 1. 构建镜像
 docker compose -f docker-compose.robot.yml build
 
@@ -615,3 +616,5 @@ docker compose -f docker-compose.robot.yml --profile robot down
   - `docker/scripts/go2-gz-entrypoint.sh` - 入口脚本
   - `agiros_ws/src/unitree_go2/unitree_go2/go2_gz_bridge.py` - 桥接节点
   - `extensions/openclaw-plugin/src/tools/go2-commands.ts` - 机器人命令
+
+

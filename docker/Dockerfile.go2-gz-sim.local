@@ -1,7 +1,7 @@
 # AGIROS loong + Gazebo Harmonic Sim for Unitree GO2
 # 使用本地 go2_gz_sim 源码构建
 # 构建上下文：go2_gz_sim 源码根目录
-FROM ros:loong-ros-base AS base
+FROM agiros:loong-ros-base AS base
 
 LABEL maintainer="RosClaw Team"
 LABEL description="Unitree GO2 Gazebo Simulation"

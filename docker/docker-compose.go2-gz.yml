@@ -9,11 +9,11 @@
 services:
   # GO2 Gazebo Simulation
   go2-gz-sim:
-    image: rosclaw/go2-gz-sim:latest
+    image: agirosclaw/go2-gz-sim:latest
     build:
       context: ..
       dockerfile: docker/Dockerfile.go2-gz-sim
-    container_name: rosclaw-go2-gz-sim
+    container_name: agirosclaw-go2-gz-sim
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
       # GZ_SIM_RESOURCE_PATH 包含模型和世界文件路径
@@ -32,9 +32,9 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       # 挂载 go2_gz_sim 源码和构建产物（默认路径）
-      - ${GO2_GZ_SIM_PATH:-/home/jhq/work/code/go2_ws/go2_sim_ws/ROS2-Gazebo-GO2}:/opt/go2_gz_sim:ro
+      - ${GO2_GZ_SIM_PATH:-/home/jhq/work/code/go2_ws/go2_sim_ws/AGIROS-Gazebo-GO2}:/opt/go2_gz_sim:ro
     networks:
-      - rosclaw-network
+      - agirosclaw-network
     profiles:
       - go2-gz
     # GPU 支持（可选）
@@ -58,30 +58,30 @@ services:
         echo "GUI mode: $$GO2_GUI"
         echo "Sensors: $$GO2_SENSORS"
 
-        # 使用 ROS2-Gazebo-GO2 提供的 launch.py 文件
+        # 使用 AGIROS-Gazebo-GO2 提供的 launch.py 文件
         # 此 launch 文件支持 world 和 sensors 参数
         agiros launch gazebo_sim launch.py world:=$$GO2_WORLD sensors:=$$GO2_SENSORS
 
   # GO2 Bridge Node - 运行 RosClaw bridge
   go2-bridge-node:
-    image: rosclaw/go2-gz-sim:latest
-    container_name: rosclaw-go2-bridge
+    image: agirosclaw/go2-gz-sim:latest
+    container_name: agirosclaw-go2-bridge
     entrypoint: ["/bin/bash", "-c"]
     command:
       - |
         export COLCON_CURRENT_PREFIX=/opt/go2_gz_sim/install
         source /opt/agiros/loong/setup.sh
         source /opt/go2_gz_sim/install/local_setup.sh
-        export COLCON_CURRENT_PREFIX=/opt/rosclaw/install
-        source /opt/rosclaw/install/local_setup.sh
+        export COLCON_CURRENT_PREFIX=/opt/agirosclaw/install
+        source /opt/agirosclaw/install/local_setup.sh
         agiros launch unitree_go2 go2_gz_bridge_launch.py
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
     volumes:
-      - ${GO2_GZ_SIM_PATH:-/home/jhq/work/code/go2_ws/go2_sim_ws/ROS2-Gazebo-GO2}:/opt/go2_gz_sim:ro
-      - /home/jhq/work/code/claw_ws/rosclaw/agiros_ws/install:/opt/rosclaw/install:ro
+      - ${GO2_GZ_SIM_PATH:-/home/jhq/work/code/go2_ws/go2_sim_ws/AGIROS-Gazebo-GO2}:/opt/go2_gz_sim:ro
+      - /home/jhq/work/code/claw_ws/rosclaw/agiros_ws/install:/opt/agirosclaw/install:ro
     networks:
-      - rosclaw-network
+      - agirosclaw-network
     profiles:
       - go2-gz
     depends_on:
@@ -89,8 +89,8 @@ services:
 
   # GO2 Scene Node - 启动场景相关的 launch 文件（建图、导航等）
   go2-scene-node:
-    image: rosclaw/go2-gz-sim:latest
-    container_name: rosclaw-go2-scene
+    image: agirosclaw/go2-gz-sim:latest
+    container_name: agirosclaw-go2-scene
     entrypoint: ["/bin/bash", "-c"]
     command:
       - |
@@ -119,9 +119,9 @@ services:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
       - GO2_SCENE=${GO2_SCENE:-none}
     volumes:
-      - ${GO2_GZ_SIM_PATH:-/home/jhq/work/code/go2_ws/go2_sim_ws/ROS2-Gazebo-GO2}:/opt/go2_gz_sim:ro
+      - ${GO2_GZ_SIM_PATH:-/home/jhq/work/code/go2_ws/go2_sim_ws/AGIROS-Gazebo-GO2}:/opt/go2_gz_sim:ro
     networks:
-      - rosclaw-network
+      - agirosclaw-network
     profiles:
       - go2-gz
     depends_on:
@@ -129,23 +129,23 @@ services:
 
   # ROSBridge Server - OpenClaw 连接到此服务
   agiros:
-    image: rosclaw/go2-gz-sim:latest
-    container_name: rosclaw-rosbridge
+    image: agirosclaw/go2-gz-sim:latest
+    container_name: agirosclaw-rosbridge
     ports:
       - "${ROSBRIDGE_PORT:-9090}:${ROSBRIDGE_PORT:-9090}"
     entrypoint: ["/bin/bash", "-c"]
-    command: ["source /opt/agiros/loong/setup.sh && source /opt/rosclaw/install/setup.sh && agiros launch rosbridge_server rosbridge_websocket_launch.xml"]
+    command: ["source /opt/agiros/loong/setup.sh && source /opt/agirosclaw/install/setup.sh && agiros launch rosbridge_server rosbridge_websocket_launch.xml"]
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
-      - COLCON_CURRENT_PREFIX=/opt/rosclaw/install
+      - COLCON_CURRENT_PREFIX=/opt/agirosclaw/install
     volumes:
-      - /home/jhq/work/code/claw_ws/rosclaw/agiros_ws/install:/opt/rosclaw/install:ro
+      - /home/jhq/work/code/claw_ws/rosclaw/agiros_ws/install:/opt/agirosclaw/install:ro
     networks:
-      - rosclaw-network
+      - agirosclaw-network
     profiles:
       - go2-gz
 
 networks:
-  rosclaw-network:
+  agirosclaw-network:
     external: true
     name: ${DOCKER_NETWORK_NAME:-1panel-network}

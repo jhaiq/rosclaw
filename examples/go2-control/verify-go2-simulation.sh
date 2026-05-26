@@ -22,11 +22,11 @@ source "$ROS2_WS/install/setup.sh"
 
 # Check packages
 echo "[2/5] Checking installed packages..."
-PACKAGES=$(agiros pkg list | grep -E "(unitree|rosclaw)" || true)
+PACKAGES=$(agiros pkg list | grep -E "(unitree|agirosclaw)" || true)
 if [[ -z "$PACKAGES" ]]; then
     echo "[ERROR] Packages not found. Building..."
     cd "$ROS2_WS"
-    colcon build --packages-select rosclaw_msgs unitree_go2
+    colcon build --packages-select agirosclaw_msgs unitree_go2
     source "$ROS2_WS/install/setup.sh"
 fi
 echo "[OK] Packages found:"

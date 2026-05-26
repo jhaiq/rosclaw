@@ -278,7 +278,7 @@ setup_ubuntu() {
     fi
 
     # Step 4: Install agent-specific Python packages
-    log_info "[4/5] Installing Python packages for rosclaw_agent..."
+    log_info "[4/5] Installing Python packages for agirosclaw_agent..."
     source "$VENV_PATH/bin/activate"
     pip install --upgrade pip
     pip install aiortc websockets
@@ -287,7 +287,7 @@ setup_ubuntu() {
     # Step 5: Build AGIROS packages
     log_info "[5/5] Building AGIROS packages..."
     cd "$ROS2_WS_PATH"
-    source /opt/ros/$ROS_DISTRO/setup.bash
+    source /opt/agiros/$ROS_DISTRO/setup.bash
     colcon build --symlink-install
     log_success "ROS2 packages built successfully"
 }
@@ -344,7 +344,7 @@ setup_macos() {
     log_success "ROS2 and development tools installed"
 
     # Step 4: Install agent-specific Python packages
-    log_info "[4/5] Installing Python packages for rosclaw_agent..."
+    log_info "[4/5] Installing Python packages for agirosclaw_agent..."
     pip install aiortc websockets
     log_success "Python packages installed (aiortc, websockets)"
 
@@ -369,7 +369,7 @@ validate_setup() {
         eval "$(mamba shell hook)"
         mamba activate "$ENV_NAME"
     else
-        source /opt/ros/$ROS_DISTRO/setup.bash
+        source /opt/agiros/$ROS_DISTRO/setup.bash
         source "$REPO_ROOT/$ENV_NAME/bin/activate"
     fi
 
@@ -392,7 +392,7 @@ validate_setup() {
 
     # Test if our packages are available
     local all_found=true
-    for pkg in rosclaw_msgs rosclaw_discovery rosclaw_agent; do
+    for pkg in agirosclaw_msgs agirosclaw_discovery agirosclaw_agent; do
         if agiros pkg list 2>/dev/null | grep -q "$pkg"; then
             log_success "Package found: $pkg"
         else
@@ -472,10 +472,10 @@ main() {
     echo "     source $REPO_ROOT/scripts/activate_workspace.sh"
     echo ""
     echo "  2. Test discovery node:"
-    echo "     agiros run rosclaw_discovery discovery_node"
+    echo "     agiros run agirosclaw_discovery discovery_node"
     echo ""
     echo "  3. Test agent node (requires signaling server):"
-    echo "     ROSCLAW_SIGNALING_URL=ws://localhost:8000 agiros run rosclaw_agent agent_node"
+    echo "     ROSCLAW_SIGNALING_URL=ws://localhost:8000 agiros run agirosclaw_agent agent_node"
     echo ""
 }
 

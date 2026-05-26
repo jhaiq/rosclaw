@@ -25,9 +25,9 @@ pnpm build            # 构建所有包
 #### 挂载rosclaw插件到openClaw
 ##### 本地部署openclaw： 1. 在openClaw的`src/plugins`目录下创建一个软链接，指向rosclaw插件的目录
 ```bash
-ln -s /path/to/rosclaw/packages/rosclaw_plugin src/plugins/
-# 例如，如果rosclaw插件位于~/rosclaw/packages/rosclaw_plugin
-ln -s ~/rosclaw/packages/rosclaw_plugin src/plugins/
+ln -s /path/to/rosclaw/packages/agirosclaw_plugin src/plugins/
+# 例如，如果rosclaw插件位于~/rosclaw/packages/agirosclaw_plugin
+ln -s ~/rosclaw/packages/agirosclaw_plugin src/plugins/
 ```
 ##### docker部署openclaw： 1. 在docker-compose.yml中添加一个新的服务，挂载rosclaw插件的目录到openClaw容器内
 ```yaml
@@ -35,18 +35,18 @@ services:
   openclaw:
     # ... 其他配置 ...      
     volumes:
-      - ./path/to/rosclaw/packages/rosclaw_plugin:/app/src/plugins/rosclaw_plugin
-      # 例如，如果rosclaw插件位于~/rosclaw/packages/rosclaw_plugin
-      - ~/rosclaw/packages/rosclaw_plugin:/app/src/plugins/rosclaw_plugin
+      - ./path/to/rosclaw/packages/agirosclaw_plugin:/app/src/plugins/agirosclaw_plugin
+      # 例如，如果rosclaw插件位于~/rosclaw/packages/agirosclaw_plugin
+      - ~/rosclaw/packages/agirosclaw_plugin:/app/src/plugins/agirosclaw_plugin
     ```
 ####加载rosclaw插件
 在openClaw的配置文件中，添加rosclaw插件的加载配置。例如，在
 `config/plugins.yaml`中添加：
 ```yaml
 plugins:
-    - name: rosclaw_plugin
-      type: rosclaw_plugin
-      path: /app/src/plugins/rosclaw_plugin
+    - name: agirosclaw_plugin
+      type: agirosclaw_plugin
+      path: /app/src/plugins/agirosclaw_plugin
       args: []
 ``` 
 ####

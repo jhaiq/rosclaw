@@ -149,10 +149,10 @@ activate_ubuntu() {
     source "$venv_path/bin/activate"
 
     log_info "[2/3] Sourcing AGIROS environment..."
-    if [ -f "/opt/ros/$ROS_DISTRO/setup.bash" ]; then
-        source "/opt/ros/$ROS_DISTRO/setup.bash"
+    if [ -f "/opt/agiros/$ROS_DISTRO/setup.bash" ]; then
+        source "/opt/agiros/$ROS_DISTRO/setup.bash"
     else
-        log_error "ROS2 $ROS_DISTRO not found at /opt/ros/$ROS_DISTRO"
+        log_error "ROS2 $ROS_DISTRO not found at /opt/agiros/$ROS_DISTRO"
         return 1
     fi
 
@@ -204,8 +204,8 @@ verify_setup() {
     local python_path=$(which python3)
     log_info "Python: $python_path"
 
-    # Check for rosclaw packages
-    for pkg in rosclaw_msgs rosclaw_discovery rosclaw_agent; do
+    # Check for agirosclaw packages
+    for pkg in agirosclaw_msgs agirosclaw_discovery agirosclaw_agent; do
         if agiros pkg list 2>/dev/null | grep -q "$pkg"; then
             log_success "Package found: $pkg"
         else
@@ -276,8 +276,8 @@ main() {
     echo ""
     echo "Ready for development! You can now:"
     echo "  - Build packages:  cd agiros_ws && colcon build --symlink-install"
-    echo "  - Run discovery:   agiros run rosclaw_discovery discovery_node"
-    echo "  - Run agent:       agiros run rosclaw_agent agent_node"
+    echo "  - Run discovery:   agiros run agirosclaw_discovery discovery_node"
+    echo "  - Run agent:       agiros run agirosclaw_agent agent_node"
     echo "  - List topics:     agiros topic list"
     echo ""
 }

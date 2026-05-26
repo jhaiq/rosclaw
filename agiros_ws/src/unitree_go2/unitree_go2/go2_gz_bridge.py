@@ -45,7 +45,7 @@ class Go2GzBridge(Node):
         )
 
         # === 里程计桥接 (Gazebo -> RosClaw) ===
-        # 注意：ROS2-Gazebo-GO2 发布的是 /robot1/odometry/filtered 不是 /robot1/odom
+        # 注意：AGIROS-Gazebo-GO2 发布的是 /robot1/odometry/filtered 不是 /robot1/odom
         self.odom_sub = self.create_subscription(
             Odometry,
             '/robot1/odometry/filtered',

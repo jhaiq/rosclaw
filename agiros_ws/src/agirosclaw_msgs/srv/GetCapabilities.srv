@@ -1,5 +1,5 @@
 string robot_namespace
 ---
-rosclaw_msgs/CapabilityManifest manifest
+agirosclaw_msgs/CapabilityManifest manifest
 bool success
 string error_message

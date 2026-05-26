@@ -87,7 +87,7 @@ across all modes — only the transport between them changes.
 │  └─────────────────────────────────────────────────────────────────────────┘      │
 │                                                                                   │
 │  ┌─────────────────────────────────┐  ┌───────────────────────────────────┐       │
-│  │  rosclaw_discovery              │  │  Nav2 / MoveIt2 / Other Stacks   │       │
+│  │  agirosclaw_discovery              │  │  Nav2 / MoveIt2 / Other Stacks   │       │
 │  │  (capability introspection)     │  │  (navigation, manipulation)       │       │
 │  └─────────────────────────────────┘  └───────────────────────────────────┘       │
 └──────────────────────────────────────────────────────────────────────────────────┘
@@ -222,7 +222,7 @@ Latency:   ~10-100ms (internet, varies)
 NAT issue:  solved — both sides connect outbound to STUN/TURN, then P2P
 ```
 
-In Mode C, the robot runs a **RosClaw Agent Node** (`rosclaw_agent`) — a
+In Mode C, the robot runs a **RosClaw Agent Node** (`agirosclaw_agent`) — a
 lightweight AGIROS node that connects outbound to the signaling/TURN server
 and establishes a WebRTC data channel with the cloud-side plugin. Commands
 and feedback flow over this encrypted peer-to-peer channel. Neither side
@@ -249,7 +249,7 @@ a unified API for all three deployment modes:
        │     └── rclnodejs → AGIROS DDS directly
        │
        └── WebRTCTransport     (Mode C — @rosclaw/transport-webrtc, stub)
-             └── WebRTC data channel → rosclaw_agent → AGIROS DDS
+             └── WebRTC data channel → agirosclaw_agent → AGIROS DDS
 ```
 
 The `createTransport(config)` factory in `@rosclaw/transport` uses dynamic
